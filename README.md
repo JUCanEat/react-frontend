@@ -1,12 +1,35 @@
 # Frontend for our app built with React
 
+## Development
+
+Start the development server with Hot Module Replacement:
+
+```bash
+npm run dev
+```
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+To build and run using Docker:
+
+```bash
+docker build -t my-app .
+
+# Run the container, format is HOST_PORT:CONTAINER_PORT
+docker run -p 3000:3000 my-app
+```
+
 ## Structure
-The project's directory structure is heavily inspired [by this guide](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md).
+The project's directory structure is inspired [by this guide](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md), as well as using React Router's `create-react-router@latest` template ([more info here](https://reactrouter.com/tutorials/quickstart)).
+
 Directories are added/removed on an "as-needed" basis.
 
 ## Meta-framework
-Vite has been chosen as the meta-framework for this project due to it 
-appearing relatively frequently as a suggestion (while reading various guides).
+Vite has been chosen as the meta-framework for this project. It integrates well with React Router - it is one of the components of the "batteries-included" template from the Quick Start guide.
 
 ### Internal
 #### Structure hints
