@@ -2,6 +2,11 @@
 
 ## Development
 
+Install dependencies:
+```bash
+npm install
+```
+
 Start the development server with Hot Module Replacement:
 
 ```bash
