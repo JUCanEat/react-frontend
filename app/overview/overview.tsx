@@ -7,7 +7,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   NavigationMenuViewport,
-} from "app/components/ui/navigation-menu"
+} from "~/shadcn/components/ui/navigation-menu"
 
 import {
   Item,
@@ -18,7 +18,7 @@ import {
   ItemHeader,
   ItemMedia,
   ItemTitle,
-} from "app/components/ui/item"
+} from "~/shadcn/components/ui/item"
 
 import jcaLogo from "~/assets/logo.svg"
 

@@ -1,0 +1,1 @@
+// a white rectangle in the "Restaurants" 'service_section', or "Cafes"..
