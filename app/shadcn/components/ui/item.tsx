@@ -31,18 +31,22 @@ function ItemSeparator({
 }
 
 const itemVariants = cva(
-  "group/item flex items-center border border-transparent text-sm rounded-md transition-colors [a]:hover:bg-accent/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+  "group/item flex items-center border border-gray-200 border-transparent text-sm rounded-md transition-colors [a]:hover:bg-gray-100/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-gray-950 focus-visible:ring-gray-950/50 focus-visible:ring-[3px] dark:border-gray-800 dark:[a]:hover:bg-gray-800/50 dark:focus-visible:border-gray-300 dark:focus-visible:ring-gray-300/50",
   {
     variants: {
       variant: {
-        default: "bg-gray-100",
-        outline: "border-border",
-        muted: "bg-muted/50",
+        default: "bg-transparent",
+        outline: "border-gray-200 dark:border-gray-800",
+        muted: "bg-gray-100/50 dark:bg-gray-800/50",
       },
       size: {
-        default: "p-4 gap-x-4 gap-y-2",
+        default: "p-4 gap-4",
         sm: "py-3 px-4 gap-2.5",
+        xsm: "py-2 px-3 gap-2",
       },
+      width: {
+        default: "max-w-full"
+      }
     },
     defaultVariants: {
       variant: "default",
@@ -77,9 +81,11 @@ const itemMediaVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent",
-        icon: "size-8 border rounded-sm bg-muted [&_svg:not([class*='size-'])]:size-4",
+        icon: "size-8 border border-gray-200 rounded-sm bg-gray-100 [&_svg:not([class*='size-'])]:size-4 dark:border-gray-800 dark:bg-gray-800",
         image:
           "size-10 rounded-sm overflow-hidden [&_img]:size-full [&_img]:object-cover",
+        logo:
+          "size-16 rounded-sm overflow-hidden [&_img]:size-full [&_img]:object-cover",
       },
     },
     defaultVariants: {
@@ -108,7 +114,7 @@ function ItemContent({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="item-content"
       className={cn(
-        "flex flex-1 flex-col gap-1 [&+[data-slot=item-content]]:flex-none",
+        "flex flex-none flex-col w-50 gap-1 [&+[data-slot=item-content]]:flex-none",
         className
       )}
       {...props}
@@ -121,7 +127,7 @@ function ItemTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="item-title"
       className={cn(
-        "flex w-fit items-center gap-2 text-sm leading-snug font-medium",
+        "flex w-1/2 items-center gap-2 text-sm leading-snug font-medium",
         className
       )}
       {...props}
@@ -134,8 +140,8 @@ function ItemDescription({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="item-description"
       className={cn(
-        "text-muted-foreground line-clamp-2 text-sm leading-normal font-normal text-balance",
-        "[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4",
+        "text-gray-500 line-clamp-2 text-sm leading-normal font-normal text-balance dark:text-gray-400",
+        "[&>a:hover]:text-gray-900 [&>a]:underline [&>a]:underline-offset-4 dark:[&>a:hover]:text-gray-50",
         className
       )}
       {...props}

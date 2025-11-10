@@ -1,1 +1,0 @@
-// contains the logo, the name and the "Log in" button.

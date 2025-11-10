@@ -18,8 +18,6 @@ export function meta({}: Route.MetaArgs) {
 
 export default function MainUI() {
     return (
-    <div>
       <Outlet />
-    </div>
   );
 }
