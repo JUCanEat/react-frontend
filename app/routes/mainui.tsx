@@ -1,13 +1,14 @@
-import type { Route } from "./+types/routes/_app/_index";
+import type { Route } from "./+types/mainui";
 import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
   Outlet,
-  Scripts,
-  ScrollRestoration,
 } from "react-router";
 
+import {
+    QueryClient,
+    QueryClientProvider,
+} from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -18,6 +19,8 @@ export function meta({}: Route.MetaArgs) {
 
 export default function MainUI() {
     return (
-      <Outlet />
+        <QueryClientProvider client={queryClient}>
+            <Outlet />
+        </QueryClientProvider>
   );
 }
