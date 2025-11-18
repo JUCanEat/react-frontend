@@ -114,7 +114,7 @@ function ItemContent({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="item-content"
       className={cn(
-        "flex flex-none flex-col w-50 gap-1 [&+[data-slot=item-content]]:flex-none",
+        "flex flex-none flex-col gap-1 [&+[data-slot=item-content]]:flex-none",
         className
       )}
       {...props}
@@ -127,7 +127,7 @@ function ItemTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="item-title"
       className={cn(
-        "flex w-1/2 items-center gap-2 text-sm leading-snug font-medium",
+        "flex items-center gap-2 text-sm leading-snug font-medium",
         className
       )}
       {...props}

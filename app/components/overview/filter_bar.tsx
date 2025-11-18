@@ -19,7 +19,14 @@ import {
 
 export function FilterBar() {
   return (
-    <ToggleGroup type="multiple" variant="outline" spacing={2} size="sm" onValueChange={(value) => console.log("Changed:", value)}>
+      <ToggleGroup
+          type="multiple"
+          variant="outline"
+          spacing={0}
+          size="sm"
+          className="mx-auto w-full max-w-[400px] [&_button]:text-[clamp(0.5rem,2.5vw,0.875rem)] [&_button]:px-[clamp(0.25rem,1vw,0.75rem)] [&_button]:py-[clamp(0.25rem,1vw,0.5rem)] [&_button]:gap-[clamp(0.25rem,0.5vw,0.5rem)] [&_svg]:w-[clamp(0.75rem,2vw,1rem)] [&_svg]:h-[clamp(0.75rem,2vw,1rem)]"
+          onValueChange={(value) => console.log("Changed:", value)}
+      >
       <ToggleGroupItem
         value="vegan"
         aria-label="Toggle vegan"
