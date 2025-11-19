@@ -8,19 +8,19 @@ export function BottomNav() {
             <nav className="flex items-center gap-8 py-3">
                 <Button
                     variant="ghost"
-                    onClick={() => alert("navigation to /")}
+                    onClick={() => (window.location.href = "/")}
                     >
                     <Home className=""/>
                 </Button>
                 <Button
                     variant="ghost"
-                    onClick={() => alert("navigation to /map")}
+                    onClick={() => (window.location.href = "/map")}
                     >
                     <Map className=""/>
                 </Button>
                 <Button
                     variant="ghost"
-                    onClick={() => alert("navigation to /profile")}
+                    onClick={() => (window.location.href = "/profile")}
                     >
                     <User className=""/>
                 </Button>
