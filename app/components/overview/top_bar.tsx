@@ -13,15 +13,17 @@ import {
 
 export function TopBar() {
   return (
-    <div className="flex w-full max-w-md flex-col gap-6">
-      <Item variant="outline" size="xsm" width="default">
-        <ItemMedia variant="logo">
-          <img src="/logo.svg"></img>
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>JU Can Eat</ItemTitle>
-        </ItemContent>
-        <ItemActions>
+    <div className="flex w-full max-w-full flex-col gap-6">
+      <Item variant="outline" size="xsm" width="default" className="justify-between">
+          <div className="flex items-center gap-2">
+              <ItemMedia variant="logo">
+                  <img src="/logo.svg"></img>
+                </ItemMedia>
+                <ItemContent>
+                    <ItemTitle>JU Can Eat</ItemTitle>
+                </ItemContent>
+          </div>
+          <ItemActions>
           <Button variant="outline" size="sm">
             Login
           </Button>

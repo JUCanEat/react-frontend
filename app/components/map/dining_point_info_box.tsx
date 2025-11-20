@@ -1,12 +1,5 @@
 import { Button } from "~/shadcn/components/ui/button";
-
-interface MockDiningPointInfoProps {
-  selectedPoint: {
-    name: string;
-    description: string;
-  } | null;
-  onClose: () => void;
-}
+import type { MockDiningPointInfoProps } from "~/interfaces"
 
 export function DiningPointInfo({ selectedPoint, onClose }: MockDiningPointInfoProps) {
   if (!selectedPoint) return null;
