@@ -1,5 +1,6 @@
 import { Map } from "~/components/map/map"
 import { TopBar } from "~/components/overview/top_bar";
+import { BottomNav } from "~/components/overview/bottom_nav"
 
 export function MapComponent() {
   return (
@@ -7,6 +8,7 @@ export function MapComponent() {
       <TopBar />
       <div className="flex-1">
         <Map />
+        <BottomNav />
       </div>
     </div>
   );

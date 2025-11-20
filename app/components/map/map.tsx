@@ -23,7 +23,7 @@ export function Map() {
   };
 
   return (
-    <div className = "w-full h-screen">
+    <div className = "w-full" style={{ height: "calc(100vh - 150px)" }}>
       <LoadScript googleMapsApiKey="" onLoad={() => setMapsLoaded(true)}>
         {mapsLoaded && (
           <GoogleMap
