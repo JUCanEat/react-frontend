@@ -1,17 +1,5 @@
 import { Button } from "~/shadcn/components/ui/button";
-import {
-    Route,
-    DollarSign,
-    Smile
-} from "lucide-react"
-
-interface MockDiningPointInfoProps {
-  selectedPoint: {
-    name: string;
-    description: string;
-  } | null;
-  onClose: () => void;
-}
+import type { MockDiningPointInfoProps } from "~/interfaces"
 
 const GetDiningPointPricingIcon = (selectedPoint) => {
     switch(selectedPoint.type) {

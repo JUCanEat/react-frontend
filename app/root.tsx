@@ -10,6 +10,9 @@ import {
 import type { Route } from "./+types/root";
 import "./tailwind_styles.css";
 
+export const rootQueryUrl: string = "http://localhost:8080";
+export const allRestaurantsEndpoint: string = "api/restaurants";
+
 export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
