@@ -1,6 +1,13 @@
 import { Button } from "~/shadcn/components/ui/button";
 import type { MockDiningPointInfoProps } from "~/interfaces"
 
+import {
+    Route,
+    DollarSign,
+    Smile,
+    X
+} from "lucide-react"
+
 const GetDiningPointPricingIcon = (selectedPoint) => {
     switch(selectedPoint.type) {
         case 'restaurant':
