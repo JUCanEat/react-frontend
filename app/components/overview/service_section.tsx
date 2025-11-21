@@ -31,22 +31,24 @@ export function ServiceSection() {
     else carouselArray = data.map((restaurantObj: Restaurant) => restaurantObj.name)
 
     return (
-    <Carousel className="w-full max-w-xs">
-      <CarouselContent>
-        {carouselArray.map((value, index) => (
-          <CarouselItem key={index}>
-            <div className="p-1">
-              <Card>
-                <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="text-4xl font-semibold">{value}</span>
-                </CardContent>
-              </Card>
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
+        <div className="flex px-14 justify-center">
+        <Carousel className="w-full max-w-xs" opts={{ align: "start", loop: true}}>
+          <CarouselContent>
+            {carouselArray.map((value, index) => (
+              <CarouselItem key={index}>
+                <div className="p-1">
+                  <Card>
+                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                      <span className="text-4xl font-semibold">{value}</span>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+        </div>
   )
 }
