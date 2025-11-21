@@ -1,26 +1,36 @@
 import { useState, type CSSProperties } from "react";
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import {
-    lat,
-    lng,
     zoom,
-    places,
     mapStyles,
     bounds,
     type Place
 } from "~/components/map/map_config";
 
+import { type Restaurant } from "~/interfaces";
+
 import { DiningPointInfo } from "~/components/map/dining_point_info_box";
 import { DiningPointMarker } from "~/components/map/dining_point_marker";
 
+import { useGetAllRestaurants } from "~/api/restaurant_service";
+
 export function Map() {
   const [mapsLoaded, setMapsLoaded] = useState(false);
-  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<Restaurant | null>(null);
 
   const containerStyle: CSSProperties = {
     width: "100%",
     height: "100%",
   };
+
+  const { isPending, error, data: restaurants } = useGetAllRestaurants();
+
+  if (isPending) return <p>Loading...</p>;
+  if (error) return <p>Error loading restaurants</p>;
+  if (!restaurants || restaurants.length === 0) return <p>No restaurants found</p>;
+
+  const lat = restaurants[0].location.latitude.value;
+  const lng = restaurants[0].location.longitude.value;
 
   return (
     <div className = "w-full" style={{ height: "calc(100vh - 150px)" }}>
@@ -38,8 +48,8 @@ export function Map() {
               zoomControl: true,
             }}
           >
-            {places.map((p) => (
-              <DiningPointMarker key={p.name} place={p} onSelect={() => setSelectedPlace(p)} />
+            {restaurants.map((p) => (
+              <DiningPointMarker key={p.name} restaurant={p} onSelect={() => setSelectedPlace(p)} />
             ))}
           </GoogleMap>
         )}

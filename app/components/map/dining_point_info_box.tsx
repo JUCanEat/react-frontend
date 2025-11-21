@@ -8,49 +8,51 @@ import {
     X
 } from "lucide-react"
 
+import { useGetAllRestaurants } from "~/api/restaurant_service";
+
+const GetDiningPointInfo = (id: string) => {
+    fetch(`${rootQueryUrl}/${allRestaurantsEndpoint}/${id}`)
+        .then(res => res.json())
+        .then((data: Restaurant) => {
+            const restaurantInfo = `Name: ${data.name}\nDescription: ${data.description}`;
+            alert(restaurantInfo);
+            return restaurantInfo;
+        })
+        .catch(err => {
+            alert("Error: " + err.message);
+        })
+}
+
 const GetDiningPointPricingIcon = (selectedPoint) => {
-    switch(selectedPoint.type) {
-        case 'restaurant':
-            return (
-                <div className="flex items-center gap-1">
-                    <DollarSign className="-mr-2" size={14}/>
-                    <DollarSign size={14}/>
-                </div>
-            );
-        default:
-            return (null);
-    }
+    return (
+        <div className="flex items-center gap-1">
+            <DollarSign className="-mr-2" size={14}/>
+            <DollarSign size={14}/>
+        </div>
+    );
 }
 
 const GetCustomerSatisfactionComponent = (selectedPoint) => { {/* TODO feature - gather and calculate customer satisfaction */}
-    switch(selectedPoint.type) {
-            case 'restaurant':
-                return (
-                    <div className="flex items-center gap-1">
-                         <Smile size={14} />
-                         <p> 6.3 </p>
-                    </div>
-                );
-            default:
-                return (null);
-    }
+    return (
+        <div className="flex items-center gap-1">
+            <Smile size={14} />
+            <p> 6.3 </p>
+        </div>
+    );
 }
 
 const GetOptionalGoToRestaurantButton = (selectedPoint) => {
-    switch(selectedPoint.type) {
-        case 'restaurant':
-            return (
-                <Button
-                    onClick={() => alert(`View menu for ${selectedPoint.name}`)}
-                    className="text-primary-foreground text-white"
-                    variant="default"
-                > Go to {selectedPoint.name}
-                </Button>
-            );
-        default:
-            return (null);
-    }
+    return (
+        <Button
+            onClick={() => alert(`View menu for ${selectedPoint.name}`)}
+            className="text-primary-foreground text-white"
+            variant="default"
+            > Go to {selectedPoint.name}
+        </Button>
+    );
 }
+
+
 
 export function DiningPointInfo({ selectedPoint, onClose }: MockDiningPointInfoProps) {
   if (!selectedPoint) return null;

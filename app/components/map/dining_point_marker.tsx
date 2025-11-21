@@ -5,11 +5,11 @@ import {
     diningPointIconSize,
 } from "~/components/map/map_config";
 
-export function DiningPointMarker({ place, onSelect }: { place: Place, onSelect: () => void }) {
+export function DiningPointMarker({ restaurant, onSelect }: { restaurant: Restaurant, onSelect: () => void }) {
     return (
         <Marker
-            position={{ lat: place.lat, lng: place.lng }}
-            title={place.name}
+            position={{ lat: restaurant.location.latitude.value, lng: restaurant.location.longitude.value }}
+            title={restaurant.name}
             onClick={onSelect}
             icon={{
                 url: diningPointIcon,
