@@ -1,5 +1,5 @@
 import { Button } from "~/shadcn/components/ui/button";
-import type { MockDiningPointInfoProps } from "~/interfaces"
+import type { FacilityInfoProps } from "~/interfaces"
 
 import {
     Route,
@@ -10,7 +10,7 @@ import {
 
 import { useGetAllRestaurants } from "~/api/restaurant_service";
 
-const GetDiningPointInfo = (id: string) => {
+const GetFacilityInfo = (id: string) => {
     fetch(`${rootQueryUrl}/${allRestaurantsEndpoint}/${id}`)
         .then(res => res.json())
         .then((data: Restaurant) => {
@@ -23,11 +23,15 @@ const GetDiningPointInfo = (id: string) => {
         })
 }
 
-const GetDiningPointPricingIcon = (selectedPoint) => {
+const GetFacilityPricingIcon = (selectedPoint) => {
+    const isRestaurant = "name" in selectedPoint;
+
     return (
         <div className="flex items-center gap-1">
             <DollarSign className="-mr-2" size={14}/>
-            <DollarSign size={14}/>
+            {isRestaurant && (
+                    <DollarSign size={14}/>
+                  )}
         </div>
     );
 }
@@ -42,19 +46,22 @@ const GetCustomerSatisfactionComponent = (selectedPoint) => { {/* TODO feature -
 }
 
 const GetOptionalGoToRestaurantButton = (selectedPoint) => {
-    return (
-        <Button
-            onClick={() => alert(`View menu for ${selectedPoint.name}`)}
-            className="text-primary-foreground text-white"
-            variant="default"
-            > Go to {selectedPoint.name}
-        </Button>
-    );
+    if ("name" in selectedPoint) {
+        return (
+            <Button
+                onClick={() => alert(`View menu for ${selectedPoint.name}`)}
+                className="text-primary-foreground text-white"
+                variant="default"
+                > Go to {selectedPoint.name}
+            </Button>
+        );
+    }
+    return null;
 }
 
 
 
-export function DiningPointInfo({ selectedPoint, onClose }: MockDiningPointInfoProps) {
+export function FacilityInfo({ selectedPoint, onClose }: FacilityInfoProps) {
   if (!selectedPoint) return null;
 
   return (
@@ -67,9 +74,9 @@ export function DiningPointInfo({ selectedPoint, onClose }: MockDiningPointInfoP
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex w-full max-w-sm items-center justify-between">
-            <h3 className="text-lg font-semibold">{selectedPoint.name}</h3>
+            <h3 className="text-lg font-semibold">{"name" in selectedPoint ? selectedPoint.name : "Vending machine"}</h3>
             {GetCustomerSatisfactionComponent(selectedPoint)}
-            {GetDiningPointPricingIcon(selectedPoint)}
+            {GetFacilityPricingIcon(selectedPoint)}
             {<div className="flex items-center gap-1">
                 <Route size={13}/>
                 <p size={10}>Navigate</p>

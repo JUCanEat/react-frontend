@@ -12,11 +12,20 @@ export interface Restaurant {
     openNow: boolean;
 }
 
-// mocks
-export interface MockDiningPointInfoProps {
-    selectedPoint: {
-        name: string;
-        description: string;
-    } | null;
+export interface VendingMachine {
+    id: string;
+    description: string;
+    photoPath: string;
+    location: {
+        id: string;
+        latitude: { value: number };
+        longitude: { value: number };
+    };
+}
+
+type Facility = Restaurant | VendingMachine;
+
+export interface FacilityInfoProps {
+    selectedPoint: Facility | null;
     onClose: () => void;
 }
