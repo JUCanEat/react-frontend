@@ -10,8 +10,11 @@ import {
 import type { Route } from "./+types/root";
 import "./tailwind_styles.css";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 export const rootQueryUrl: string = "http://localhost:8080";
 export const allRestaurantsEndpoint: string = "api/restaurants";
+export const allVendingMachinesEndpoint: string = "api/vending-machines";
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
@@ -45,8 +48,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const queryClient = new QueryClient();
+
 export default function App() {
-  return <Outlet />;
+  return <QueryClientProvider client={queryClient}>
+    <Outlet />;
+  </QueryClientProvider>
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
