@@ -6,5 +6,6 @@ export default [
         route("restaurants/:restaurantId","routes/restaurant.tsx")
     ]),
     route("profile","routes/profile.tsx"),    
-    route("map","routes/map.tsx")
+    route("map","routes/map.tsx"),
+    route("dishes","routes/dishes.tsx")
 ] satisfies RouteConfig;

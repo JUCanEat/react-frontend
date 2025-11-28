@@ -49,7 +49,7 @@ const GetOptionalGoToRestaurantButton = (selectedPoint) => {
     if ("name" in selectedPoint) {
         return (
             <Button
-                onClick={() => alert(`View menu for ${selectedPoint.name}`)}
+                onClick={() => (window.location.href = "/dishes")}
                 className="text-primary-foreground text-white"
                 variant="default"
                 > Go to {selectedPoint.name}
