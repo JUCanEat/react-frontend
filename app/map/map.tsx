@@ -5,7 +5,7 @@ import { BottomNav } from "~/components/overview/bottom_nav"
 export function MapComponent() {
   return (
     <div className="flex flex-col h-screen w-full">
-      <TopBar />
+        <TopBar isProfilePage={false}></TopBar>
       <div className="flex-1">
         <Map />
         <BottomNav />
