@@ -13,7 +13,7 @@ import {
 
 export function ServiceSectionStripe() {
   return (
-    <div className="flex w-full max-w-md flex-col gap-2">
+    <div className="flex w-full max-w-full flex-col gap-2">
       <Item variant="outline" size="xsm">
         <ItemMedia>
         </ItemMedia>
