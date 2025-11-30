@@ -11,12 +11,16 @@ import {
   ItemTitle,
 } from "~/shadcn/components/ui/item"
 
-export function TopBar() {
-  return (
+export function TopBar({isProfilePage}: {isProfilePage: boolean}) {
+  var itemClassName: string = isProfilePage ? "justify-center" : "justify-between"
+    return (
     <div className="flex w-full max-w-full flex-col gap-6">
-      <Item variant="outline" size="xsm" width="default" className="justify-between">
+      <Item variant="outline" size="xsm" width="default" className={itemClassName}>
           <div className="flex items-center gap-2">
-              <ItemMedia variant="logo">
+              <ItemMedia
+                  variant="logo"
+                  onClick={() => (window.location.href = "/")}
+              >
                   <img src="/logo.svg"></img>
                 </ItemMedia>
                 <ItemContent>
@@ -24,9 +28,15 @@ export function TopBar() {
                 </ItemContent>
           </div>
           <ItemActions>
-          <Button variant="outline" size="sm">
-            Login
-          </Button>
+              {!isProfilePage && (
+                  <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => (window.location.href = "/profile")}
+                  >
+                      Login
+                  </Button>
+              )}
         </ItemActions>
       </Item>
     </div>

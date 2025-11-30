@@ -46,11 +46,15 @@ const itemVariants = cva(
       },
       width: {
         default: "max-w-full"
+      },
+      justify: {
+          default: "justify-between"
       }
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+        justify: "default"
     },
   }
 )

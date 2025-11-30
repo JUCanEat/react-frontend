@@ -1,2 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
+/*@layer components {*/
+/*    .filter-bar-padding {*/
+/*        padding-left: calc(100vw / 8);*/
+/*        padding-right: calc(100vw / 8);*/
+/*    }*/
+/*}*/
