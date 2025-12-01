@@ -5,6 +5,7 @@ export default [
         index("routes/overview.tsx"),
         route("restaurants/:restaurantId","routes/restaurant.tsx")
     ]),
-    route("profile","routes/profile.tsx"),    
+    route("login","routes/login.tsx"),
+    route("profile","routes/profile.tsx"),
     route("map","routes/map.tsx")
 ] satisfies RouteConfig;

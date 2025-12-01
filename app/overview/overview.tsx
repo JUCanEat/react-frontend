@@ -5,15 +5,20 @@ import { ServiceSectionStripe } from "~/components/overview/service_section_stri
 import { ServiceSection } from "~/components/overview/service_section"
 import { BottomNav } from "~/components/overview/bottom_nav"
 
+import { useGetAllRestaurants } from "~/api/restaurant_service"
+import { useGetAllVendingMachines } from "~/api/vending_machine_service"
+
 export function OverviewComponent() {
   return (
     <>
-      <TopBar isProfilePage={false}></TopBar>
+      <TopBar isLoginPage={false}></TopBar>
       <div className = "w-full" style={{ height: "calc(100vh - 150px)"}}>
           <SearchBar></SearchBar>
           <FilterBar></FilterBar>
-          <ServiceSectionStripe></ServiceSectionStripe>
-          <ServiceSection></ServiceSection>
+          <ServiceSectionStripe stripeTitle={"Restaurants"}></ServiceSectionStripe>
+          <ServiceSection carouselItemSource={useGetAllRestaurants}></ServiceSection>
+          <ServiceSectionStripe stripeTitle={"Vending Machines"}></ServiceSectionStripe>
+          <ServiceSection carouselItemSource={useGetAllVendingMachines}></ServiceSection>
       </div>
       <BottomNav />
     </>

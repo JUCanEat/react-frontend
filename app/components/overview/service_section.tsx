@@ -10,36 +10,28 @@ import {
     CarouselNext,
     CarouselPrevious
 } from "~/shadcn/components/ui/carousel"
-import { useQuery } from '@tanstack/react-query'
-import { allRestaurantsEndpoint, rootQueryUrl } from '~/root'
 
 import type { Restaurant } from "~/interfaces"
 
 
-export function ServiceSection() {
-    const { isPending, error, data } = useQuery<Restaurant[]>({
-        queryKey: ['allRestaurantData'], // quite arbitrary for our purposes now, read docs abt queryKey!
-        queryFn: () =>
-            fetch(`${rootQueryUrl}/${allRestaurantsEndpoint}`).then((res) =>
-                res.json(),
-            ),
-    })
+export function ServiceSection({carouselItemSource} : {carouselItemSource: () => any} ) {
+    const { isPending, error, data } = carouselItemSource()
 
     let carouselArray: Array<string>;
     if (isPending) carouselArray = Array.from({ length: 3 }, () => 'Loading...')
-    if (error || data === undefined) carouselArray = Array.from({ length: 3 }, () => 'Error')
-    else carouselArray = data.map((restaurantObj: Restaurant) => restaurantObj.name)
+    else if (error || data === undefined) carouselArray = Array.from({ length: 3 }, () => 'Error')
+    else carouselArray = data.map((retrievedObj: any) => retrievedObj.name)
 
     return (
         <div className="flex px-14 justify-center">
         <Carousel className="w-full max-w-xs" opts={{ align: "start", loop: true}}>
           <CarouselContent>
             {carouselArray.map((value, index) => (
-              <CarouselItem key={index}>
+              <CarouselItem key={index} className="basis-3/5">
                 <div className="p-1">
                   <Card>
                     <CardContent className="flex aspect-square items-center justify-center p-6">
-                      <span className="text-4xl font-semibold">{value}</span>
+                      <span className="text-xl font-semibold">{value}</span>
                     </CardContent>
                   </Card>
                 </div>
