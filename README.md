@@ -45,10 +45,10 @@ export default [
         index("routes/overview.tsx"),
         route("restaurants/:restaurantId","routes/restaurant.tsx")
     ]),
-    route("profile","routes/profile.tsx"),
+    route("login","routes/login.tsx"),
 ] satisfies RouteConfig;
 ```
-then we consider `./routes/mainui.tsx` and `./routes/profile.tsx` to each be a 'single route'. For each corresponding
+then we consider `./routes/mainui.tsx` and `./routes/login.tsx` to each be a 'single route'. For each corresponding
 `.tsx` file under `./app/routes`, we include the QueryClient as such:
 ```typescript
 import {
