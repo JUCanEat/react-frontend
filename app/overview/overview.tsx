@@ -8,7 +8,7 @@ import { BottomNav } from "~/components/overview/bottom_nav"
 export function OverviewComponent() {
   return (
     <>
-      <TopBar isProfilePage={false}></TopBar>
+      <TopBar isLoginPage={false}></TopBar>
       <div className = "w-full" style={{ height: "calc(100vh - 150px)"}}>
           <SearchBar></SearchBar>
           <FilterBar></FilterBar>
