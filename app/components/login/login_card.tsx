@@ -15,7 +15,7 @@ import { FaGoogle } from "react-icons/fa";
 
 export function LoginCard() {
     return (
-        <Card className="w-full max-w-sm max-h-1/2">
+        <Card className="w-full max-w-sm max-h-3/4">
             <CardHeader className="justify-center text-xl">
                 <CardTitle>Login</CardTitle>
             </CardHeader>
