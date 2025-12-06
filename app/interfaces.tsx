@@ -35,5 +35,6 @@ export interface Dish {
     name: string,
     description: string,
     price: string,
-    image: string
+    image: string,
+    allergens: string[]
 }

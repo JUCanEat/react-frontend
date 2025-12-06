@@ -1,6 +1,3 @@
-// contains 'filter_options' (eg. "Vegan", "Vegetarian") in one stripe
-"use client"
-
 import * as React from "react"
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group"
 import { type VariantProps } from "class-variance-authority"
@@ -17,9 +14,22 @@ import {
   ToggleGroupItem
 } from '~/shadcn/components/ui/toggle-group'
 
-export function FilterBar() {
+export type FilterValue = "vegan" | "vegetarian" | "lactoseFree" | "glutenFree"
+
+export interface FilterBarProps {
+    value: FilterValue[]
+    onChange: (value: FilterValue[]) => void
+}
+
+export function FilterBar({ value, onChange }: FilterBarProps) {
   return (
-      <ToggleGroup type="multiple" variant="outline" spacing={0} size="sm" onValueChange={(value) => console.log("Changed:", value)}>
+      <ToggleGroup
+          type="multiple"
+          variant="outline"
+          spacing={0}
+          size="sm"
+          value={value}
+          onValueChange={(val) => onChange(val as FilterValue[])}>
           <ToggleGroupItem
               value="vegan"
               aria-label="Toggle vegan"
@@ -37,7 +47,7 @@ export function FilterBar() {
               Vegetarian
           </ToggleGroupItem>
           <ToggleGroupItem
-              value="lactose-free"
+              value="lactoseFree"
               aria-label="Toggle lactose free"
               className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
           >
@@ -45,7 +55,7 @@ export function FilterBar() {
               Lactose-free
           </ToggleGroupItem>
           <ToggleGroupItem
-              value="gluten-free"
+              value="glutenFree"
               aria-label="Toggle gluten free"
               className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
           >

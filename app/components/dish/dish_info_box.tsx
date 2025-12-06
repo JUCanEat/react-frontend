@@ -1,5 +1,4 @@
-import { Dish } from "~/interfaces";
-import { Heart, Star } from "lucide-react";
+import { ClickableHeart } from "~/components/dish/clickable_heart"
 
 export function DishInfo({dish}:  {dish: Dish}) {
     return (
@@ -27,11 +26,7 @@ export function DishInfo({dish}:  {dish: Dish}) {
             </div>
 
             <div>
-                <Heart className="w-5 h-5 text-red-500" />
-                <div>
-                    <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 mr-1" />
-                    5
-                </div>
+                <ClickableHeart/>
             </div>
 
         </div>
