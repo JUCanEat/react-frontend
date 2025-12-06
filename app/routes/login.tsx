@@ -1,7 +1,7 @@
 import { TopBar } from "~/components/overview/top_bar"
 import { BottomNav } from "~/components/overview/bottom_nav"
-import ProfileComponent from "~/profile/profile";
+import LoginComponent from "~/login/login";
 
-export default function Profile() {
-    return <ProfileComponent />
+export default function Login() {
+    return <LoginComponent />
 }

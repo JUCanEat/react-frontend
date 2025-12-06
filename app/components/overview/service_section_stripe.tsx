@@ -11,14 +11,12 @@ import {
   ItemTitle,
 } from "~/shadcn/components/ui/item"
 
-export function ServiceSectionStripe() {
+export function ServiceSectionStripe({stripeTitle} : {stripeTitle: string}) {
   return (
-    <div className="flex w-full max-w-md flex-col gap-2">
+    <div className="flex w-full max-w-full flex-col gap-2">
       <Item variant="outline" size="xsm">
-        <ItemMedia>
-        </ItemMedia>
         <ItemContent>
-          <ItemTitle>Restaurants</ItemTitle>
+          <ItemTitle>{stripeTitle}</ItemTitle>
         </ItemContent>
         <ItemActions>
           <Button variant="outline" size="xsm">
