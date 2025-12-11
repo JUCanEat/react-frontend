@@ -55,3 +55,17 @@ export interface Dish {
     image: string,
     allergens: string[]
 }
+
+export interface DishDTO {
+  id?: string;
+  name: string;
+  category: string;
+  price: number;
+  allergens: string[];
+}
+
+export interface DailyMenuDTO {
+  id?: string;
+  date: string;
+  dishes: DishDTO[];
+}

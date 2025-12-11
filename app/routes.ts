@@ -9,6 +9,11 @@ export default [
     route("login","routes/login.tsx"),
     route("profile","routes/profile.tsx"),
     route("map","routes/map.tsx"),
+<<<<<<< HEAD
     route("menu", "routes/menu.tsx"),
     route("dishes","routes/dishes.tsx")
+=======
+    route("dishes","routes/dishes.tsx"),
+    route("menu/add", "routes/menu_form.tsx")
+>>>>>>> bbc7e76 (Add form for manual menu addition)
 ] satisfies RouteConfig;
