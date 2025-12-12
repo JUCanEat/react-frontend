@@ -6,7 +6,8 @@ export function DishInfo({dish}:  {dish: Dish}) {
 
             <img
                 className="w-20 h-20 rounded-lg object-cover"
-                src={dish.image}
+                //src={dish.image} todo: backend serves photo stuff
+                src="https://studioyaara.co.il/wp-content/uploads/2018/02/yaara_-4.jpg"
                 alt={dish.name}
             />
 
@@ -21,7 +22,7 @@ export function DishInfo({dish}:  {dish: Dish}) {
                 </div>
 
                 <span className="flex items-center text-xs font-semibold">
-                    {dish.price}
+                    {dish.price} PLN {/* todo: fetch currency from db*/}
                 </span>
             </div>
 

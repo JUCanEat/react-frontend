@@ -3,12 +3,18 @@ import { TopBar } from "~/components/overview/top_bar"
 import { BottomNav } from "~/components/overview/bottom_nav"
 import { mockDishes } from "~/dishlist/mock_dishes"
 import { DishInfo } from "~/components/dish/dish_info_box"
-import { useState } from "react"
+import { useState } from "react";
+import { useGetDailyMenu } from "~/api/menu_service";
 
-export function DishListComponent() {
+export function DishListComponent({ restaurantId }: { restaurantId: string }) {
   const [filters, setFilters] = useState<string[]>([]);
 
-  const filteredDishes = mockDishes.filter(dish => {
+  const { data, isLoading, error } = useGetDailyMenu(restaurantId);
+
+  const dishes = data?.dishes ?? [];
+
+  const filteredDishes = dishes.filter(dish => {
+  //const filteredDishes = mockDishes.filter(dish => {
     if (filters.length === 0) return true;
 
     const allergens = dish.allergens ?? [];

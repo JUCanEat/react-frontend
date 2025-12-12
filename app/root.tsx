@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 export const rootQueryUrl: string = "http://localhost:8080";
 export const allRestaurantsEndpoint: string = "api/restaurants";
 export const allVendingMachinesEndpoint: string = "api/vending-machines";
+export const menuEndpoint: string = "api/menus";
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
