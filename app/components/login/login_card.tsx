@@ -12,8 +12,14 @@ import { Input } from "~/shadcn/components/ui/input"
 import { Label } from "~/shadcn/components/ui/label"
 
 import { FaGoogle } from "react-icons/fa";
+import { useKeycloak } from "@react-keycloak/web";
 
 export function LoginCard() {
+    const { keycloak } = useKeycloak();
+
+    const handleLoginClick = () => {
+        keycloak.login();
+    };
     return (
         <Card className="w-full max-w-sm max-h-3/4">
             <CardHeader className="justify-center text-xl">
@@ -47,7 +53,7 @@ export function LoginCard() {
                 </form>
             </CardContent>
             <CardFooter className="flex-col gap-2">
-                <Button type="submit" className="w-full">
+                <Button type="button" className="w-full" onClick={handleLoginClick}>
                     Login
                 </Button>
                 <Button variant="outline" className="w-full">
