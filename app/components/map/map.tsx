@@ -68,7 +68,13 @@ export function Map() {
             }}
           >
             {restaurants.map((p) => (
-              <FacilityMarker key={p.name} facility={p} onSelect={() => setSelectedPlace(p)} />
+              <FacilityMarker
+                key={p.name}
+                facility={p}
+                onSelect={() =>
+                    setSelectedPlace(p)
+                }
+                />
             ))}
 
             {vendingMachines.map((vm) => (
