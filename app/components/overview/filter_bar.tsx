@@ -14,22 +14,9 @@ import {
   ToggleGroupItem
 } from '~/shadcn/components/ui/toggle-group'
 
-export type FilterValue = "vegan" | "vegetarian" | "lactoseFree" | "glutenFree"
-
-export interface FilterBarProps {
-    value: FilterValue[]
-    onChange: (value: FilterValue[]) => void
-}
-
-export function FilterBar({ value, onChange }: FilterBarProps) {
+export function FilterBar() {
   return (
-      <ToggleGroup
-          type="multiple"
-          variant="outline"
-          spacing={0}
-          size="sm"
-          value={value}
-          onValueChange={(val) => onChange(val as FilterValue[])}>
+      <ToggleGroup type="multiple" variant="outline" spacing={0} size="sm" onValueChange={(value) => console.log("Changed:", value)}>
           <ToggleGroupItem
               value="vegan"
               aria-label="Toggle vegan"
@@ -47,7 +34,7 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
               Vegetarian
           </ToggleGroupItem>
           <ToggleGroupItem
-              value="lactoseFree"
+              value="lactose-free"
               aria-label="Toggle lactose free"
               className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
           >
@@ -55,7 +42,7 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
               Lactose-free
           </ToggleGroupItem>
           <ToggleGroupItem
-              value="glutenFree"
+              value="gluten-free"
               aria-label="Toggle gluten free"
               className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
           >
