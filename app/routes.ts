@@ -7,5 +7,6 @@ export default [
     ]),
     route("login","routes/login.tsx"),
     route("profile","routes/profile.tsx"),
-    route("map","routes/map.tsx")
+    route("map","routes/map.tsx"),
+    route("menu", "routes/menu.tsx")
 ] satisfies RouteConfig;
