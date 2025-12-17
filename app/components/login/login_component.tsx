@@ -1,6 +1,6 @@
-import { TopBar } from "~/components/overview/top_bar";
+import { TopBar } from "~/components/shared/top_bar";
 import { LoginCard } from "~/components/login/login_card";
-import { BottomNav } from "~/components/overview/bottom_nav";
+import { BottomNav } from "~/components/shared/bottom_nav";
 
 export default function LoginComponent() {
     return (
