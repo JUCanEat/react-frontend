@@ -8,7 +8,7 @@ import {
     hasVegetarianOption,
     hasLactoseFreeOption,
     hasGlutenFreeOption,
-} from "~/shadcn/lib/restaurant_filters"
+} from "~/shadcn/lib/dish_filters"
 
 interface UseRestaurantItemsWithFiltersProps {
     carouselItemSource: () => {
