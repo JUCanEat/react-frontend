@@ -42,13 +42,13 @@ To the best of my knowledge, it should be wrapped most-externally around a singl
 ```typescript
 export default [
     layout("./routes/mainui.tsx", [
-        index("routes/overview.tsx"),
+        index("routes/overview_component.tsx"),
         route("restaurants/:restaurantId","routes/restaurant.tsx")
     ]),
-    route("login","routes/login.tsx"),
+    route("login","routes/login_component.tsx"),
 ] satisfies RouteConfig;
 ```
-then we consider `./routes/mainui.tsx` and `./routes/login.tsx` to each be a 'single route'. For each corresponding
+then we consider `./routes/mainui.tsx` and `./routes/login_component.tsx` to each be a 'single route'. For each corresponding
 `.tsx` file under `./app/routes`, we include the QueryClient as such:
 ```typescript
 import {
@@ -78,11 +78,12 @@ The workflow is essentially this:
 1. `~/routes.ts` determines routes.
 2. The routes are found under `~/routes`. These `.tsx` files correspond to pages/nested pages.
 3. The pages would ideally be easily composable with fully-built components.
-4. A fully-built component should have their own folder in `./app`, eg. `~/map`, `~/overview`.
+4. A fully-built component should have their own `<name>_component` component in `~/components/<name>/`, 
+eg. `~/components/map/map_component`, `~/components/overview/overview_component`.
 5. Fully-built components should be built in a hierarchical manner (check out [this](https://react.dev/learn/thinking-in-react))
 by using smaller components.
 6. The smaller components, which can theoretically be reused (but will probably most often be used to inspire the creation 
-of new components) live under `~/components`.
+of new components) live under `~/components`. The unambiguously reusable components are placed under `~/components/shared`.
 
 ## Styling
 We use `shadcn` components as the base for our own components (they have accessibility features ready and are easily extensible). Their website [is here](https://ui.shadcn.com).

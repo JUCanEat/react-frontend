@@ -1,6 +1,6 @@
 "use client";
 
-import { DishListComponent } from "~/menu/dish_list";
+import { DishListComponent } from "~/components/menu/dish_list";
 import { useRestaurantStore } from "~/store/restaurant_store";
 import { useEffect } from "react";
 
