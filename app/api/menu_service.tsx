@@ -7,4 +7,4 @@ export const useGetDailyMenu = (restaurantId: string) =>
   useQuery<DailyMenu>({
     queryKey: ["dailyMenu", restaurantId],
     queryFn: () => apiGet<DailyMenu>(`${rootQueryUrl}/${menusEndpoint}/${restaurantId}`),
-  });
+});
