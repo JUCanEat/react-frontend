@@ -1,43 +1,36 @@
-import { FilterBar } from "~/components/overview/filter_bar"
-import { TopBar } from "~/components/shared/top_bar"
-import { BottomNav } from "~/components/shared/bottom_nav"
-//import { mockDishes } from "~/components/menu/dishlist/mock_dishes"
-import { DishInfo } from "~/components/menu/dish/dish_info_box"
+/**
+ Dishes in the menu section can be filtered with allergen-based filters.
+ A dish is filtered out when it contains allergen that conflicts with the filter (like for "GLUTEN" allergen and "gluten-free" filter).
+ */
+
+import { FilterBar, type FilterValue } from "~/components/overview/filter_bar"
+import { TopBar } from "~/components/overview/top_bar"
+import { BottomNav } from "~/components/overview/bottom_nav"
+//import { mockDishes } from "~/dishlist/mock_dishes"
+import { DishInfo } from "~/menu/dish/dish_info_box"
+import type { Dish } from "~/interfaces";
 import { useState } from "react";
 import { useGetDailyMenu } from "~/api/menu_service";
+import { filterDishes } from "~/shadcn/lib/dish_filters";
 
 export function DishListComponent({ restaurantId }: { restaurantId: string }) {
-  const [filters, setFilters] = useState<string[]>([]);
+  const [filters, setFilters] = useState<FilterValue[]>([]);
 
   const { data, isLoading, error } = useGetDailyMenu(restaurantId);
 
   const dishes = data?.dishes ?? [];
 
-  const filteredDishes = dishes.filter(dish => {
-  //const filteredDishes = mockDishes.filter(dish => {
-    if (filters.length === 0) return true;
+  // map UI filter values to the dish_filters expected strings
+  const filterValueMap: Record<FilterValue, string> = {
+    vegan: "vegan",
+    vegetarian: "vegetarian",
+    lactoseFree: "lactose-free",
+    glutenFree: "gluten-free",
+  };
 
-    const allergens = dish.allergens ?? [];
+  const dishFilterStrings = filters.map((f) => filterValueMap[f]);
 
-    return filters.every(filter => {
-      switch (filter) {
-        case "vegan":
-           return !allergens.includes("lactose") && !allergens.includes("meat");
-
-        case "vegetarian":
-          return !allergens.includes("meat");
-
-        case "lactose-free":
-          return !allergens.includes("lactose");
-
-        case "gluten-free":
-          return !allergens.includes("gluten");
-
-        default:
-          return !allergens.includes("gluten");
-      }
-    });
-  });
+  const filteredDishes: Dish[] = filterDishes(dishes, dishFilterStrings);
 
   return (
     <>
