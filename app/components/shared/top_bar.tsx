@@ -14,18 +14,15 @@ import {
 export function TopBar({isLoginPage}: {isLoginPage: boolean}) {
   var itemClassName: string = isLoginPage ? "justify-center" : "justify-between"
     return (
-    <div className="flex w-full max-w-full flex-col gap-6">
+    <div className="flex w-full flex-row">
       <Item variant="outline" size="xsm" width="default" className={itemClassName}>
-          <div className="flex items-center gap-2">
-              <ItemMedia
-                  variant="logo"
-                  onClick={() => (window.location.href = "/")}
-              >
+          <div className="flex items-center gap-1.5">
+              <ItemMedia variant="logo" onClick={() => (window.location.href = "/")}>
                   <img src="/logo.svg"></img>
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>JU Can Eat</ItemTitle>
-                </ItemContent>
+              </ItemMedia>
+              <ItemContent className={"hidden 3xs:block"}>
+                  <ItemTitle>JU Can Eat</ItemTitle>
+              </ItemContent>
           </div>
           <ItemActions>
               {!isLoginPage && (

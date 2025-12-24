@@ -1,4 +1,4 @@
-import { ClickableHeart } from "~/menu/dish/clickable_heart"
+import { ClickableHeart } from "~/components/menu/dish/clickable_heart"
 
 export function DishInfo({dish}:  {dish: Dish}) {
     return (
