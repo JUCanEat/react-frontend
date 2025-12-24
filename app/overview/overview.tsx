@@ -1,3 +1,7 @@
+/**
+ The main page filtering filters the restaurants by whether they serve gluter-free/vegen/vegetarian/lactose-free dishes today.
+ */
+
 import { FilterBar } from "~/components/overview/filter_bar"
 import { TopBar } from "~/components/overview/top_bar"
 import { SearchBar } from "~/components/overview/search_bar"

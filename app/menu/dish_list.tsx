@@ -1,3 +1,8 @@
+/**
+ Dishes in the menu section can be filtered with allergen-based filters.
+ A dish is filtered out when it contains allergen that conflicts with the filter (like for "GLUTEN" allergen and "gluten-free" filter).
+ */
+
 import { FilterBar, type FilterValue } from "~/components/overview/filter_bar"
 import { TopBar } from "~/components/overview/top_bar"
 import { BottomNav } from "~/components/overview/bottom_nav"
