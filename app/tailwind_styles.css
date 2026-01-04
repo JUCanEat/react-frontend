@@ -1,9 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/*@layer components {*/
-/*    .filter-bar-padding {*/
-/*        padding-left: calc(100vw / 8);*/
-/*        padding-right: calc(100vw / 8);*/
-/*    }*/
-/*}*/
+@theme {
+    --breakpoint-3xs: 16rem; /* 256px */
+    --breakpoint-2xs: 18rem; /* 288px */
+    --breakpoint-xs: 20rem;  /* 320px */
+    --breakpoint-osm1: 28rem; /* 448px - "our small, 1" */
+}

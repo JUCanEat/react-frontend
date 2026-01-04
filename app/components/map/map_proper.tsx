@@ -20,7 +20,7 @@ import {
 import { useGetAllRestaurants } from "~/api/restaurant_service";
 import { useGetAllVendingMachines } from "~/api/vending_machine_service";
 
-export function Map() {
+export function Map_proper() {
 
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<Facility | null>(null);

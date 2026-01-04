@@ -12,6 +12,23 @@ export interface Restaurant {
     openNow: boolean;
 }
 
+export type Allergen = "NUTS" | "GLUTEN" | "MEAT" | "LACTOSE"
+
+export interface Dish {
+    id: string
+    name: string
+    category?: string
+    price: number
+    image?: string
+    allergens: Allergen[] | null
+}
+
+export interface DailyMenu {
+    id: string
+    date: string
+    dishes: Dish[] | null
+}
+
 export interface VendingMachine {
     id: string;
     description: string;
@@ -23,7 +40,7 @@ export interface VendingMachine {
     };
 }
 
-type Facility = Restaurant | VendingMachine;
+export type Facility = Restaurant | VendingMachine;
 
 export interface FacilityInfoProps {
     selectedPoint: Facility | null;

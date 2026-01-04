@@ -9,5 +9,6 @@ export default [
     route("profile","routes/profile.tsx"),
     route("map","routes/map.tsx"),
     route("dishes","routes/dishes.tsx"),
-    route("menu/add", "routes/menu_form.tsx")
+    route("menu/add", "routes/menu_form.tsx"),
+    route("menu", "routes/menu.tsx")
 ] satisfies RouteConfig;
