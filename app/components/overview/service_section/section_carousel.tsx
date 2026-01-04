@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import {
     Carousel,
@@ -9,6 +11,8 @@ import {
 
 import { RestaurantTile } from "~/components/overview/service_section/restaurant_tile"
 import { VendingMachineTile } from "~/components/overview/service_section/vending_machine_tile"
+import { useRestaurantStore } from "~/store/restaurant_store";
+import { useNavigate } from "react-router-dom";
 
 export type ServiceVariant = "restaurant" | "vending"
 
@@ -18,6 +22,9 @@ interface SectionCarouselProps {
 }
 
 export function SectionCarousel({ items, variant }: SectionCarouselProps) {
+    const navigate = useNavigate();
+    const setSelectedRestaurant = useRestaurantStore.getState().setSelectedRestaurant;
+
     return (
         <div className="flex justify-center px-14">
             <Carousel className="w-full max-w-[227px]" opts={{ align: "start", loop: true }}>
@@ -30,6 +37,10 @@ export function SectionCarousel({ items, variant }: SectionCarouselProps) {
                                         name={item.name}
                                         description={item.description}
                                         openNow={item.openNow}
+                                        onClick={() => {
+                                            setSelectedRestaurant(item);
+                                            navigate('/menu');
+                                        }}
                                     />
                                 ) : (
                                     <VendingMachineTile description={item.description} />

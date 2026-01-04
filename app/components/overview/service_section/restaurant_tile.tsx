@@ -4,11 +4,12 @@ interface RestaurantTileProps {
     name: string
     description: string
     openNow: boolean
+    onClick?: () => void
 }
 
-export function RestaurantTile({ name, description, openNow }: RestaurantTileProps) {
+export function RestaurantTile({ name, description, openNow, onClick }: RestaurantTileProps) {
     return (
-        <div className="w-[227px] h-[148px] rounded-2xl overflow-hidden flex flex-col bg-black">
+        <div onClick={onClick} className="w-[227px] h-[148px] rounded-2xl overflow-hidden flex flex-col bg-black cursor-pointer">
 
             <div className="flex-1 bg-white" />
 
