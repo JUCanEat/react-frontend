@@ -40,7 +40,7 @@ export interface VendingMachine {
     };
 }
 
-type Facility = Restaurant | VendingMachine;
+export type Facility = Restaurant | VendingMachine;
 
 export interface FacilityInfoProps {
     selectedPoint: Facility | null;
