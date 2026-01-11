@@ -1,18 +1,31 @@
 // contains the logo, the name and the "Log in" button.
-import { BadgeCheckIcon, ChevronRightIcon } from "lucide-react"
-
-import { Button } from "~/shadcn/components/ui/button"
+import { Button } from "~/shadcn/components/ui/button";
 import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from "~/shadcn/components/ui/item"
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemMedia,
+    ItemTitle,
+} from "~/shadcn/components/ui/item";
+import { useKeycloak } from "@react-keycloak/web";
 
-export function TopBar({isLoginPage}: {isLoginPage: boolean}) {
-  var itemClassName: string = isLoginPage ? "justify-center" : "justify-between"
+export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
+    const { keycloak, initialized } = useKeycloak();
+    const itemClassName = isLoginPage ? "justify-center" : "justify-between";
+
+    const handleLogin = () => {
+        if (!initialized) return;
+        keycloak.login({
+            redirectUri: window.location.origin + "/profile",
+        });
+    };
+
+    const handleLogout = () => {
+        keycloak.logout({
+            redirectUri: window.location.origin + "/",
+        });
+    };
+
     return (
     <div className="flex w-full flex-row">
       <Item variant="outline" size="xsm" width="default" className={itemClassName}>
@@ -39,3 +52,4 @@ export function TopBar({isLoginPage}: {isLoginPage: boolean}) {
     </div>
   )
 }
+
