@@ -20,7 +20,7 @@ export function BottomNav() {
                 </Button>
                 <Button
                     variant="ghost"
-                    onClick={() => (window.location.href = "/login")}
+                    onClick={() => (window.location.href = "/profile")}
                     >
                     <User className=""/>
                 </Button>

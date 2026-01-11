@@ -13,9 +13,9 @@ import "./tailwind_styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { ReactKeycloakProvider } from "@react-keycloak/web";
-import keycloak from "~/auth/keycloak";
+import { getKeycloak } from "~/auth/keycloak";
 
-export const rootQueryUrl: string = "http://localhost:8080";
+export const rootQueryUrl = import.meta.env.VITE_BACKEND_URL;
 export const allRestaurantsEndpoint: string = "api/restaurants";
 export const allVendingMachinesEndpoint: string = "api/vending-machines";
 export const menusEndpoint = "api/menus"
@@ -55,17 +55,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
 const queryClient = new QueryClient();
 
 export default function App() {
+    const keycloak = getKeycloak();
+
+    if (!keycloak) {
+        return null;
+    }
+
     return (
         <ReactKeycloakProvider
             authClient={keycloak}
             initOptions={{ onLoad: "check-sso" }}
         >
-        <QueryClientProvider client={queryClient}>
-            <Outlet />
-        </QueryClientProvider>
-    </ReactKeycloakProvider>
-  );
+            <QueryClientProvider client={queryClient}>
+                <Outlet />
+            </QueryClientProvider>
+        </ReactKeycloakProvider>
+    );
 }
+
+
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";

@@ -1,30 +1,25 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { RequireAuth } from "~/auth/RequireAuth";
+import { StaffMenuFromPhotoComponent } from "~/staff/menu_from_photo";
 import { useKeycloak } from "@react-keycloak/web";
 
-import { StaffMenuFromPhotoComponent } from "~/staff/menu_from_photo";
-
 export default function StaffMenuFromPhotoRoute() {
-    const { keycloak, initialized } = useKeycloak();
-    const navigate = useNavigate();
+    return (
+        <RequireAuth>
+            <StaffMenuFromPhotoInner />
+        </RequireAuth>
+    );
+}
 
-    useEffect(() => {
-        if (!initialized) return;
+function StaffMenuFromPhotoInner() {
+    const { keycloak } = useKeycloak();
+    const roles = keycloak.tokenParsed?.realm_access?.roles || [];
 
-        if (!keycloak.authenticated) {
-            navigate("/login", { replace: true });
-            return;
-        }
-
-        const roles = keycloak.tokenParsed?.realm_access?.roles || [];
-
-        if (!roles.includes("restaurant_owner")) {
-            navigate("/", { replace: true });
-        }
-    }, [initialized, keycloak.authenticated, navigate]);
-
-    if (!initialized) {
-        return null;
+    if (!roles.includes("restaurant_owner")) {
+        return (
+            <div className="p-6 text-white">
+                Brak dostępu
+            </div>
+        );
     }
 
     return <StaffMenuFromPhotoComponent />;

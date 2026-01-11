@@ -1,27 +1,21 @@
-import { TopBar } from "~/components/overview/top_bar"
-import { BottomNav } from "~/components/overview/bottom_nav"
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
 import { useKeycloak } from "@react-keycloak/web";
+import { Button } from "~/shadcn/components/ui/button";
 
-import LoginComponent from "~/login/login";
+export default function LoginRoute() {
+    const { keycloak } = useKeycloak();
 
-export default function Login() {
-    const { keycloak, initialized } = useKeycloak();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!initialized) return;
-
-        if (!keycloak.authenticated) return;
-
-        const roles = keycloak.tokenParsed?.realm_access?.roles || [];
-
-        if (roles.includes("restaurant_owner")) {
-            navigate("/staff/menu-from-photo", { replace: true });
-        } else {
-            navigate("/", { replace: true });
-        }
-    }, [initialized, keycloak.authenticated, navigate]);
-    return <LoginComponent />
+    return (
+        <div className="h-screen flex items-center justify-center">
+            <Button
+                size="lg"
+                onClick={() =>
+                    keycloak.login({
+                        redirectUri: window.location.origin + "/profile",
+                    })
+                }
+            >
+                Log in
+            </Button>
+        </div>
+    );
 }

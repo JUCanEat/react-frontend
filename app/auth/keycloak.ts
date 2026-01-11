@@ -1,9 +1,19 @@
 import Keycloak from "keycloak-js";
 
-const keycloak = new Keycloak({
-    url: "http://localhost:8081",
-    realm: "JuCanEat",
-    clientId: "JuCanEat-frontend",
-});
+let keycloak: Keycloak | null = null;
 
-export default keycloak;
+export function getKeycloak() {
+    if (typeof window === "undefined") {
+        return null;
+    }
+
+    if (!keycloak) {
+        keycloak = new Keycloak({
+            url: import.meta.env.VITE_KEYCLOAK_URL,
+            realm: "JuCanEat",
+            clientId: "JuCanEat-frontend",
+        });
+    }
+
+    return keycloak;
+}
