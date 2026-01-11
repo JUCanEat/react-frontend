@@ -18,7 +18,9 @@ import { getKeycloak } from "~/auth/keycloak";
 export const rootQueryUrl = import.meta.env.VITE_BACKEND_URL;
 export const allRestaurantsEndpoint: string = "api/restaurants";
 export const allVendingMachinesEndpoint: string = "api/vending-machines";
-export const menusEndpoint = "api/menus"
+export const menusEndpoint = "api/menus";
+export const menuEndpoint = "api/menus/:id";
+
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },

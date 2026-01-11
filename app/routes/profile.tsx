@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useKeycloak } from "@react-keycloak/web";
-import ProfileComponent from "~/profile/profile";
-
+import ProfileComponent from "~/components/profile/profile_component";
 export default function ProfileRoute() {
     const { keycloak, initialized } = useKeycloak();
     const navigate = useNavigate();

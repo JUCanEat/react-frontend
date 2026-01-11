@@ -45,7 +45,7 @@ const itemVariants = cva(
         xsm: "py-2 px-3 gap-2",
       },
       width: {
-        default: "max-w-full"
+        default: "w-full max-w-full"
       },
       justify: {
           default: "justify-between"
@@ -54,7 +54,8 @@ const itemVariants = cva(
     defaultVariants: {
       variant: "default",
       size: "default",
-        justify: "default"
+        justify: "default",
+        width: "default"
     },
   }
 )
@@ -63,6 +64,7 @@ function Item({
   className,
   variant = "default",
   size = "default",
+  width = "default",
   asChild = false,
   ...props
 }: React.ComponentProps<"div"> &
@@ -126,7 +128,7 @@ function ItemContent({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function ItemTitle({ className, ...props }: React.ComponentProps<"div">) {
+function ItemTitle({className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="item-title"

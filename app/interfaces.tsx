@@ -17,8 +17,9 @@ export type Allergen = "NUTS" | "GLUTEN" | "MEAT" | "LACTOSE"
 export interface Dish {
     id: string
     name: string
-    category: string
+    category?: string
     price: number
+    image?: string
     allergens: Allergen[] | null
 }
 
@@ -39,7 +40,7 @@ export interface VendingMachine {
     };
 }
 
-type Facility = Restaurant | VendingMachine;
+export type Facility = Restaurant | VendingMachine;
 
 export interface FacilityInfoProps {
     selectedPoint: Facility | null;

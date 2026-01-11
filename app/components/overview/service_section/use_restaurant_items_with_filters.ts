@@ -1,3 +1,10 @@
+/**
+ Filters in the main page (overview) allow to filter restaurants based on whether they have at least one
+ dish satisfying the applied filters available today (in the active menu).
+ Meaning, a dish is filtered out when it contains allergen that conflicts with the filter (like for "GLUTEN" allergen and "gluten-free" filter),
+ and the restaurant is filtered out if it does not have any dishes left in active menu after this filtering.
+ */
+
 import { useQuery } from "@tanstack/react-query"
 import { rootQueryUrl, menusEndpoint } from "~/root"
 
@@ -8,7 +15,7 @@ import {
     hasVegetarianOption,
     hasLactoseFreeOption,
     hasGlutenFreeOption,
-} from "~/shadcn/lib/restaurant_filters"
+} from "~/shadcn/lib/dish_filters"
 
 interface UseRestaurantItemsWithFiltersProps {
     carouselItemSource: () => {

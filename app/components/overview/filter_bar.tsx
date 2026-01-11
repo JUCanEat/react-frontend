@@ -39,7 +39,9 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
               className="flex-1 data-[state=on]:bg-transparent data-[state=on]:*:[svg]:stroke-blue-500"
           >
               <Vegan />
-              Vegan
+              <div className={"hidden osm1:block"}>
+                  Vegan
+              </div>
           </ToggleGroupItem>
           <ToggleGroupItem
               value="vegetarian"
@@ -47,7 +49,9 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
               className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
           >
               <Sprout />
-              Vegetarian
+              <div className={"hidden osm1:block"}>
+                  Vegetarian
+              </div>
           </ToggleGroupItem>
           <ToggleGroupItem
               value="lactoseFree"
@@ -55,15 +59,19 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
               className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
           >
               <MilkOff />
-              Lactose-free
+              <div className={"hidden osm1:block"}>
+                  Lactose-free
+              </div>
           </ToggleGroupItem>
           <ToggleGroupItem
               value="glutenFree"
               aria-label="Toggle gluten free"
-              className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
+              className="flex-1 osm1:justify-center data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
           >
               <WheatOff />
-              Gluten-free
+              <div className={"hidden osm1:block"}>
+                  Gluten-free
+              </div>
           </ToggleGroupItem>
       </ToggleGroup>
   )
