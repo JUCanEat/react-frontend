@@ -1,0 +1,69 @@
+services:
+  java-backend:
+    attach: false
+    image: haniazipser2004/awesome-amazing-project:latest
+    ports:
+      - "8080:8080"
+    pull_policy: always
+    depends_on:
+      - keycloak
+      - rabbitmq
+      - elasticSearch
+    environment:
+      - SPRING_PROFILES_ACTIVE=compose
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8081/realms/JuCanEat
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/JuCanEat/protocol/openid-connect/certs
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=admin
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=DEBUG
+      - KEYCLOAK_AUTH_SERVER_URL=http://localhost:8081
+      - KEYCLOAK_REALM=JuCanEat
+    extra_hosts:
+      - "localhost:host-gateway"
+
+  keycloak:
+    attach: false
+    image: quay.io/keycloak/keycloak:24.0.1
+    ports:
+      - "8081:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: start-dev --import-realm
+    volumes:
+      - ./imports:/opt/keycloak/data/import
+
+  rabbitmq:
+    attach: false
+    image: 'rabbitmq:latest'
+    environment:
+      - RABBITMQ_DEFAULT_PASS=admin
+      - RABBITMQ_DEFAULT_USER=admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  elasticSearch:
+    attach: false
+    image: elasticsearch:8.11.1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  react:
+    build: .
+    container_name: react
+    #image: konmtal/jca-react-frontend
+    ports:
+      - "3000:3000"
+
+volumes:
+  elasticsearch-data:
