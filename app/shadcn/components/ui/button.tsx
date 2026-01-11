@@ -9,15 +9,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gray-900 text-gray-50 hover:bg-gray-900/90 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90",
+        default: "bg-zinc-900 text-gray-50 hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-gray-900 dark:hover:bg-zinc-50/90",
         destructive:
           "bg-red-500 text-white hover:bg-red-500/90 focus-visible:ring-red-500/20 dark:focus-visible:ring-red-500/40 dark:bg-red-500/60 dark:bg-red-900 dark:hover:bg-red-900/90 dark:focus-visible:ring-red-900/20 dark:dark:focus-visible:ring-red-900/40 dark:dark:bg-red-900/60",
         outline:
-          "border bg-white shadow-xs hover:bg-gray-100 hover:text-gray-900 dark:bg-gray-200/30 dark:border-gray-200 dark:hover:bg-gray-200/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:dark:bg-gray-800/30 dark:dark:border-gray-800 dark:dark:hover:bg-gray-800/50",
+          "bg-white shadow-xs hover:bg-zinc-100 hover:text-gray-900 dark:bg-zinc-200/30 dark:hover:bg-zinc-200/50 dark:bg-zinc-950 dark:hover:bg-zinc-800 dark:hover:text-gray-50 dark:dark:bg-zinc-800/30 dark:dark:hover:bg-zinc-800/50",
+        highlight:
+          "bg-white shadow-xs hover:bg-zinc-100 hover:text-gray-900 dark:bg-zinc-200/30 dark:text-martynablue dark:hover:bg-zinc-200/50 dark:bg-zinc-950 dark:hover:bg-zinc-800 dark:hover:text-gray-50 dark:dark:bg-zinc-800/30 dark:dark:hover:bg-zinc-800/50",
         secondary:
-          "bg-gray-100 text-gray-900 hover:bg-gray-100/80 dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-800/80",
+          "bg-zinc-100 text-gray-900 hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-gray-50 dark:hover:bg-zinc-800/80",
         ghost:
-          "hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-100/50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:dark:hover:bg-gray-800/50",
+          "dark:text-zinc-50 hover:bg-zinc-100 hover:text-gray-900 dark:hover:bg-zinc-100/50 dark:hover:bg-zinc-800 dark:hover:text-gray-50 dark:dark:hover:bg-zinc-800/50",
         link: "text-gray-900 underline-offset-4 hover:underline dark:text-gray-50",
       },
       size: {
@@ -29,10 +31,20 @@ const buttonVariants = cva(
         "icon-sm": "size-8",
         "icon-lg": "size-10",
       },
+      border: {
+          outline: "border dark:border-gray-200 dark:dark:border-gray-800",
+          none: "border-none"
+      },
+      rounded: {
+          default: "rounded-0",
+          rounded: "rounded-md"
+      }
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      border: "outline",
+      rounded: "default"
     },
   }
 )
@@ -40,7 +52,9 @@ const buttonVariants = cva(
 function Button({
   className,
   variant,
+  border,
   size,
+  rounded,
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
@@ -52,7 +66,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, border, size, className }))}
       {...props}
     />
   )

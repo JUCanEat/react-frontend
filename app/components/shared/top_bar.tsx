@@ -15,19 +15,23 @@ export function TopBar({isLoginPage}: {isLoginPage: boolean}) {
   var itemClassName: string = isLoginPage ? "justify-center" : "justify-between"
     return (
     <div className="flex w-full flex-row">
-      <Item variant="outline" size="xsm" width="default" className={itemClassName}>
-          <div className="flex items-center gap-1.5">
-              <ItemMedia variant="logo" onClick={() => (window.location.href = "/")}>
+      <Item variant="outline" size="xsm" width="default" className={`itemClassName`}>
+          <div></div>
+          <div className="flex items-center">
+              <ItemMedia variant="logo" className={"scale-120 dark:invert"} onClick={() => (window.location.href = "/")}>
                   <img src="/logo.svg"></img>
               </ItemMedia>
               <ItemContent className={"hidden 3xs:block"}>
-                  <ItemTitle>JU Can Eat</ItemTitle>
+                  <div></div>
+                  <ItemTitle className={"text-base pt-2"}>JU Can Eat</ItemTitle>
+                  <div></div>
               </ItemContent>
           </div>
           <ItemActions>
               {!isLoginPage && (
                   <Button
-                      variant="outline"
+                      variant="highlight"
+                      border="none"
                       size="sm"
                       onClick={() => (window.location.href = "/login")}
                   >

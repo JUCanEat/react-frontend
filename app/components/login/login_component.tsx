@@ -10,7 +10,7 @@ export default function LoginComponent() {
                 <div className="h-1/10"></div>
                 <LoginCard></LoginCard>
             </div>
-            <BottomNav></BottomNav>
+            <BottomNav page={"login"}></BottomNav>
         </>
     )
 }

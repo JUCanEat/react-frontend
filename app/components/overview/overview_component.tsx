@@ -18,27 +18,33 @@ export function OverviewComponent() {
     const [filters, setFilters] = React.useState<FilterValue[]>([])
 
     return (
-        <>
+        <div className={"dark:bg-zinc-950"}>
             <TopBar isLoginPage={false} />
-            <div className="w-full" style={{ height: "calc(100vh - 150px)" }}>
-                <SearchBar />
+            <div className={"pt-5 pl-5 pr-5 dark:bg-zinc-950"}>
+                <div className="w-full" style={{ height: "calc(100vh - 200px)" }}>
+                    <SearchBar></SearchBar>
 
-                <FilterBar value={filters} onChange={setFilters} />
+                        <FilterBar value={filters} onChange={setFilters} />
 
-                <ServiceSectionStripe stripeTitle={"Restaurants"} />
-                <ServiceSection
-                    carouselItemSource={useGetAllRestaurants}
-                    variant="restaurant"
-                    filters={filters}
-                />
+                    <div className={"pt-5"}>
+                        <ServiceSectionStripe stripeTitle={"Restaurants"} />
+                        <ServiceSection
+                            carouselItemSource={useGetAllRestaurants}
+                            variant="restaurant"
+                            filters={filters}
+                        />
+                    </div>
 
-                <ServiceSectionStripe stripeTitle={"Vending Machines"} />
-                <ServiceSection
-                    carouselItemSource={useGetAllVendingMachines}
-                    variant="vending"
-                />
+                    <div className={"pt-5"}>
+                        <ServiceSectionStripe stripeTitle={"Vending Machines"} />
+                        <ServiceSection
+                            carouselItemSource={useGetAllVendingMachines}
+                            variant="vending"
+                        />
+                    </div>
+                </div>
+            <BottomNav page={"overview"}></BottomNav>
             </div>
-            <BottomNav />
-        </>
+        </div>
     )
 }

@@ -14,14 +14,15 @@ import {
 export function ServiceSectionStripe({stripeTitle} : {stripeTitle: string}) {
   return (
     <div className="flex w-full max-w-full flex-col gap-2">
-      <Item variant="outline" size="xsm">
-        <ItemContent>
+      <Item variant="outline" border="none" size="xsm" rounded="rounded">
+        <ItemContent className={"dark:text-martynablue"}>
           <ItemTitle>{stripeTitle}</ItemTitle>
         </ItemContent>
         <ItemActions>
-          <Button variant="outline" size="xsm">
-            See All
-          </Button>
+          {/* deprecated */}
+          {/*<Button variant="outline" size="xsm">*/}
+          {/*  See All*/}
+          {/*</Button>*/}
         </ItemActions>
       </Item>
     </div>

@@ -8,7 +8,7 @@ export function MapComponent() {
         <TopBar isLoginPage={false}></TopBar>
       <div className="flex-1">
         <Map_proper />
-        <BottomNav />
+        <BottomNav page={"map"}></BottomNav>
       </div>
     </div>
   );
