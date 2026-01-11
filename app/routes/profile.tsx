@@ -1,27 +1,66 @@
-<<<<<<< HEAD
-import { TopBar } from "~/components/shared/top_bar"
-import { BottomNav } from "~/components/shared/bottom_nav"
-import ProfileComponent from "~/components/profile/profile_component";
-=======
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { TopBar } from "~/components/shared/top_bar";
+import { BottomNav } from "~/components/shared/bottom_nav";
 import { useKeycloak } from "@react-keycloak/web";
-import ProfileComponent from "~/profile/profile";
->>>>>>> 21f9d6a35b32dc75e64590f880d5c34a571c2446
 
-export default function ProfileRoute() {
+export default function ProfileComponent() {
     const { keycloak, initialized } = useKeycloak();
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!initialized) return;
+    if (!initialized) {
+        return (
+            <>
+                <TopBar isLoginPage={false} />
+                <div
+                    className="w-full flex items-center justify-center"
+                    style={{ height: "calc(100vh - 150px)" }}
+                >
+                    <p className="text-sm opacity-60">Loading profile…</p>
+                </div>
+                <BottomNav />
+            </>
+        );
+    }
 
-        const roles = keycloak.tokenParsed?.realm_access?.roles || [];
+    const token = keycloak.tokenParsed;
 
-        if (keycloak.authenticated && roles.includes("restaurant_owner")) {
-            navigate("/staff/menu-from-photo", { replace: true });
-        }
-    }, [initialized, keycloak.authenticated]);
+    if (!token) {
+        return (
+            <>
+                <TopBar isLoginPage={false} />
+                <div
+                    className="w-full flex items-center justify-center"
+                    style={{ height: "calc(100vh - 150px)" }}
+                >
+                    <p className="text-sm opacity-60">
+                        You are not logged in
+                    </p>
+                </div>
+                <BottomNav />
+            </>
+        );
+    }
 
-    return <ProfileComponent />;
+    return (
+        <>
+            <TopBar isLoginPage={false} />
+
+            <div
+                className="w-full flex flex-col items-center justify-center gap-3"
+                style={{ height: "calc(100vh - 150px)" }}
+            >
+                <p className="text-lg font-semibold">
+                    {token.given_name} {token.family_name}
+                </p>
+
+                <p className="text-sm opacity-80">
+                    {token.email}
+                </p>
+
+                <p className="text-sm opacity-60">
+                    @{token.preferred_username}
+                </p>
+            </div>
+
+            <BottomNav />
+        </>
+    );
 }

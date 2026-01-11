@@ -65,10 +65,15 @@ export default function App() {
     }
 
     return (
-        <ReactKeycloakProvider
-            authClient={keycloak}
-            initOptions={{ onLoad: "check-sso" }}
-        >
+      <ReactKeycloakProvider
+        authClient={keycloak}
+        initOptions={{ 
+          onLoad: "check-sso",
+          silentCheckSsoRedirectUri: typeof window !== 'undefined' 
+          ? window.location.origin + "/silent-check-sso.html" 
+          : undefined
+        }}
+      >
             <QueryClientProvider client={queryClient}>
                 <Outlet />
             </QueryClientProvider>

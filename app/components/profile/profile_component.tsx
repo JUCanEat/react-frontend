@@ -1,5 +1,5 @@
-import { TopBar } from "~/components/overview/top_bar";
-import { BottomNav } from "~/components/overview/bottom_nav";
+import { TopBar } from "~/components/shared/top_bar";
+import { BottomNav } from "~/components/shared/bottom_nav";
 import { useKeycloak } from "@react-keycloak/web";
 
 export default function ProfileComponent() {
