@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useKeycloak } from "@react-keycloak/web";
 import {
     Card,
     CardContent,
@@ -17,14 +18,13 @@ import {
 } from "~/shadcn/components/ui/select";
 import { Checkbox } from "~/shadcn/components/ui/checkbox";
 import { Plus, Trash } from "lucide-react";
-import { motion } from "framer-motion";
 import {
     Alert,
     AlertTitle,
     AlertDescription
 } from "~/shadcn/components/ui/alert";
 import { type DishDTO } from "~/interfaces";
-//import { useUpdateDailyMenu } from "~/api/menu_service";
+import { useUpdateDailyMenuWithToken } from "~/api/menu_service";
 
 const ALLERGENS = [
   "GLUTEN",
@@ -32,14 +32,16 @@ const ALLERGENS = [
   "MEAT"
 ];
 
-const CATEGORIES = ["STARTER", "MAIN", "DESSERT", "DRINK"];
+const CATEGORIES = ["SOUP", "MAIN_COURSE"];
 
-export function DailyMenuForm({ restaurantId }: { restaurantId: string }) {
+export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: string; userId: string; token: string }) {
   const [date, setDate] = useState("");
   const [dishes, setDishes] = useState<DishDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const errorRef = React.useRef<HTMLDivElement>(null);
+  const updateMenu = useUpdateDailyMenuWithToken(token);
 
   const addDish = () => {
     setDishes([
@@ -53,8 +55,6 @@ export function DailyMenuForm({ restaurantId }: { restaurantId: string }) {
     (updated[index] as any)[field] = value;
     setDishes(updated);
   };
-
-  //const updateMenu = useUpdateDailyMenu(restaurantId, { date, dishes });
 
   const toggleAllergen = (index: number, allergen: string) => {
     const updated = [...dishes];
@@ -98,16 +98,28 @@ export function DailyMenuForm({ restaurantId }: { restaurantId: string }) {
       }
 
       setError(null);
+      setIsSubmitting(true);
 
       try {
-        await updateMenu.refetch(); // TODO: api call
+        await updateMenu.mutateAsync({
+          restaurantId,
+          menu: {
+            date,
+            dishes
+          }
+        });
         alert("Menu updated successfully!");
+        // Reset form
+        setDishes([]);
+        setDate("");
       } catch (err: any) {
         setError(err.message || "Failed to update menu.");
         setTimeout(() => errorRef.current?.scrollIntoView({
             behavior: "smooth",
             block: "center"
         }), 50);
+      } finally {
+        setIsSubmitting(false);
       }
   };
 
@@ -134,10 +146,8 @@ export function DailyMenuForm({ restaurantId }: { restaurantId: string }) {
 
           <div className="space-y-4">
             {dishes.map((dish, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
                 className="p-4 border rounded-xl space-y-4 bg-gray-50"
               >
                 <div className="flex justify-between items-center">
@@ -200,16 +210,16 @@ export function DailyMenuForm({ restaurantId }: { restaurantId: string }) {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
 
-          <Button onClick={addDish} className="w-full flex items-center gap-2">
+          <Button onClick={addDish} className="w-full flex items-center gap-2" disabled={isSubmitting}>
             <Plus className="h-4 w-4" /> Add Dish
           </Button>
 
-          <Button onClick={handleSubmit} className="w-full mt-2" variant="default">
-            Submit Menu
+          <Button onClick={handleSubmit} className="w-full mt-2" variant="default" disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Submit Menu"}
           </Button>
         </CardContent>
       </Card>

@@ -18,13 +18,10 @@ import { getKeycloak } from "~/auth/keycloak";
 export const rootQueryUrl = import.meta.env.VITE_BACKEND_URL;
 export const allRestaurantsEndpoint: string = "api/restaurants";
 export const allVendingMachinesEndpoint: string = "api/vending-machines";
-<<<<<<< HEAD
 export const menusEndpoint = "api/menus";
 export const menuEndpoint = "api/menus/:id";
 
-=======
 export const createMenuEndpoint: string = "api/menus/"
->>>>>>> bbc7e76 (Add form for manual menu addition)
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
@@ -68,10 +65,15 @@ export default function App() {
     }
 
     return (
-        <ReactKeycloakProvider
-            authClient={keycloak}
-            initOptions={{ onLoad: "check-sso" }}
-        >
+      <ReactKeycloakProvider
+        authClient={keycloak}
+        initOptions={{ 
+          onLoad: "check-sso",
+          silentCheckSsoRedirectUri: typeof window !== 'undefined' 
+          ? window.location.origin + "/silent-check-sso.html" 
+          : undefined
+        }}
+      >
             <QueryClientProvider client={queryClient}>
                 <Outlet />
             </QueryClientProvider>
