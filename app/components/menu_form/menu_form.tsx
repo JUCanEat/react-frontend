@@ -24,23 +24,12 @@ import {
     AlertDescription
 } from "~/shadcn/components/ui/alert";
 import { type DishDTO } from "~/interfaces";
-import { useUpdateDailyMenu } from "~/api/menu_service";
+//import { useUpdateDailyMenu } from "~/api/menu_service";
 
 const ALLERGENS = [
   "GLUTEN",
-  "CRUSTACEANS",
-  "EGGS",
-  "FISH",
-  "PEANUTS",
-  "SOYBEANS",
-  "MILK",
-  "NUTS",
-  "CELERY",
-  "MUSTARD",
-  "SESAME",
-  "SULPHITES",
-  "LUPIN",
-  "MOLLUSCS",
+  "LACTOSE",
+  "MEAT"
 ];
 
 const CATEGORIES = ["STARTER", "MAIN", "DESSERT", "DRINK"];
@@ -65,7 +54,7 @@ export function DailyMenuForm({ restaurantId }: { restaurantId: string }) {
     setDishes(updated);
   };
 
-  const updateMenu = useUpdateDailyMenu(restaurantId, { date, dishes });
+  //const updateMenu = useUpdateDailyMenu(restaurantId, { date, dishes });
 
   const toggleAllergen = (index: number, allergen: string) => {
     const updated = [...dishes];
@@ -111,7 +100,7 @@ export function DailyMenuForm({ restaurantId }: { restaurantId: string }) {
       setError(null);
 
       try {
-        await updateMenu.refetch();
+        await updateMenu.refetch(); // TODO: api call
         alert("Menu updated successfully!");
       } catch (err: any) {
         setError(err.message || "Failed to update menu.");

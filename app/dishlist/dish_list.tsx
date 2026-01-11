@@ -1,6 +1,6 @@
 import { FilterBar } from "~/components/overview/filter_bar"
-import { TopBar } from "~/components/overview/top_bar"
-import { BottomNav } from "~/components/overview/bottom_nav"
+import { TopBar } from "~/components/shared/top_bar"
+import { BottomNav } from "~/components/shared/bottom_nav"
 import { mockDishes } from "~/dishlist/mock_dishes"
 import { DishInfo } from "~/components/dish/dish_info_box"
 import { useState } from "react"
