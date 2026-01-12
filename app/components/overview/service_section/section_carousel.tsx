@@ -30,12 +30,12 @@ export function SectionCarousel({ items, variant }: SectionCarouselProps) {
     const [selectedPoint, setSelectedPoint] = useState<Facility | null>(null);
 
     return (
-        <div className="flex justify-center px-14">
-            <Carousel className="w-full max-w-[227px]" opts={{ align: "start", loop: true }}>
+        <div className="flex justify-center">
+            <Carousel className="w-full" opts={{ align: "start", loop: true }}>
                 <CarouselContent>
                     {items.map((item, index) => (
-                        <CarouselItem key={item.id ?? index}>
-                            <div className="p-1 flex justify-center">
+                        <CarouselItem key={item.id ?? index} className={"basis-1/2 sm:basis-1/3"}>
+                            <div className="py-1 flex justify-center">
                                 {variant === "restaurant" ? (
                                     <RestaurantTile
                                         name={item.name}
@@ -54,8 +54,8 @@ export function SectionCarousel({ items, variant }: SectionCarouselProps) {
                     ))}
                 </CarouselContent>
 
-                <CarouselPrevious />
-                <CarouselNext />
+                {/*<CarouselPrevious />*/}
+                {/*<CarouselNext />*/}
             </Carousel>
             {selectedPoint && (
                 <FacilityInfo

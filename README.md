@@ -24,6 +24,11 @@ Start the development server with Hot Module Replacement:
 bun run dev
 ```
 
+To run vitest tests:
+```bash
+npx vitest
+```
+
 To build and run using Docker:
 ```bash
 docker build -t my-app .

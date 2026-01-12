@@ -29,6 +29,7 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
       <ToggleGroup
           type="multiple"
           variant="outline"
+          className={"pt-5"}
           spacing={0}
           size="sm"
           value={value}
@@ -36,7 +37,7 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
           <ToggleGroupItem
               value="vegan"
               aria-label="Toggle vegan"
-              className="flex-1 data-[state=on]:bg-transparent data-[state=on]:*:[svg]:stroke-blue-500"
+              className="flex-1 data-[state=on]:bg-transparent data-[state=on]:*:[svg]:stroke-martynablue"
           >
               <Vegan />
               <div className={"hidden osm1:block"}>
@@ -46,7 +47,7 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
           <ToggleGroupItem
               value="vegetarian"
               aria-label="Toggle vegetarian"
-              className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
+              className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-martynablue"
           >
               <Sprout />
               <div className={"hidden osm1:block"}>
@@ -56,7 +57,7 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
           <ToggleGroupItem
               value="lactoseFree"
               aria-label="Toggle lactose free"
-              className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
+              className="flex-1 data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-martynablue"
           >
               <MilkOff />
               <div className={"hidden osm1:block"}>
@@ -66,7 +67,7 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
           <ToggleGroupItem
               value="glutenFree"
               aria-label="Toggle gluten free"
-              className="flex-1 osm1:justify-center data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-blue-500"
+              className="flex-1 osm1:justify-center data-[state=on]:bg-transparent  data-[state=on]:*:[svg]:stroke-martynablue"
           >
               <WheatOff />
               <div className={"hidden osm1:block"}>
