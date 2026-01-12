@@ -1,4 +1,12 @@
 # Frontend for our app built with React
+## Quick Start
+A.K.A. "_This is not my part of the codebase and I want to get it running._"
+
+```bash
+bun install
+docker compose up
+```
+
 
 ## Development
 ### Install bun for faster development
