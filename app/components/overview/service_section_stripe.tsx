@@ -15,7 +15,7 @@ export function ServiceSectionStripe({stripeTitle} : {stripeTitle: string}) {
   return (
     <div className="flex w-full max-w-full flex-col gap-2">
       <Item variant="outline" border="none" size="xsm" rounded="rounded">
-        <ItemContent className={"dark:text-martynablue"}>
+        <ItemContent className={"dark:text-jcablue"}>
           <ItemTitle>{stripeTitle}</ItemTitle>
         </ItemContent>
         <ItemActions>
