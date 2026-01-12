@@ -6,4 +6,6 @@
     --breakpoint-2xs: 18rem; /* 288px */
     --breakpoint-xs: 20rem;  /* 320px */
     --breakpoint-osm1: 28rem; /* 448px - "our small, 1" */
+    --color-martynablue: #009de0;
+    --color-brightmartynablue: #28b9f7;
 }

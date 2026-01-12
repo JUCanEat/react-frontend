@@ -31,12 +31,12 @@ function ItemSeparator({
 }
 
 const itemVariants = cva(
-  "group/item flex items-center border border-gray-200 border-transparent text-sm rounded-md transition-colors [a]:hover:bg-gray-100/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-gray-950 focus-visible:ring-gray-950/50 focus-visible:ring-[3px] dark:border-gray-800 dark:[a]:hover:bg-gray-800/50 dark:focus-visible:border-gray-300 dark:focus-visible:ring-gray-300/50",
+  "group/item flex items-center border border-gray-200 border-transparent text-sm transition-colors [a]:hover:bg-gray-100/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-gray-950 focus-visible:ring-gray-950/50 focus-visible:ring-[3px] dark:border-gray-800 dark:[a]:hover:bg-gray-800/50 dark:focus-visible:border-gray-300 dark:focus-visible:ring-gray-300/50",
   {
     variants: {
       variant: {
         default: "bg-transparent",
-        outline: "border-gray-200 dark:border-gray-800",
+        outline: "dark:bg-zinc-950 dark:text-zinc-50",
         muted: "bg-gray-100/50 dark:bg-gray-800/50",
       },
       size: {
@@ -49,13 +49,23 @@ const itemVariants = cva(
       },
       justify: {
           default: "justify-between"
-      }
+      },
+      rounded: {
+          default: "rounded-0",
+          rounded: "rounded-md"
+      },
+        border: {
+            outline: "border dark:border-gray-200 dark:dark:border-gray-800",
+            none: "border-none"
+        },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
         justify: "default",
-        width: "default"
+        width: "default",
+        rounded: "default",
+        border: "outline"
     },
   }
 )
@@ -65,6 +75,8 @@ function Item({
   variant = "default",
   size = "default",
   width = "default",
+    rounded = "default",
+    border = "outline",
   asChild = false,
   ...props
 }: React.ComponentProps<"div"> &
@@ -75,7 +87,7 @@ function Item({
       data-slot="item"
       data-variant={variant}
       data-size={size}
-      className={cn(itemVariants({ variant, size, className }))}
+      className={cn(itemVariants({ variant, size, width, rounded, border, className }))}
       {...props}
     />
   )
