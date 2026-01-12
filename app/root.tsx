@@ -15,7 +15,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactKeycloakProvider } from "@react-keycloak/web";
 import { getKeycloak } from "~/auth/keycloak";
 
-export const rootQueryUrl = import.meta.env.VITE_BACKEND_URL;
+export const rootQueryUrl = import.meta.env.VITE_API_URL;
 export const allRestaurantsEndpoint: string = "api/restaurants";
 export const allVendingMachinesEndpoint: string = "api/vending-machines";
 export const menusEndpoint = "api/menus";
