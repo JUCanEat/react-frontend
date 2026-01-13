@@ -10,7 +10,7 @@ def test_unregistered_user(page: Page, frontend_url: str, safety_timeout: int, a
     map_button.wait_for(state="visible", timeout=safety_timeout)
     map_button.click()
 
-    bistro_button = page.locator('div[title="Bistro Świetlica"]')
+    bistro_button = page.get_by_title('Bistro Świetlica')
     bistro_button.wait_for(state="visible", timeout=api_load_timeout)
     bistro_button.click()
 
@@ -27,7 +27,7 @@ def test_unregistered_user(page: Page, frontend_url: str, safety_timeout: int, a
     map_button.wait_for(state="visible", timeout=safety_timeout)
     map_button.click()
 
-    bistro_button = page.locator('div[title="Bistro by Jelonek"]')
+    bistro_button = page.get_by_title('Bistro by Jelonek')
     bistro_button.wait_for(state="visible", timeout=api_load_timeout)
     bistro_button.click()
 
