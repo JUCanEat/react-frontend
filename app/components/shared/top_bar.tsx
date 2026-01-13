@@ -1,45 +1,58 @@
 // contains the logo, the name and the "Log in" button.
-import { BadgeCheckIcon, ChevronRightIcon } from "lucide-react"
-
-import { Button } from "~/shadcn/components/ui/button"
+import { Button } from "~/shadcn/components/ui/button";
 import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from "~/shadcn/components/ui/item"
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemMedia,
+    ItemTitle,
+} from "~/shadcn/components/ui/item";
+import { useKeycloak } from "@react-keycloak/web";
 
-export function TopBar({isLoginPage}: {isLoginPage: boolean}) {
-  var itemClassName: string = isLoginPage ? "justify-center" : "justify-between"
+export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
+    const { keycloak, initialized } = useKeycloak();
+    const itemClassName = isLoginPage ? "justify-center" : "justify-between";
+
+    const handleLogin = () => {
+        if (!initialized) return;
+        keycloak.login({
+            redirectUri: window.location.origin + "/profile",
+        });
+    };
+
+    const handleLogout = () => {
+        keycloak.logout({
+            redirectUri: window.location.origin + "/",
+        });
+    };
+
     return (
-    <div className="flex w-full flex-row">
-      <Item variant="outline" size="xsm" width="default" className={`itemClassName`}>
-          <div></div>
-          <div className="flex items-center">
-              <ItemMedia variant="logo" className={"scale-120 dark:invert"} onClick={() => (window.location.href = "/")}>
-                  <img src="/logo.svg"></img>
-              </ItemMedia>
-              <ItemContent className={"hidden 3xs:block"}>
-                  <div></div>
-                  <ItemTitle className={"text-base pt-2"}>JU Can Eat</ItemTitle>
-                  <div></div>
-              </ItemContent>
-          </div>
-          <ItemActions>
-              {!isLoginPage && (
-                  <Button
-                      variant="highlight"
-                      border="none"
-                      size="sm"
-                      onClick={() => (window.location.href = "/login")}
-                  >
-                      Login
-                  </Button>
-              )}
-        </ItemActions>
-      </Item>
-    </div>
-  )
+        <div className="flex w-full max-w-full flex-col gap-6">
+            <Item variant="outline" size="xsm" width="default" className={itemClassName}>
+                <div className="flex items-center gap-2">
+                    <ItemMedia variant="logo" onClick={() => (window.location.href = "/")}>
+                        <img src="/logo.svg" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>JU Can Eat</ItemTitle>
+                    </ItemContent>
+                </div>
+
+                <ItemActions>
+                    {!isLoginPage && initialized && !keycloak.authenticated && (
+                        <Button size="sm" variant="outline" onClick={handleLogin}>
+                            Login
+                        </Button>
+                    )}
+
+                    {!isLoginPage && initialized && keycloak.authenticated && (
+                        <Button size="sm" variant="outline" onClick={handleLogout}>
+                            Logout
+                        </Button>
+                    )}
+                </ItemActions>
+            </Item>
+        </div>
+    );
 }
+

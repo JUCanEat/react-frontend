@@ -21,9 +21,8 @@ export function BottomNav({page}: {page : string}) {
                     <Map className=""/>
                 </Button>
                 <Button
-                    variant={page === "profile" || page === "login" ? "highlight" : "ghost"}
-                    border="none"
-                    onClick={() => (window.location.href = "/login")}
+                    variant="ghost"
+                    onClick={() => (window.location.href = "/profile")}
                     >
                     <User className=""/>
                 </Button>
