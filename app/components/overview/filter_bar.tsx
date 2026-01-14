@@ -1,6 +1,3 @@
-// contains 'filter_options' (eg. "Vegan", "Vegetarian") in one stripe
-"use client"
-
 import * as React from "react"
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group"
 import { type VariantProps } from "class-variance-authority"
@@ -29,7 +26,6 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
       <ToggleGroup
           type="multiple"
           variant="outline"
-          className={"pt-5"}
           spacing={0}
           size="sm"
           value={value}

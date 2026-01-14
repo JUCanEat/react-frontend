@@ -21,6 +21,7 @@ export const allVendingMachinesEndpoint: string = "api/vending-machines";
 export const menusEndpoint = "api/menus";
 export const menuEndpoint = "api/menus/:id";
 
+export const createMenuEndpoint: string = "api/menus/"
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
@@ -64,10 +65,12 @@ export default function App() {
     }
 
     return (
-        <ReactKeycloakProvider
-            authClient={keycloak}
-            initOptions={{ onLoad: "check-sso" }}
-        >
+      <ReactKeycloakProvider
+        authClient={keycloak}
+        initOptions={{ 
+          onLoad: "check-sso"
+        }}
+      >
             <QueryClientProvider client={queryClient}>
                 <Outlet />
             </QueryClientProvider>

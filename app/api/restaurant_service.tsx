@@ -1,10 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
 import { rootQueryUrl, allRestaurantsEndpoint } from "~/root";
-import type { Restaurant } from "~/interfaces";
 import { apiGet } from "~/api/api";
+import type { Restaurant } from "~/interfaces";
 
 export let useGetAllRestaurants = () =>
-  useQuery<Restaurant[]>({
-    queryKey: ["restaurants"],
-    queryFn: () => apiGet<Restaurant[]>(`${rootQueryUrl}/${allRestaurantsEndpoint}`),
-  });
+    apiGet<Restaurant[]>("restaurants", `${rootQueryUrl}/${allRestaurantsEndpoint}`);
