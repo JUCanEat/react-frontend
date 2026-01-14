@@ -1,11 +1,44 @@
-export async function apiGet<T>(url: string): Promise<T> {
-    const response = await fetch(url);
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
-    if (response.ok) {
-        return response.json() as Promise<T>;
+export function apiGet<T>(
+    key: string,
+    url: string
+    ): UseQueryResult<T> {
+        return useQuery<T>({
+            queryKey: [key],
+            queryFn: async () => {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(`API Error: ${response.status} - ${text}`)
+                }
+                return response.json() as Promise<T>;
+            }
+        });
     }
 
-    const text = await response.text;
-    const status = response.status;
-    throw new Error(`API Error: ${status} - ${text}`);
-}
+export function apiPut<TInput>(
+    key: string,
+    url: string,
+    body: TInput
+    ) {
+        return useQuery({
+        queryKey: [key, body],
+        queryFn: async () => {
+          const response = await fetch(url, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`API Error: ${response.status} - ${text}`);
+          }
+
+          return response;
+        },
+      });
+    }

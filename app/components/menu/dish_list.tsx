@@ -32,6 +32,52 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
 
   const filteredDishes: Dish[] = filterDishes(dishes, dishFilterStrings);
 
+  if (isLoading) {
+    return (
+      <div className="dark:bg-zinc-950">
+        <TopBar isLoginPage={false} />
+        <div className="w-full dark:bg-zinc-950 flex items-center justify-center" style={{ height: "calc(100vh - 150px)" }}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p className="dark:text-white">Loading menu...</p>
+          </div>
+        </div>
+        <BottomNav page={"menu"} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dark:bg-zinc-950">
+        <TopBar isLoginPage={false} />
+        <div className="w-full dark:bg-zinc-950 flex items-center justify-center" style={{ height: "calc(100vh - 150px)" }}>
+          <div className="text-center text-red-500 dark:text-red-400">
+            <p>Error loading menu:</p>
+            <p className="text-sm mt-2">{error.message}</p>
+            <p className="text-xs mt-2 dark:text-gray-400">Restaurant ID: {restaurantId}</p>
+          </div>
+        </div>
+        <BottomNav page={"menu"} />
+      </div>
+    );
+  }
+
+  if (!dishes || dishes.length === 0) {
+    return (
+      <div className="dark:bg-zinc-950">
+        <TopBar isLoginPage={false} />
+        <div className="w-full dark:bg-zinc-950 flex items-center justify-center" style={{ height: "calc(100vh - 150px)" }}>
+          <div className="text-center dark:text-white">
+            <p>No dishes available for this restaurant</p>
+            <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">Restaurant ID: {restaurantId}</p>
+          </div>
+        </div>
+        <BottomNav page={"menu"} />
+      </div>
+    );
+  }
+
   return (
     <div className="dark:bg-zinc-950">
       <TopBar isLoginPage={false} />
@@ -49,7 +95,7 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
           </div>
         </div>
       </div>
-      <BottomNav />
+      <BottomNav page={"menu"} />
     </div>
   );
 }
