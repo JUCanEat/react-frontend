@@ -33,13 +33,15 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
   const filteredDishes: Dish[] = filterDishes(dishes, dishFilterStrings);
 
   return (
-    <>
+    <div className="dark:bg-zinc-950">
       <TopBar isLoginPage={false} />
-      <div className="w-full" style={{ height: "calc(100vh - 150px)" }}>
+      <div className="w-full dark:bg-zinc-950" style={{ height: "calc(100vh - 150px)" }}>
 
-        <FilterBar value={filters} onChange={setFilters} />
+        <div className="px-4 pt-2">
+          <FilterBar value={filters} onChange={setFilters} />
+        </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2">
+        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2 dark:bg-zinc-950">
           <div className="flex flex-col gap-4">
             {filteredDishes.map(dish => (
               <DishInfo key={dish.id} dish={dish} />
@@ -48,6 +50,6 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
         </div>
       </div>
       <BottomNav />
-    </>
+    </div>
   );
 }

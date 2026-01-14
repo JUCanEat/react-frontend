@@ -52,7 +52,7 @@ export function Map_proper() {
   };
 
   return (
-    <div className = "w-full" style={{ height: "calc(100vh - 150px)" }}>
+    <div className = "w-full h-full">
       <LoadScript googleMapsApiKey="" onLoad={() => setMapsLoaded(true)}>
         {mapsLoaded && (
           <GoogleMap
