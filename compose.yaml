@@ -61,9 +61,9 @@ services:
   react:
     #build: .
     #container_name: react
-    image: konmtal/jca-react-frontend:latest
+    image: konmtal/https-jca-react-frontend:safe-0.0.1
     ports:
-      - "3000:3000"
+      - "3000:80"
 
 volumes:
   elasticsearch-data:

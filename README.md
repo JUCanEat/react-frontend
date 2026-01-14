@@ -5,6 +5,7 @@ A.K.A. "_This is not my part of the codebase and I want to get it running._"
 ```bash
 npm install
 docker compose up
+
 ```
 
 To build for HTTP, change `.env.development` and `.env.production` to use `HTTP` instead of `HTTPS` for their envvars.
