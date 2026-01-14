@@ -124,7 +124,7 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4 space-y-6">
+    <div className="max-w-3xl mx-auto p-4 space-y-6 dark:bg-zinc-950">
     {error && (
       <div ref={errorRef}>
         <Alert variant="destructive">
@@ -134,24 +134,24 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
       </div>
     )}
 
-      <Card className="shadow-md rounded-2xl">
+      <Card className="shadow-md rounded-2xl dark:bg-zinc-900">
         <CardHeader>
-          <CardTitle className="text-xl">Create Daily Menu</CardTitle>
+          <CardTitle className="text-xl dark:text-white">Create Daily Menu</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col space-y-2">
-            <Label>Date</Label>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <Label className="dark:text-white">Date</Label>
+            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700" />
           </div>
 
           <div className="space-y-4">
             {dishes.map((dish, index) => (
               <div
                 key={index}
-                className="p-4 border rounded-xl space-y-4 bg-gray-50"
+                className="p-4 border rounded-xl space-y-4 bg-gray-50 dark:bg-zinc-800 dark:border-zinc-700"
               >
                 <div className="flex justify-between items-center">
-                  <h3 className="font-semibold">Dish {index + 1}</h3>
+                  <h3 className="font-semibold dark:text-white">Dish {index + 1}</h3>
                   <Button variant="destructive" size="icon" onClick={() => removeDish(index)}>
                     <Trash className="h-4 w-4" />
                   </Button>
@@ -159,15 +159,16 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col space-y-2">
-                    <Label>Name</Label>
+                    <Label className="dark:text-white">Name</Label>
                     <Input
                       value={dish.name}
                       onChange={(e) => updateDish(index, "name", e.target.value)}
+                      className="dark:bg-zinc-700 dark:text-white dark:border-zinc-600"
                     />
                   </div>
 
                   <div className="flex flex-col space-y-2">
-                    <Label>Category</Label>
+                    <Label className="dark:text-white">Category</Label>
                     <Select
                       onValueChange={(v) => updateDish(index, "category", v)}
                       value={dish.category}
@@ -186,18 +187,19 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
                   </div>
 
                   <div className="flex flex-col space-y-2">
-                    <Label>Price</Label>
+                    <Label className="dark:text-white">Price</Label>
                     <Input
                       type="number"
                       step="0.01"
                       value={dish.price}
                       onChange={(e) => updateDish(index, "price", parseFloat(e.target.value))}
+                      className="dark:bg-zinc-700 dark:text-white dark:border-zinc-600"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Allergens</Label>
+                  <Label className="dark:text-white">Allergens</Label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {ALLERGENS.map((a) => (
                       <label key={a} className="flex items-center space-x-2">
@@ -205,7 +207,7 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
                           checked={dish.allergens.includes(a)}
                           onCheckedChange={() => toggleAllergen(index, a)}
                         />
-                        <span className="text-sm">{a}</span>
+                        <span className="text-sm dark:text-white">{a}</span>
                       </label>
                     ))}
                   </div>

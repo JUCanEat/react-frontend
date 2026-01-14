@@ -14,15 +14,6 @@ export interface Restaurant {
 
 export type Allergen = "NUTS" | "GLUTEN" | "MEAT" | "LACTOSE"
 
-export interface Dish {
-    id: string
-    name: string
-    category?: string
-    price: number
-    image?: string
-    allergens: Allergen[] | null
-}
-
 export interface DailyMenu {
     id: string
     date: string

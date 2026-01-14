@@ -36,7 +36,7 @@ export default function ProfileRoute() {
                         You are not logged in
                     </p>
                 </div>
-                <BottomNav />
+                <BottomNav page={"profile"} />
             </>
         );
     }
@@ -62,7 +62,7 @@ export default function ProfileRoute() {
                 </p>
             </div>
 
-            <BottomNav />
+            <BottomNav page={"profile"} />
         </>
     );
 }

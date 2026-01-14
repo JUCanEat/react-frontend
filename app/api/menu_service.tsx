@@ -5,30 +5,7 @@ import type { DailyMenu } from "~/interfaces";
 import { getAccessToken } from "~/api/user_service";
 
 export const useGetDailyMenu = (restaurantId: string) =>
-<<<<<<< HEAD
-    useQuery<DailyMenu>({
-        queryKey: ["dailyMenu", restaurantId],
-        queryFn: () => apiGet<DailyMenu>(`${rootQueryUrl}/${menusEndpoint}/${restaurantId}`),
-    });
-=======
-import { rootQueryUrl } from "~/root";
-import { apiPut } from "~/api/api";
-import type { DailyMenuDTO } from "~/interfaces";
-
-export const useUpdateDailyMenu = (restaurantId: string, menu: DailyMenuDTO) =>
-  apiPut<DailyMenuDTO>(
-    `menu/add`,
-    `http://localhost:8080/api/menus/${restaurantId}`,
-  );
-
-  //CZY SIE PRZESYLA??? IDK -mb cause i am not the restautant owner
-  //todo: create a new restaurant and test!!!
->>>>>>> bbc7e76 (Add form for manual menu addition)
-=======
-  useQuery<DailyMenu>({
-    queryKey: ["dailyMenu", restaurantId],
-    queryFn: () => apiGet<DailyMenu>(`${rootQueryUrl}/${menusEndpoint}/${restaurantId}`),
-  });
+  apiGet<DailyMenu>("dailyMenu", `${rootQueryUrl}/${menusEndpoint}/${restaurantId}`);
 
 export const useUpdateDailyMenu = () =>
   useMutation({
@@ -83,4 +60,4 @@ export const useUpdateDailyMenuWithToken = (token: string) =>
       return { success: true };
     }
   });
->>>>>>> 0ef298b (Connect form with backend)
+

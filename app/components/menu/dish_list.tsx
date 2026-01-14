@@ -32,14 +32,62 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
 
   const filteredDishes: Dish[] = filterDishes(dishes, dishFilterStrings);
 
+  if (isLoading) {
+    return (
+      <div className="dark:bg-zinc-950">
+        <TopBar isLoginPage={false} />
+        <div className="w-full dark:bg-zinc-950 flex items-center justify-center" style={{ height: "calc(100vh - 150px)" }}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p className="dark:text-white">Loading menu...</p>
+          </div>
+        </div>
+        <BottomNav page={"menu"} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dark:bg-zinc-950">
+        <TopBar isLoginPage={false} />
+        <div className="w-full dark:bg-zinc-950 flex items-center justify-center" style={{ height: "calc(100vh - 150px)" }}>
+          <div className="text-center text-red-500 dark:text-red-400">
+            <p>Error loading menu:</p>
+            <p className="text-sm mt-2">{error.message}</p>
+            <p className="text-xs mt-2 dark:text-gray-400">Restaurant ID: {restaurantId}</p>
+          </div>
+        </div>
+        <BottomNav page={"menu"} />
+      </div>
+    );
+  }
+
+  if (!dishes || dishes.length === 0) {
+    return (
+      <div className="dark:bg-zinc-950">
+        <TopBar isLoginPage={false} />
+        <div className="w-full dark:bg-zinc-950 flex items-center justify-center" style={{ height: "calc(100vh - 150px)" }}>
+          <div className="text-center dark:text-white">
+            <p>No dishes available for this restaurant</p>
+            <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">Restaurant ID: {restaurantId}</p>
+          </div>
+        </div>
+        <BottomNav page={"menu"} />
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className="dark:bg-zinc-950">
       <TopBar isLoginPage={false} />
-      <div className="w-full" style={{ height: "calc(100vh - 150px)" }}>
+      <div className="w-full dark:bg-zinc-950" style={{ height: "calc(100vh - 150px)" }}>
 
-        <FilterBar value={filters} onChange={setFilters} />
+        <div className="px-4 pt-2">
+          <FilterBar value={filters} onChange={setFilters} />
+        </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2">
+        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2 dark:bg-zinc-950">
           <div className="flex flex-col gap-4">
             {filteredDishes.map(dish => (
               <DishInfo key={dish.id} dish={dish} />
@@ -47,7 +95,7 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
           </div>
         </div>
       </div>
-      <BottomNav />
-    </>
+      <BottomNav page={"menu"} />
+    </div>
   );
 }

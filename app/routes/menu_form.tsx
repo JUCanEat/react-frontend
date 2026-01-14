@@ -17,53 +17,53 @@ export default function DailyMenuPage() {
 
   if (!initialized) {
     return (
-      <>
+      <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false}></TopBar>
-        <div className="w-full flex items-center justify-center" style={{ height: "calc(100vh - 150px)"}}>
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="ml-2 text-sm">Loading authentication...</span>
+        <div className="w-full flex items-center justify-center dark:bg-zinc-950" style={{ height: "calc(100vh - 150px)"}}>
+          <Loader2 className="h-6 w-6 animate-spin dark:text-white" />
+          <span className="ml-2 text-sm dark:text-white">Loading authentication...</span>
         </div>
-      </>
+      </div>
     );
   }
 
   if (!keycloak.token) {
     return (
-      <>
+      <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false}></TopBar>
-        <div className="max-w-3xl mx-auto p-4">
+        <div className="max-w-3xl mx-auto p-4 dark:bg-zinc-950">
           <Alert variant="destructive">
             <AlertTitle>Authentication required</AlertTitle>
             <AlertDescription>Please log in to add a menu.</AlertDescription>
           </Alert>
         </div>
-      </>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <>
+      <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false}></TopBar>
-        <div className="w-full flex items-center justify-center" style={{ height: "calc(100vh - 150px)"}}>
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="ml-2 text-sm">Loading your restaurants...</span>
+        <div className="w-full flex items-center justify-center dark:bg-zinc-950" style={{ height: "calc(100vh - 150px)"}}>
+          <Loader2 className="h-6 w-6 animate-spin dark:text-white" />
+          <span className="ml-2 text-sm dark:text-white">Loading your restaurants...</span>
         </div>
-      </>
+      </div>
     );
   }
 
   if (error || !restaurantId) {
     return (
-      <>
+      <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false}></TopBar>
-        <div className="max-w-3xl mx-auto p-4">
+        <div className="max-w-3xl mx-auto p-4 dark:bg-zinc-950">
           <Alert variant="destructive">
             <AlertTitle>Error loading profile</AlertTitle>
             <AlertDescription>Could not load your profile. Please try logging in again.</AlertDescription>
           </Alert>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -82,11 +82,11 @@ export default function DailyMenuPage() {
   }
 
   return (
-      <>
+      <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false}></TopBar>
-        <div className = "w-full" style={{ height: "calc(100vh - 150px)"}}>
+        <div className = "w-full dark:bg-zinc-950" style={{ height: "calc(100vh - 150px)"}}>
             <DailyMenuForm restaurantId={restaurantId} userId={userId || ""} token={keycloak.token}></DailyMenuForm>
         </div>
-      </>
+      </div>
     );
 }

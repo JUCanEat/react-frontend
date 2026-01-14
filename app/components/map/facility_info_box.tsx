@@ -27,8 +27,6 @@ function CustomerSatisfaction() {
   );
 }
 
-<<<<<<< HEAD
-=======
 const GetCustomerSatisfactionComponent = (selectedPoint) => { {/* TODO feature - gather and calculate customer satisfaction */}
     return (
         <div className="flex items-center gap-1">
@@ -52,9 +50,6 @@ const GetOptionalGoToRestaurantButton = (selectedPoint) => {
     return null;
 }
 
-
-
->>>>>>> 95e0174 (Implement dish list page with mock data)
 export function FacilityInfo({ selectedPoint, onClose }: FacilityInfoProps) {
   const navigate = useNavigate();
   const setSelectedRestaurant = useRestaurantStore((s) => s.setSelectedRestaurant);
