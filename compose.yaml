@@ -59,9 +59,9 @@ services:
       - elasticsearch-data:/usr/share/elasticsearch/data
 
   react:
-    build: .
-    container_name: react
-    #image: konmtal/jca-react-frontend
+    #build: .
+    #container_name: react
+    image: konmtal/jca-react-frontend:latest
     ports:
       - "3000:3000"
 
