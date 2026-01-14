@@ -46,3 +46,11 @@ export interface FacilityInfoProps {
     selectedPoint: Facility | null;
     onClose: () => void;
 }
+
+export interface Dish {
+    id: string,
+    name: string,
+    description: string,
+    price: string,
+    image: string
+}

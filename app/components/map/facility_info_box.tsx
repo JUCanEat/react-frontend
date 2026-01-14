@@ -27,6 +27,34 @@ function CustomerSatisfaction() {
   );
 }
 
+<<<<<<< HEAD
+=======
+const GetCustomerSatisfactionComponent = (selectedPoint) => { {/* TODO feature - gather and calculate customer satisfaction */}
+    return (
+        <div className="flex items-center gap-1">
+            <Smile size={14} />
+            <p> 6.3 </p>
+        </div>
+    );
+}
+
+const GetOptionalGoToRestaurantButton = (selectedPoint) => {
+    if ("name" in selectedPoint) {
+        return (
+            <Button
+                onClick={() => (window.location.href = "/dishes")}
+                className="text-primary-foreground text-white"
+                variant="default"
+                > Go to {selectedPoint.name}
+            </Button>
+        );
+    }
+    return null;
+}
+
+
+
+>>>>>>> 95e0174 (Implement dish list page with mock data)
 export function FacilityInfo({ selectedPoint, onClose }: FacilityInfoProps) {
   const navigate = useNavigate();
   const setSelectedRestaurant = useRestaurantStore((s) => s.setSelectedRestaurant);
