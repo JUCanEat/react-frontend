@@ -1,14 +1,14 @@
 import * as React from "react";
-import type { DishDTO } from "~/api/menuApi";
+import type { Dish, Allergen } from "~/interfaces";
 
-const ALLERGEN_OPTIONS = ["GLUTEN", "LACTOSE", "MEAT", "NUTS"];
+const ALLERGEN_OPTIONS: Allergen[] = ["GLUTEN", "LACTOSE", "MEAT", "NUTS"];
 const CATEGORY_OPTIONS = ["SOUP", "MAIN_COURSE"];
 
 interface DishEditorProps {
-    dish: DishDTO;
+    dish: Dish;
     index: number;
-    onDishChange: (index: number, field: keyof DishDTO, value: any) => void;
-    onAllergenToggle: (index: number, allergen: string) => void;
+    onDishChange: (index: number, field: keyof Dish, value: any) => void;
+    onAllergenToggle: (index: number, allergen: Allergen) => void;
     onRemove: (index: number) => void;
 }
 
@@ -47,7 +47,7 @@ export function DishEditor({ dish, index, onDishChange, onAllergenToggle, onRemo
                         Category
                     </label>
                     <select
-                        value={dish.category}
+                        value={dish.category || ""}
                         onChange={(e) => onDishChange(index, "category", e.target.value)}
                         className="w-full border rounded px-3 py-2"
                         style={{ borderColor: '#1B1B1B' }}

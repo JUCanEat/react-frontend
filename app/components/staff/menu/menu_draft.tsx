@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import { useNavigate } from "react-router-dom";
-import { menuApi } from "~/api/menuApi";
-import type { DailyMenuDTO, DishDTO } from "~/api/menuApi";
+import { menuService } from "~/api/menu_service";
+import type { DailyMenu, Dish, Allergen } from "~/interfaces";
 import { LoadingSpinner } from "~/components/staff/common/loading_spinner";
 import { ErrorState, EmptyState } from "~/components/staff/common/error_state";
 import { StatusBanner } from "~/components/staff/common/status_banner";
@@ -18,7 +18,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(true);
     const [saving, setSaving] = React.useState(false);
-    const [menu, setMenu] = React.useState<DailyMenuDTO | null>(null);
+    const [menu, setMenu] = React.useState<DailyMenu | null>(null);
     const [error, setError] = React.useState<string | null>(null);
 
     React.useEffect(() => {
@@ -26,7 +26,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
             if (!keycloak.token) return;
 
             try {
-                const draft = await menuApi.getMenuDraft(restaurantId, keycloak.token);
+                const draft = await menuService.getMenuDraft(restaurantId, keycloak.token);
                 setMenu(draft);
             } catch (error) {
                 console.error("Failed to fetch draft:", error);
@@ -39,8 +39,8 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         fetchDraft();
     }, [keycloak.token, restaurantId]);
 
-    const handleDishChange = (index: number, field: keyof DishDTO, value: any) => {
-        if (!menu) return;
+    const handleDishChange = (index: number, field: keyof Dish, value: any) => {
+        if (!menu || !menu.dishes) return;
 
         const updatedDishes = [...menu.dishes];
         updatedDishes[index] = {
@@ -54,8 +54,8 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         });
     };
 
-    const handleAllergenToggle = (dishIndex: number, allergen: string) => {
-        if (!menu) return;
+    const handleAllergenToggle = (dishIndex: number, allergen: Allergen) => {
+        if (!menu || !menu.dishes) return;
 
         const dish = menu.dishes[dishIndex];
         const allergens = dish.allergens || [];
@@ -68,7 +68,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     };
 
     const handleRemoveDish = (index: number) => {
-        if (!menu) return;
+        if (!menu || !menu.dishes) return;
 
         const updatedDishes = menu.dishes.filter((_, i) => i !== index);
         setMenu({
@@ -84,7 +84,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         setError(null);
 
         try {
-            await menuApi.approveMenu(restaurantId, menu, keycloak.token);
+            await menuService.approveMenu(restaurantId, menu, keycloak.token);
             setTimeout(() => {
                 navigate("/profile");
             }, 1500);
@@ -103,7 +103,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         return <ErrorState message={error} />;
     }
 
-    if (!menu) {
+    if (!menu || !menu.dishes) {
         return <EmptyState message="No draft found" />;
     }
 

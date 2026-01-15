@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import { useNavigate } from "react-router-dom";
-import { menuApi } from "~/api/menuApi";
+import { menuService } from "~/api/menu_service";
 import { LoadingSpinner } from "~/components/staff/common/loading_spinner";
 import { MenuUploadSection } from "~/components/staff/menu/menu_upload_section";
 import { CategoryGrid } from "~/components/staff/menu/category_grid";
@@ -18,13 +18,12 @@ export function StaffMenuFromPhoto({ restaurantId }: StaffMenuFromPhotoProps) {
 
     console.log("Restaurant ID:", restaurantId);
 
-    // Polling - sprawdzaj co 3 sekundy czy draft jest gotowy
     React.useEffect(() => {
         if (!processing || !keycloak.token) return;
 
         const interval = setInterval(async () => {
             try {
-                const draft = await menuApi.getMenuDraft(restaurantId, keycloak.token!);
+                const draft = await menuService.getMenuDraft(restaurantId, keycloak.token!);
                 console.log("Draft menu found:", draft);
 
                 setProcessing(false);
@@ -47,7 +46,7 @@ export function StaffMenuFromPhoto({ restaurantId }: StaffMenuFromPhotoProps) {
         setUploading(true);
 
         try {
-            await menuApi.uploadMenuImage(restaurantId, file, keycloak.token);
+            await menuService.uploadMenuImage(restaurantId, file, keycloak.token);
             setUploading(false);
             setProcessing(true);
         } catch (error) {

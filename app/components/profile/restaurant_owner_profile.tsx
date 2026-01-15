@@ -3,12 +3,7 @@ import { BottomNav } from "~/components/shared/bottom_nav";
 import { useKeycloak } from "@react-keycloak/web";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
-interface Restaurant {
-    id: string;
-    name: string;
-    description?: string;
-}
+import type { Restaurant } from "~/interfaces";
 
 interface UserData {
     firstName: string;
