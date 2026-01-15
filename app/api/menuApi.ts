@@ -1,4 +1,4 @@
-const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 export interface DishDTO {
     id?: string;
