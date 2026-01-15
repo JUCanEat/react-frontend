@@ -14,15 +14,6 @@ export interface Restaurant {
 
 export type Allergen = "NUTS" | "GLUTEN" | "MEAT" | "LACTOSE"
 
-export interface Dish {
-    id: string
-    name: string
-    category?: string
-    price: number
-    image?: string
-    allergens: Allergen[] | null
-}
-
 export interface DailyMenu {
     id: string
     date: string
@@ -45,4 +36,27 @@ export type Facility = Restaurant | VendingMachine;
 export interface FacilityInfoProps {
     selectedPoint: Facility | null;
     onClose: () => void;
+}
+
+export interface Dish {
+    id: string,
+    name: string,
+    description: string,
+    price: string,
+    image: string,
+    allergens: string[]
+}
+
+export interface DishDTO {
+  id?: string;
+  name: string;
+  category: string;
+  price: number;
+  allergens: string[];
+}
+
+export interface DailyMenuDTO {
+  id?: string;
+  date: string;
+  dishes: DishDTO[];
 }
