@@ -1,17 +1,17 @@
 import { RequireAuth } from "~/auth/RequireAuth";
-import { StaffMenuFromPhoto } from "~/components/staff/menu/menu_from_photo";
+import { StaffMenuDraft } from "~/components/staff/menu/menu_draft";
 import { useKeycloak } from "@react-keycloak/web";
 import { useParams } from "react-router-dom";
 
-export default function StaffMenuFromPhotoRoute() {
+export default function StaffMenuDraftRoute() {
     return (
         <RequireAuth>
-            <StaffMenuFromPhotoInner />
+            <StaffMenuDraftInner />
         </RequireAuth>
     );
 }
 
-function StaffMenuFromPhotoInner() {
+function StaffMenuDraftInner() {
     const { keycloak } = useKeycloak();
     const { restaurantId } = useParams<{ restaurantId: string }>();
     const roles = keycloak.tokenParsed?.realm_access?.roles || [];
@@ -32,5 +32,5 @@ function StaffMenuFromPhotoInner() {
         );
     }
 
-    return <StaffMenuFromPhoto restaurantId={restaurantId} />;
+    return <StaffMenuDraft restaurantId={restaurantId} />;
 }

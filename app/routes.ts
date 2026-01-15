@@ -4,7 +4,8 @@ export default [
     layout("./routes/mainui.tsx", [
         index("routes/overview.tsx"),
         route("restaurants/:restaurantId","routes/restaurant.tsx"),
-        route("staff/menu-from-photo", "routes/staff_menu_from_photo.tsx"),
+        route("staff/menu-from-photo/:restaurantId", "routes/staff_menu_from_photo.tsx"),
+        route("staff/menu-draft/:restaurantId", "routes/staff_menu_draft.tsx"),
     ]),
     route("login","routes/login.tsx"),
     route("profile","routes/profile.tsx"),

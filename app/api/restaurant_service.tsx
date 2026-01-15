@@ -4,7 +4,7 @@ import type { Restaurant } from "~/interfaces";
 import { apiGet } from "~/api/api";
 
 export let useGetAllRestaurants = () =>
-  useQuery<Restaurant[]>({
-    queryKey: ["restaurants"],
-    queryFn: () => apiGet<Restaurant[]>(`${rootQueryUrl}/${allRestaurantsEndpoint}`),
-  });
+    useQuery<Restaurant[]>({
+        queryKey: ["restaurants"],
+        queryFn: () => apiGet<Restaurant[]>(`${rootQueryUrl}/${allRestaurantsEndpoint}`),
+    });
