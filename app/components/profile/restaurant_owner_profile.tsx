@@ -34,7 +34,7 @@ export default function RestaurantOwnerProfile() {
             console.log("Fetching user data...");
 
             try {
-                const response = await fetch("http://localhost:8080/api/users/me", {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
                     headers: {
                         Authorization: `Bearer ${keycloak.token}`,
                     },
