@@ -3,25 +3,20 @@
 A.K.A. "_This is not my part of the codebase and I want to get it running._"
 
 ```bash
-bun install
+npm install
 docker compose up
 ```
 
 
 ## Development
-### Install bun for faster development
-The bun runtime repo is available [here](https://github.com/oven-sh/bun).
-
-_Note_: if you run into issues, all of the below `bun` commands should be interchangeable with `npm`.
-
 #### Install dependencies:
 ```bash
-bun install
+npm install
 ```
 
 Start the development server with Hot Module Replacement:
 ```bash
-bun run dev
+npm run dev
 ```
 
 To run vitest tests:
