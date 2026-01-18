@@ -4,7 +4,7 @@ import { apiGet } from "~/api/api";
 import type { DailyMenu } from "~/interfaces";
 import { getAccessToken } from "~/api/user_service";
 
-const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 // React Query hooks
 export const useGetDailyMenu = (restaurantId: string) =>
