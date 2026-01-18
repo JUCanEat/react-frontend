@@ -91,6 +91,10 @@ export default function RestaurantOwnerProfile() {
         navigate(`/staff/menu-from-photo/${restaurantId}`);
     };
 
+    const handleMenuFormSelect = (restaurantId: string) => {
+        navigate(`/staff/menu-from-form/${restaurantId}`);
+    };
+
     return (
         <>
             <TopBar isLoginPage={false} />
@@ -150,15 +154,11 @@ export default function RestaurantOwnerProfile() {
                                             </button>
 
                                             <button
-                                                className="flex-1 px-3 py-2 rounded text-sm font-medium opacity-50"
-                                                style={{
-                                                    backgroundColor: 'white',
-                                                    color: '#1B1B1B',
-                                                    border: '1px solid #1B1B1B'
-                                                }}
-                                                disabled
+                                                className="flex-1 px-3 py-2 rounded text-sm font-medium text-white"
+                                                style={{ backgroundColor: '#009DE0' }}
+                                                onClick={() => handleMenuFormSelect(restaurant.id)}
                                             >
-                                                Add manually (soon)
+                                                Add manually
                                             </button>
                                         </div>
                                     </div>
