@@ -12,5 +12,5 @@ export default [
     route("map","routes/map.tsx"),
     route("menu", "routes/menu.tsx"),
     route("dishes","routes/dishes.tsx"),
-    route("menu/add", "routes/menu_form.tsx")
+    route("staff/menu-from-form/:restaurantId", "routes/menu_form.tsx")
 ] satisfies RouteConfig;
