@@ -19,12 +19,19 @@ jobs:
       - name: Run container
         run: docker run -d -p 3000:80 --name test-container test-image
 
-      - name: Wait for container
-        run: sleep 5
-
-      - name: Check health
+      - name: Wait for container to be healthy
         run: |
-          curl -f http://localhost:3000 || exit 1
+          for i in {1..30}; do
+            if curl -f http://localhost:3000 2>/dev/null; then
+              echo "✓ Container is healthy"
+              exit 0
+            fi
+            echo "Attempt $i/30: Waiting for container..."
+            sleep 2
+          done
+          echo "✗ Container failed to respond"
+          docker logs test-container
+          exit 1
 
       - name: Stop container
         if: always()
@@ -46,9 +53,19 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Generate image tags
+        id: meta
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          COMMIT_SHA=${{ github.sha }}
+          SHORT_SHA=${COMMIT_SHA:0:7}
+          echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/jca-react-frontend:${BRANCH_NAME},${{ secrets.DOCKERHUB_USERNAME }}/jca-react-frontend:${BRANCH_NAME}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/jca-react-frontend:${{ github.ref_name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
