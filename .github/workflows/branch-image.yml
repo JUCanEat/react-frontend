@@ -24,7 +24,7 @@ jobs:
 
       - name: Check health
         run: |
-          curl -f http://localhost:3000 || exit 1
+          curl -vf http://localhost:3000 || exit 1
 
       - name: Stop container
         if: always()
