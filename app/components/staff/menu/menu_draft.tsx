@@ -8,6 +8,7 @@ import { ErrorState, EmptyState } from "~/components/staff/common/error_state";
 import { StatusBanner } from "~/components/staff/common/status_banner";
 import { DishEditor } from "~/components/staff/menu/dish_editor";
 import { MenuActionButtons } from "~/components/staff/menu/menu_action_buttons";
+import { useRestaurantStore } from "~/store/restaurant_store";
 
 interface StaffMenuDraftProps {
     restaurantId: string;
@@ -16,6 +17,7 @@ interface StaffMenuDraftProps {
 export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     const { keycloak } = useKeycloak();
     const navigate = useNavigate();
+    const { menuFormSuccess, setMenuFormSuccess, setSelectedRestaurant } = useRestaurantStore();
     const [loading, setLoading] = React.useState(true);
     const [saving, setSaving] = React.useState(false);
     const [menu, setMenu] = React.useState<DailyMenu | null>(null);
@@ -38,6 +40,13 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
 
         fetchDraft();
     }, [keycloak.token, restaurantId]);
+
+    React.useEffect(() => {
+        if (menuFormSuccess) {
+            navigate(`/menu?restaurantId=${restaurantId}`);
+            setMenuFormSuccess(false);
+        }
+    }, [menuFormSuccess, navigate, restaurantId, setMenuFormSuccess]);
 
     const handleDishChange = (index: number, field: keyof Dish, value: any) => {
         if (!menu || !menu.dishes) return;
@@ -85,9 +94,8 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
 
         try {
             await menuService.approveMenu(restaurantId, menu, keycloak.token);
-            setTimeout(() => {
-                navigate(`/menu?restaurantId=${restaurantId}`);
-            }, 1500);
+            setSelectedRestaurant({ id: restaurantId });
+            setMenuFormSuccess(true);
         } catch (error) {
             console.error("Failed to approve menu:", error);
             setError("Failed to approve menu. Please try again.");
