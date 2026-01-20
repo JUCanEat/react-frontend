@@ -59,31 +59,35 @@ export default function RestaurantOwnerProfile() {
 
     if (!initialized || loading) {
         return (
-            <>
+            <div className="relative min-h-screen bg-white dark:bg-zinc-950">
                 <TopBar isLoginPage={false} />
                 <div
                     className="w-full flex items-center justify-center"
                     style={{ height: "calc(100vh - 150px)" }}
                 >
-                    <p className="text-sm opacity-60">Loading profile…</p>
+                    <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">Loading profile…</p>
                 </div>
-                <BottomNav />
-            </>
+                <div className="fixed bottom-0 left-0 w-full z-50">
+                    <BottomNav />
+                </div>
+            </div>
         );
     }
 
     if (!userData) {
         return (
-            <>
+            <div className="relative min-h-screen bg-white dark:bg-zinc-950">
                 <TopBar isLoginPage={false} />
                 <div
                     className="w-full flex items-center justify-center"
                     style={{ height: "calc(100vh - 150px)" }}
                 >
-                    <p className="text-sm opacity-60">Failed to load profile</p>
+                    <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">Failed to load profile</p>
                 </div>
-                <BottomNav />
-            </>
+                <div className="fixed bottom-0 left-0 w-full z-50">
+                    <BottomNav />
+                </div>
+            </div>
         );
     }
 
@@ -96,33 +100,30 @@ export default function RestaurantOwnerProfile() {
     };
 
     return (
-        <>
+        <div className="relative min-h-screen bg-white dark:bg-zinc-950">
             <TopBar isLoginPage={false} />
-
             <div
                 className="w-full flex flex-col items-center px-4 py-6"
                 style={{ minHeight: "calc(100vh - 150px)" }}
             >
                 <div className="w-full max-w-md">
                     <div className="mb-6 text-center">
-                        <p className="text-lg font-semibold" style={{ color: '#1B1B1B' }}>
+                        <p className="text-lg font-semibold text-gray-900 dark:text-white">
                             {userData.firstName} {userData.lastName}
                         </p>
-                        <p className="text-sm opacity-80 mt-1" style={{ color: '#1B1B1B' }}>
+                        <p className="text-sm opacity-80 mt-1 text-gray-800 dark:text-gray-300">
                             {userData.email}
                         </p>
-                        <p className="text-sm opacity-60" style={{ color: '#1B1B1B' }}>
+                        <p className="text-sm opacity-60 text-gray-700 dark:text-gray-400">
                             @{userData.username}
                         </p>
                     </div>
-
                     <div className="mt-8">
-                        <h2 className="text-xl font-semibold mb-4 text-center" style={{ color: '#1B1B1B' }}>
+                        <h2 className="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">
                             Your restaurants
                         </h2>
-
                         {!userData.ownedRestaurants || userData.ownedRestaurants.length === 0 ? (
-                            <p className="text-center" style={{ color: '#1B1B1B' }}>
+                            <p className="text-center text-gray-900 dark:text-gray-300">
                                 You don't have any restaurants yet.
                             </p>
                         ) : (
@@ -130,32 +131,27 @@ export default function RestaurantOwnerProfile() {
                                 {userData.ownedRestaurants.map((restaurant) => (
                                     <div
                                         key={restaurant.id}
-                                        className="p-4 border rounded-lg"
-                                        style={{ borderColor: '#1B1B1B' }}
+                                        className="p-4 border rounded-lg border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
                                     >
                                         <div className="mb-3">
-                                            <p className="text-lg font-semibold" style={{ color: '#1B1B1B' }}>
+                                            <p className="text-lg font-semibold text-gray-900 dark:text-white">
                                                 {restaurant.name}
                                             </p>
                                             {restaurant.description && (
-                                                <p className="text-sm opacity-60 mt-1" style={{ color: '#1B1B1B' }}>
+                                                <p className="text-sm opacity-60 mt-1 text-gray-700 dark:text-gray-400">
                                                     {restaurant.description}
                                                 </p>
                                             )}
                                         </div>
-
                                         <div className="flex gap-2">
                                             <button
-                                                className="flex-1 px-3 py-2 rounded text-sm text-white font-medium"
-                                                style={{ backgroundColor: '#009DE0' }}
+                                                className="flex-1 px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
                                                 onClick={() => handleRestaurantSelect(restaurant.id)}
                                             >
                                                 Add menu from photo
                                             </button>
-
                                             <button
-                                                className="flex-1 px-3 py-2 rounded text-sm font-medium text-white"
-                                                style={{ backgroundColor: '#009DE0' }}
+                                                className="flex-1 px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
                                                 onClick={() => handleMenuFormSelect(restaurant.id)}
                                             >
                                                 Add manually
@@ -168,8 +164,9 @@ export default function RestaurantOwnerProfile() {
                     </div>
                 </div>
             </div>
-
-            <BottomNav />
-        </>
+            <div className="fixed bottom-0 left-0 w-full z-50">
+                <BottomNav />
+            </div>
+        </div>
     );
 }

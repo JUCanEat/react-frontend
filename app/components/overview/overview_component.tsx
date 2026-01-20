@@ -22,10 +22,6 @@ export function OverviewComponent() {
             <TopBar isLoginPage={false} />
             <div className={"pt-5 pl-5 pr-5 dark:bg-zinc-950"}>
                 <div className="w-full" style={{ height: "calc(100vh - 200px)" }}>
-                    <SearchBar></SearchBar>
-
-                        <FilterBar value={filters} onChange={setFilters} />
-
                     <div className={"pt-5"}>
                         <ServiceSectionStripe stripeTitle={"Restaurants"} />
                         <ServiceSection

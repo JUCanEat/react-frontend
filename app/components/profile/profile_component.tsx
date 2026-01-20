@@ -10,10 +10,10 @@ export default function ProfileComponent() {
             <>
                 <TopBar isLoginPage={false} />
                 <div
-                    className="w-full flex items-center justify-center"
+                    className="w-full flex items-center justify-center bg-white dark:bg-zinc-950"
                     style={{ height: "calc(100vh - 150px)" }}
                 >
-                    <p className="text-sm opacity-60">Loading profile…</p>
+                    <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">Loading profile…</p>
                 </div>
                 <BottomNav />
             </>
@@ -27,10 +27,10 @@ export default function ProfileComponent() {
             <>
                 <TopBar isLoginPage={false} />
                 <div
-                    className="w-full flex items-center justify-center"
+                    className="w-full flex items-center justify-center bg-white dark:bg-zinc-950"
                     style={{ height: "calc(100vh - 150px)" }}
                 >
-                    <p className="text-sm opacity-60">
+                    <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
                         You are not logged in
                     </p>
                 </div>
@@ -42,24 +42,20 @@ export default function ProfileComponent() {
     return (
         <>
             <TopBar isLoginPage={false} />
-
             <div
-                className="w-full flex flex-col items-center justify-center gap-3"
+                className="w-full flex flex-col items-center justify-center gap-3 bg-white dark:bg-zinc-950"
                 style={{ height: "calc(100vh - 150px)" }}
             >
-                <p className="text-lg font-semibold">
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
                     {token.given_name} {token.family_name}
                 </p>
-
-                <p className="text-sm opacity-80">
+                <p className="text-sm opacity-80 text-gray-800 dark:text-gray-300">
                     {token.email}
                 </p>
-
-                <p className="text-sm opacity-60">
+                <p className="text-sm opacity-60 text-gray-700 dark:text-gray-400">
                     @{token.preferred_username}
                 </p>
             </div>
-
             <BottomNav />
         </>
     );

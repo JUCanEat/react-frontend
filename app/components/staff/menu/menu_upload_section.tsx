@@ -51,11 +51,6 @@ export function MenuUploadSection({ onFileSelect }: MenuUploadSectionProps) {
             />
 
             <div className="mb-10 grid grid-cols-[auto_auto] justify-center gap-0">
-                <UploadOptionCard
-                    Icon={Camera}
-                    label="Take a Picture"
-                    onClick={handleTakePicture}
-                />
 
                 <UploadOptionCard
                     Icon={Upload}
