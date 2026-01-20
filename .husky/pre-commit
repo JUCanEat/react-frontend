@@ -1,2 +1,2 @@
-npx prettier --write .
+npx lint-staged
 npx vitest run --silent
