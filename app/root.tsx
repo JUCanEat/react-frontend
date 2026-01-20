@@ -5,35 +5,35 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "react-router";
+} from 'react-router';
 
-import type { Route } from "./+types/root";
-import "./tailwind_styles.css";
+import type { Route } from './+types/root';
+import './tailwind_styles.css';
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { ReactKeycloakProvider } from "@react-keycloak/web";
-import { getKeycloak } from "~/auth/keycloak";
+import { ReactKeycloakProvider } from '@react-keycloak/web';
+import { getKeycloak } from '~/auth/keycloak';
 
 export const rootQueryUrl = import.meta.env.VITE_BACKEND_URL;
-export const allRestaurantsEndpoint: string = "api/restaurants";
-export const allVendingMachinesEndpoint: string = "api/vending-machines";
-export const menusEndpoint = "api/menus";
-export const menuEndpoint = "api/menus/:id";
+export const allRestaurantsEndpoint: string = 'api/restaurants';
+export const allVendingMachinesEndpoint: string = 'api/vending-machines';
+export const menusEndpoint = 'api/menus';
+export const menuEndpoint = 'api/menus/:id';
 
-export const createMenuEndpoint: string = "api/menus/"
+export const createMenuEndpoint: string = 'api/menus/';
 
 export const links: Route.LinksFunction = () => [
-  { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
+    rel: 'preconnect',
+    href: 'https://fonts.gstatic.com',
+    crossOrigin: 'anonymous',
   },
   {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
   },
 ];
 
@@ -42,7 +42,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1"
+        />
         <Meta />
         <Links />
       </head>
@@ -58,39 +61,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
 const queryClient = new QueryClient();
 
 export default function App() {
-    const keycloak = getKeycloak();
+  const keycloak = getKeycloak();
 
-    if (!keycloak) {
-        return null;
-    }
+  if (!keycloak) {
+    return null;
+  }
 
-    return (
-      <ReactKeycloakProvider
-        authClient={keycloak}
-        initOptions={{ 
-          onLoad: "check-sso"
-        }}
-      >
-            <QueryClientProvider client={queryClient}>
-                <Outlet />
-            </QueryClientProvider>
-        </ReactKeycloakProvider>
-    );
+  return (
+    <ReactKeycloakProvider
+      authClient={keycloak}
+      initOptions={{
+        onLoad: 'check-sso',
+      }}
+    >
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
+    </ReactKeycloakProvider>
+  );
 }
 
-
-
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  let message = 'Oops!';
+  let details = 'An unexpected error occurred.';
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? '404' : 'Error';
     details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+      error.status === 404 ? 'The requested page could not be found.' : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;

@@ -1,11 +1,11 @@
-import * as React from "react"
-import { Button } from "~/shadcn/components/ui/button"
+import * as React from 'react';
+import { Button } from '~/shadcn/components/ui/button';
 
 type UploadOptionCardProps = {
-    Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
-    label: string
-    onClick: () => void
-}
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  label: string;
+  onClick: () => void;
+};
 
 export function UploadOptionCard({ Icon, label, onClick }: UploadOptionCardProps) {
     return (
