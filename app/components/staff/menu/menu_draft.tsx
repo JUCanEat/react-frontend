@@ -86,7 +86,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         try {
             await menuService.approveMenu(restaurantId, menu, keycloak.token);
             setTimeout(() => {
-                navigate("/profile");
+                navigate(`/menu?restaurantId=${restaurantId}`);
             }, 1500);
         } catch (error) {
             console.error("Failed to approve menu:", error);

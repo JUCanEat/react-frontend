@@ -85,42 +85,29 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
     return null;
   };
 
+  const navigate = require("react-router-dom").useNavigate();
   const handleSubmit = async () => {
-      const validationError = validateDishes();
-
-      if (validationError) {
-        setError(validationError);
-        setTimeout(() => errorRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        }), 50);
-        return;
-      }
-
-      setError(null);
-      setIsSubmitting(true);
-
-      try {
-        await updateMenu.mutateAsync({
-          restaurantId,
-          menu: {
-            date,
-            dishes
-          }
-        });
-        alert("Menu updated successfully!");
-        // Reset form
-        setDishes([]);
-        setDate("");
-      } catch (err: any) {
-        setError(err.message || "Failed to update menu.");
-        setTimeout(() => errorRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        }), 50);
-      } finally {
-        setIsSubmitting(false);
-      }
+    const validationError = validateDishes();
+    if (validationError) {
+      setError(validationError);
+      setTimeout(() => errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
+      return;
+    }
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      await updateMenu.mutateAsync({
+        restaurantId,
+        menu: { date, dishes },
+      });
+      // Redirect to the menu page for this restaurant
+      navigate(`/menu?restaurantId=${restaurantId}`);
+    } catch (err: any) {
+      setError(err.message || "Failed to update menu.");
+      setTimeout(() => errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
