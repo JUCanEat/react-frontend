@@ -3,15 +3,15 @@
  A dish is filtered out when it contains allergen that conflicts with the filter (like for "GLUTEN" allergen and "gluten-free" filter).
  */
 
-import { FilterBar, type FilterValue } from "~/components/overview/filter_bar"
-import { TopBar } from "~/components/shared/top_bar"
-import { BottomNav } from "~/components/shared/bottom_nav"
+import { FilterBar, type FilterValue } from '~/components/overview/filter_bar';
+import { TopBar } from '~/components/shared/top_bar';
+import { BottomNav } from '~/components/shared/bottom_nav';
 //import { mockDishes } from "~/dishlist/mock_dishes"
-import { DishInfo } from "~/components/menu/dish/dish_info_box"
-import type { Dish } from "~/interfaces";
-import { useState } from "react";
-import { useGetDailyMenu } from "~/api/menu_service";
-import { filterDishes } from "~/shadcn/lib/dish_filters";
+import { DishInfo } from '~/components/menu/dish/dish_info_box';
+import type { Dish } from '~/interfaces';
+import { useState } from 'react';
+import { useGetDailyMenu } from '~/api/menu_service';
+import { filterDishes } from '~/shadcn/lib/dish_filters';
 
 export function DishListComponent({ restaurantId }: { restaurantId: string }) {
   const [filters, setFilters] = useState<FilterValue[]>([]);
@@ -22,13 +22,13 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
 
   // map UI filter values to the dish_filters expected strings
   const filterValueMap: Record<FilterValue, string> = {
-    vegan: "vegan",
-    vegetarian: "vegetarian",
-    lactoseFree: "lactose-free",
-    glutenFree: "gluten-free",
+    vegan: 'vegan',
+    vegetarian: 'vegetarian',
+    lactoseFree: 'lactose-free',
+    glutenFree: 'gluten-free',
   };
 
-  const dishFilterStrings = filters.map((f) => filterValueMap[f]);
+  const dishFilterStrings = filters.map(f => filterValueMap[f]);
 
   const filteredDishes: Dish[] = filterDishes(dishes, dishFilterStrings);
 
@@ -36,13 +36,16 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
     return (
       <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false} />
-        <div className="w-full dark:bg-zinc-950 flex items-center justify-center" style={{ height: "calc(100vh - 150px)" }}>
+        <div
+          className="w-full dark:bg-zinc-950 flex items-center justify-center"
+          style={{ height: 'calc(100vh - 150px)' }}
+        >
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
             <p className="dark:text-white">Loading menu...</p>
           </div>
         </div>
-        <BottomNav page={"menu"} />
+        <BottomNav page={'menu'} />
       </div>
     );
   }
@@ -51,14 +54,17 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
     return (
       <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false} />
-        <div className="w-full dark:bg-zinc-950 flex items-center justify-center" style={{ height: "calc(100vh - 150px)" }}>
+        <div
+          className="w-full dark:bg-zinc-950 flex items-center justify-center"
+          style={{ height: 'calc(100vh - 150px)' }}
+        >
           <div className="text-center text-red-500 dark:text-red-400">
             <p>Error loading menu:</p>
             <p className="text-sm mt-2">{error.message}</p>
             <p className="text-xs mt-2 dark:text-gray-400">Restaurant ID: {restaurantId}</p>
           </div>
         </div>
-        <BottomNav page={"menu"} />
+        <BottomNav page={'menu'} />
       </div>
     );
   }
@@ -67,13 +73,18 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
     return (
       <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false} />
-        <div className="w-full dark:bg-zinc-950 flex items-center justify-center" style={{ height: "calc(100vh - 150px)" }}>
+        <div
+          className="w-full dark:bg-zinc-950 flex items-center justify-center"
+          style={{ height: 'calc(100vh - 150px)' }}
+        >
           <div className="text-center dark:text-white">
             <p>No dishes available for this restaurant</p>
-            <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">Restaurant ID: {restaurantId}</p>
+            <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
+              Restaurant ID: {restaurantId}
+            </p>
           </div>
         </div>
-        <BottomNav page={"menu"} />
+        <BottomNav page={'menu'} />
       </div>
     );
   }
@@ -81,21 +92,29 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
   return (
     <div className="dark:bg-zinc-950">
       <TopBar isLoginPage={false} />
-      <div className="w-full dark:bg-zinc-950" style={{ height: "calc(100vh - 150px)" }}>
-
+      <div
+        className="w-full dark:bg-zinc-950"
+        style={{ height: 'calc(100vh - 150px)' }}
+      >
         <div className="px-4 pt-2">
-          <FilterBar value={filters} onChange={setFilters} />
+          <FilterBar
+            value={filters}
+            onChange={setFilters}
+          />
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2 dark:bg-zinc-950">
           <div className="flex flex-col gap-4">
             {filteredDishes.map(dish => (
-              <DishInfo key={dish.id} dish={dish} />
+              <DishInfo
+                key={dish.id}
+                dish={dish}
+              />
             ))}
           </div>
         </div>
       </div>
-      <BottomNav page={"menu"} />
+      <BottomNav page={'menu'} />
     </div>
   );
 }

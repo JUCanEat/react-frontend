@@ -11,7 +11,7 @@ import { MenuActionButtons } from "~/components/staff/menu/menu_action_buttons";
 import { useRestaurantStore } from "~/store/restaurant_store";
 
 interface StaffMenuDraftProps {
-    restaurantId: string;
+  restaurantId: string;
 }
 
 export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
@@ -63,27 +63,16 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         });
     };
 
-    const handleAllergenToggle = (dishIndex: number, allergen: Allergen) => {
-        if (!menu || !menu.dishes) return;
+    fetchDraft();
+  }, [keycloak.token, restaurantId]);
 
-        const dish = menu.dishes[dishIndex];
-        const allergens = dish.allergens || [];
+  const handleDishChange = (index: number, field: keyof Dish, value: any) => {
+    if (!menu || !menu.dishes) return;
 
-        const updatedAllergens = allergens.includes(allergen)
-            ? allergens.filter(a => a !== allergen)
-            : [...allergens, allergen];
-
-        handleDishChange(dishIndex, "allergens", updatedAllergens);
-    };
-
-    const handleRemoveDish = (index: number) => {
-        if (!menu || !menu.dishes) return;
-
-        const updatedDishes = menu.dishes.filter((_, i) => i !== index);
-        setMenu({
-            ...menu,
-            dishes: updatedDishes,
-        });
+    const updatedDishes = [...menu.dishes];
+    updatedDishes[index] = {
+      ...updatedDishes[index],
+      [field]: value,
     };
 
     const handleApprove = async () => {
@@ -106,45 +95,64 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     if (loading) {
         return <LoadingSpinner message="Loading draft..." />;
     }
+  };
 
-    if (error && !menu) {
-        return <ErrorState message={error} />;
-    }
+  if (loading) {
+    return <LoadingSpinner message="Loading draft..." />;
+  }
 
-    if (!menu || !menu.dishes) {
-        return <EmptyState message="No draft found" />;
-    }
+  if (error && !menu) {
+    return <ErrorState message={error} />;
+  }
 
-    return (
-        <div className="w-full min-h-screen bg-white p-4">
-            <div className="max-w-4xl mx-auto">
-                {saving && <StatusBanner type="success" message="Approving menu..." showSpinner />}
-                {error && menu && <StatusBanner type="error" message={error} />}
+  if (!menu || !menu.dishes) {
+    return <EmptyState message="No draft found" />;
+  }
 
-                <h1 className="text-2xl font-semibold mb-6" style={{ color: '#1B1B1B' }}>
-                    Review Menu Draft
-                </h1>
+  return (
+    <div className="w-full min-h-screen bg-white p-4">
+      <div className="max-w-4xl mx-auto">
+        {saving && (
+          <StatusBanner
+            type="success"
+            message="Approving menu..."
+            showSpinner
+          />
+        )}
+        {error && menu && (
+          <StatusBanner
+            type="error"
+            message={error}
+          />
+        )}
 
-                <div className="space-y-4">
-                    {menu.dishes.map((dish, index) => (
-                        <DishEditor
-                            key={index}
-                            dish={dish}
-                            index={index}
-                            onDishChange={handleDishChange}
-                            onAllergenToggle={handleAllergenToggle}
-                            onRemove={handleRemoveDish}
-                        />
-                    ))}
-                </div>
+        <h1
+          className="text-2xl font-semibold mb-6"
+          style={{ color: '#1B1B1B' }}
+        >
+          Review Menu Draft
+        </h1>
 
-                <MenuActionButtons
-                    onApprove={handleApprove}
-                    onCancel={() => navigate("/profile")}
-                    isApproving={saving}
-                    isDisabled={menu.dishes.length === 0}
-                />
-            </div>
+        <div className="space-y-4">
+          {menu.dishes.map((dish, index) => (
+            <DishEditor
+              key={index}
+              dish={dish}
+              index={index}
+              onDishChange={handleDishChange}
+              onAllergenToggle={handleAllergenToggle}
+              onRemove={handleRemoveDish}
+            />
+          ))}
         </div>
-    );
+
+        <MenuActionButtons
+          onApprove={handleApprove}
+          onCancel={() => navigate('/profile')}
+          isApproving={saving}
+          isDisabled={menu.dishes.length === 0}
+        />
+      </div>
+    </div>
+  );
 }

@@ -54,10 +54,7 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
   const updateMenu = useUpdateDailyMenuWithToken(token);
 
   const addDish = () => {
-    setDishes([
-      ...dishes,
-      { name: "", category: "", price: 0, allergens: [] },
-    ]);
+    setDishes([...dishes, { name: '', category: '', price: 0, allergens: [] }]);
   };
 
   const updateDish = (index: number, field: keyof DishDTO, value: any) => {
@@ -70,7 +67,7 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
     const updated = [...dishes];
     const exists = updated[index].allergens.includes(allergen);
     updated[index].allergens = exists
-      ? updated[index].allergens.filter((a) => a !== allergen)
+      ? updated[index].allergens.filter(a => a !== allergen)
       : [...updated[index].allergens, allergen];
     setDishes(updated);
   };
@@ -81,8 +78,8 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
   };
 
   const validateDishes = () => {
-    if (!date) return "Please select a date.";
-    if (dishes.length === 0) return "Please add at least one dish.";
+    if (!date) return 'Please select a date.';
+    if (dishes.length === 0) return 'Please add at least one dish.';
 
     for (let i = 0; i < dishes.length; i++) {
       const d = dishes[i];
@@ -136,14 +133,14 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
 
   return (
     <div className="max-w-3xl mx-auto p-4 space-y-6 dark:bg-zinc-950">
-    {error && (
-      <div ref={errorRef}>
-        <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      </div>
-    )}
+      {error && (
+        <div ref={errorRef}>
+          <Alert variant="destructive">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       <Card className="shadow-md rounded-2xl dark:bg-zinc-900">
         <CardHeader>
@@ -152,7 +149,12 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
         <CardContent className="space-y-4">
           <div className="flex flex-col space-y-2">
             <Label className="dark:text-white">Date</Label>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700" />
+            <Input
+              type="date"
+              value={date}
+              onChange={e => setDate(e.target.value)}
+              className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700"
+            />
           </div>
 
           <div className="space-y-4">
@@ -163,7 +165,11 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
               >
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold dark:text-white">Dish {index + 1}</h3>
-                  <Button variant="destructive" size="icon" onClick={() => removeDish(index)}>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => removeDish(index)}
+                  >
                     <Trash className="h-4 w-4" />
                   </Button>
                 </div>
@@ -173,7 +179,7 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
                     <Label className="dark:text-white">Name</Label>
                     <Input
                       value={dish.name}
-                      onChange={(e) => updateDish(index, "name", e.target.value)}
+                      onChange={e => updateDish(index, 'name', e.target.value)}
                       className="dark:bg-zinc-700 dark:text-white dark:border-zinc-600"
                     />
                   </div>
@@ -181,15 +187,18 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
                   <div className="flex flex-col space-y-2">
                     <Label className="dark:text-white">Category</Label>
                     <Select
-                      onValueChange={(v) => updateDish(index, "category", v)}
+                      onValueChange={v => updateDish(index, 'category', v)}
                       value={dish.category}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {CATEGORIES.map((c) => (
-                          <SelectItem key={c} value={c}>
+                        {CATEGORIES.map(c => (
+                          <SelectItem
+                            key={c}
+                            value={c}
+                          >
                             {c}
                           </SelectItem>
                         ))}
@@ -203,7 +212,7 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
                       type="number"
                       step="0.01"
                       value={dish.price}
-                      onChange={(e) => updateDish(index, "price", parseFloat(e.target.value))}
+                      onChange={e => updateDish(index, 'price', parseFloat(e.target.value))}
                       className="dark:bg-zinc-700 dark:text-white dark:border-zinc-600"
                     />
                   </div>
@@ -212,8 +221,11 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
                 <div className="space-y-2">
                   <Label className="dark:text-white">Allergens</Label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {ALLERGENS.map((a) => (
-                      <label key={a} className="flex items-center space-x-2">
+                    {ALLERGENS.map(a => (
+                      <label
+                        key={a}
+                        className="flex items-center space-x-2"
+                      >
                         <Checkbox
                           checked={dish.allergens.includes(a)}
                           onCheckedChange={() => toggleAllergen(index, a)}
@@ -227,12 +239,21 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
             ))}
           </div>
 
-          <Button onClick={addDish} className="w-full flex items-center gap-2" disabled={isSubmitting}>
+          <Button
+            onClick={addDish}
+            className="w-full flex items-center gap-2"
+            disabled={isSubmitting}
+          >
             <Plus className="h-4 w-4" /> Add Dish
           </Button>
 
-          <Button onClick={handleSubmit} className="w-full mt-2" variant="default" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit Menu"}
+          <Button
+            onClick={handleSubmit}
+            className="w-full mt-2"
+            variant="default"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Menu'}
           </Button>
         </CardContent>
       </Card>
