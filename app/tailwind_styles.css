@@ -1,11 +1,11 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @theme {
-    --breakpoint-3xs: 16rem; /* 256px */
-    --breakpoint-2xs: 18rem; /* 288px */
-    --breakpoint-xs: 20rem;  /* 320px */
-    --breakpoint-osm1: 28rem; /* 448px - "our small, 1" */
-    --color-jcablue: #009de0;
-    --color-brightjcablue: #28b9f7;
+  --breakpoint-3xs: 16rem; /* 256px */
+  --breakpoint-2xs: 18rem; /* 288px */
+  --breakpoint-xs: 20rem; /* 320px */
+  --breakpoint-osm1: 28rem; /* 448px - "our small, 1" */
+  --color-jcablue: #009de0;
+  --color-brightjcablue: #28b9f7;
 }
