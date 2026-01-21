@@ -8,24 +8,23 @@ type UploadOptionCardProps = {
 };
 
 export function UploadOptionCard({ Icon, label, onClick }: UploadOptionCardProps) {
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      className="
-        flex h-[150px] w-[180px] flex-col items-center justify-center
-        rounded-[10px] border-[1px] border-[#009DE0] bg-[#1B1B1B]
-        shadow-sm hover:bg-[#262626]
-      "
-      onClick={onClick}
-    >
-      <Icon
-        style={{ width: 60, height: 60 }}
-        strokeWidth={2}
-        className="text-white translate-y-[3px]"
-      />
-
-      <span className="mt-[-4px] font-light text-[20px] text-[#009DE0] leading-tight">{label}</span>
-    </Button>
-  );
+    return (
+        <Button
+            type="button"
+            variant="outline"
+            className="flex h-[150px] w-[180px] flex-col items-center justify-center rounded-[10px] border-2 border-[#009DE0] shadow-sm transition-colors
+                bg-white text-[#009DE0] hover:bg-zinc-100
+                dark:bg-zinc-900 dark:text-[#009DE0] dark:border-[#009DE0] dark:hover:bg-zinc-800"
+            onClick={onClick}
+        >
+            <Icon
+                style={{ width: 60, height: 60 }}
+                strokeWidth={2}
+                className="translate-y-[3px]"
+            />
+            <span className="mt-[-4px] font-light text-[20px] leading-tight">
+                {label}
+            </span>
+        </Button>
+    )
 }
