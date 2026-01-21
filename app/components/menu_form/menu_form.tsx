@@ -1,37 +1,51 @@
-import React, { useState } from 'react';
-import { useKeycloak } from '@react-keycloak/web';
-import { Card, CardContent, CardHeader, CardTitle } from '~/shadcn/components/ui/card';
-import { Button } from '~/shadcn/components/ui/button';
-import { Input } from '~/shadcn/components/ui/input';
-import { Label } from '~/shadcn/components/ui/label';
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useKeycloak } from "@react-keycloak/web";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '~/shadcn/components/ui/select';
-import { Checkbox } from '~/shadcn/components/ui/checkbox';
-import { Plus, Trash } from 'lucide-react';
-import { Alert, AlertTitle, AlertDescription } from '~/shadcn/components/ui/alert';
-import { type DishDTO } from '~/interfaces';
-import { useUpdateDailyMenuWithToken } from '~/api/menu_service';
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle
+} from "~/shadcn/components/ui/card";
+import { Button } from "~/shadcn/components/ui/button"
+import { Input } from "~/shadcn/components/ui/input";
+import { Label } from "~/shadcn/components/ui/label";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem
+} from "~/shadcn/components/ui/select";
+import { Checkbox } from "~/shadcn/components/ui/checkbox";
+import { Plus, Trash } from "lucide-react";
+import {
+    Alert,
+    AlertTitle,
+    AlertDescription
+} from "~/shadcn/components/ui/alert";
+import { type DishDTO } from "~/interfaces";
+import { useUpdateDailyMenuWithToken } from "~/api/menu_service";
+import { useRestaurantStore } from "~/store/restaurant_store";
 
-const ALLERGENS = ['GLUTEN', 'LACTOSE', 'MEAT'];
+const ALLERGENS = [
+  "GLUTEN",
+  "LACTOSE",
+  "MEAT"
+];
 
-const CATEGORIES = ['SOUP', 'MAIN_COURSE'];
+const CATEGORIES = ["SOUP", "MAIN_COURSE"];
 
-export function DailyMenuForm({
-  restaurantId,
-  userId,
-  token,
-}: {
-  restaurantId: string;
-  userId: string;
-  token: string;
-}) {
-  const [date, setDate] = useState('');
+export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: string; userId: string; token: string }) {
+  const { menuFormSuccess, setMenuFormSuccess, setSelectedRestaurant } = useRestaurantStore();
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    if (menuFormSuccess) {
+      navigate(`/menu?restaurantId=${restaurantId}`);
+      setMenuFormSuccess(false);
+    }
+  }, [menuFormSuccess, navigate, restaurantId, setMenuFormSuccess]);
+  const [date, setDate] = useState("");
   const [dishes, setDishes] = useState<DishDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,49 +93,42 @@ export function DailyMenuForm({
   };
 
   const handleSubmit = async () => {
-    const validationError = validateDishes();
+      const validationError = validateDishes();
 
-    if (validationError) {
-      setError(validationError);
-      setTimeout(
-        () =>
-          errorRef.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-          }),
-        50
-      );
-      return;
-    }
+      if (validationError) {
+        setError(validationError);
+        setTimeout(() => errorRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        }), 50);
+        return;
+      }
 
-    setError(null);
-    setIsSubmitting(true);
+      setError(null);
+      setIsSubmitting(true);
 
-    try {
-      await updateMenu.mutateAsync({
-        restaurantId,
-        menu: {
-          date,
-          dishes,
-        },
-      });
-      alert('Menu updated successfully!');
-      // Reset form
-      setDishes([]);
-      setDate('');
-    } catch (err: any) {
-      setError(err.message || 'Failed to update menu.');
-      setTimeout(
-        () =>
-          errorRef.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-          }),
-        50
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+      try {
+        await updateMenu.mutateAsync({
+          restaurantId,
+          menu: {
+            date,
+            dishes
+          }
+        });
+        // Reset form
+        setDishes([]);
+        setDate("");
+        setSelectedRestaurant({ id: restaurantId }); 
+        setMenuFormSuccess(true);
+      } catch (err: any) {
+        setError(err.message || "Failed to update menu.");
+        setTimeout(() => errorRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        }), 50);
+      } finally {
+        setIsSubmitting(false);
+      }
   };
 
   return (
