@@ -6,7 +6,7 @@ interface VendingMachineTileProps {
 
 export function VendingMachineTile({ description }: VendingMachineTileProps) {
   return (
-    <div className="w-[227px] h-[148px] rounded-xl overflow-hidden flex flex-col bg-black">
+    <div className="w-[227px] h-[148px] rounded-xl overflow-hidden flex flex-col bg-white border-1 border-[#000000]">
       <div className="flex-1 bg-white" />
 
       <div className="bg-[#1B1B1B] px-3 py-2">

@@ -31,38 +31,41 @@ export function SectionCarousel({ items, variant }: SectionCarouselProps) {
 
   return (
     <div className="flex justify-center">
-      <Carousel
-        className="w-full"
-        opts={{ align: 'start', loop: true }}
-      >
-        <CarouselContent>
-          {items.map((item, index) => (
-            <CarouselItem
-              key={item.id ?? index}
-              className={'basis-1/2 sm:basis-1/3'}
-            >
-              <div className="py-1 flex justify-center">
-                {variant === 'restaurant' ? (
-                  <RestaurantTile
-                    name={item.name}
-                    description={item.description}
-                    openNow={item.openNow}
-                    onClick={() => {
-                      // show the FacilityInfo modal on top of the overview
-                      setSelectedPoint(item);
-                    }}
-                  />
-                ) : (
-                  <VendingMachineTile description={item.description} />
-                )}
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+      <div className="relative w-full">
+        <Carousel
+          className="w-full"
+          opts={{ align: 'start', loop: false }}
+        >
+          <CarouselContent>
+            {items.map((item, index) => (
+              <CarouselItem
+                key={item.id ?? index}
+                className={'basis-64'}
+              >
+                <div className="py-1 flex justify-center">
+                  {variant === 'restaurant' ? (
+                    <RestaurantTile
+                      name={item.name}
+                      description={item.description}
+                      openNow={item.openNow}
+                      onClick={() => {
+                        // show the FacilityInfo modal on top of the overview
+                        setSelectedPoint(item);
+                      }}
+                    />
+                  ) : (
+                    <VendingMachineTile description={item.description} />
+                  )}
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
 
-        {/*<CarouselPrevious />*/}
-        {/*<CarouselNext />*/}
-      </Carousel>
+          {/*<CarouselPrevious />*/}
+          {/*<CarouselNext />*/}
+        </Carousel>
+        <div className="absolute right-0 top-0 bottom-0 w-[50px] pointer-events-none gradientbp:bg-gradient-to-r gradientbp::from-transparent gradientbp:via-white/100 gradientbp:via-30% gradientbp:to-white dark:via-zinc-950/70 dark:to-zinc-950" />
+      </div>
       {selectedPoint && (
         <FacilityInfo
           selectedPoint={selectedPoint}
