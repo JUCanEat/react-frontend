@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface ErrorStateProps {
   message: string;
@@ -6,11 +7,8 @@ interface ErrorStateProps {
   backLabel?: string;
 }
 
-export function ErrorState({
-  message,
-  backPath = '/profile',
-  backLabel = 'Back to Profile',
-}: ErrorStateProps) {
+export function ErrorState({ message, backPath = '/profile', backLabel }: ErrorStateProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -30,7 +28,7 @@ export function ErrorState({
           className="w-full mt-4 px-4 py-2 rounded text-white font-medium"
           style={{ backgroundColor: '#1B1B1B' }}
         >
-          {backLabel}
+          {backLabel ?? t('staff.backToProfile')}
         </button>
       </div>
     </div>
@@ -43,11 +41,8 @@ interface EmptyStateProps {
   backLabel?: string;
 }
 
-export function EmptyState({
-  message,
-  backPath = '/profile',
-  backLabel = 'Back to Profile',
-}: EmptyStateProps) {
+export function EmptyState({ message, backPath = '/profile', backLabel }: EmptyStateProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -63,7 +58,7 @@ export function EmptyState({
         className="px-4 py-2 rounded text-white font-medium"
         style={{ backgroundColor: '#1B1B1B' }}
       >
-        {backLabel}
+        {backLabel ?? t('staff.backToProfile')}
       </button>
     </div>
   );

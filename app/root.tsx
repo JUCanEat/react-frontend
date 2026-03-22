@@ -6,9 +6,12 @@ import {
   Scripts,
   ScrollRestoration,
 } from 'react-router';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { Route } from './+types/root';
 import './tailwind_styles.css';
+import './i18n';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -61,7 +64,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 const queryClient = new QueryClient();
 
 export default function App() {
+  const { i18n } = useTranslation();
   const keycloak = getKeycloak();
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = i18n.language;
+    }
+  }, [i18n.language]);
 
   if (!keycloak) {
     return null;
@@ -82,14 +92,15 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = 'Oops!';
-  let details = 'An unexpected error occurred.';
+  const { t } = useTranslation();
+
+  let message = t('errors.oops');
+  let details = t('errors.unexpected');
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? '404' : 'Error';
-    details =
-      error.status === 404 ? 'The requested page could not be found.' : error.statusText || details;
+    message = error.status === 404 ? '404' : t('common.error');
+    details = error.status === 404 ? t('errors.notFound') : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;

@@ -4,6 +4,7 @@ import { Button } from '~/shadcn/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useRestaurantStore } from '~/store/restaurant_store';
 import type { FacilityInfoProps, Restaurant, Facility } from '~/interfaces';
+import { useTranslation } from 'react-i18next';
 
 import { Route, DollarSign, Smile } from 'lucide-react';
 
@@ -38,36 +39,9 @@ function CustomerSatisfaction() {
   );
 }
 
-const GetCustomerSatisfactionComponent = selectedPoint => {
-  {
-    /* TODO feature - gather and calculate customer satisfaction */
-  }
-  return (
-    <div className="flex items-center gap-1">
-      <Smile size={14} />
-      <p> 6.3 </p>
-    </div>
-  );
-};
-
-const GetOptionalGoToRestaurantButton = selectedPoint => {
-  if ('name' in selectedPoint) {
-    return (
-      <Button
-        onClick={() => (window.location.href = '/dishes')}
-        className="text-primary-foreground text-white"
-        variant="default"
-      >
-        {' '}
-        Go to {selectedPoint.name}
-      </Button>
-    );
-  }
-  return null;
-};
-
 export function FacilityInfo({ selectedPoint, onClose }: FacilityInfoProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const setSelectedRestaurant = useRestaurantStore(s => s.setSelectedRestaurant);
 
   if (!selectedPoint) return null;
@@ -91,7 +65,7 @@ export function FacilityInfo({ selectedPoint, onClose }: FacilityInfoProps) {
       >
         <div className="flex w-full max-w-sm items-center justify-between">
           <h3 className="text-lg font-semibold dark:text-white">
-            {isRestaurant ? (selectedPoint as Restaurant).name : 'Vending machine'}
+            {isRestaurant ? (selectedPoint as Restaurant).name : t('map.vendingMachine')}
           </h3>
           <CustomerSatisfaction />
           <PricingIcon selectedPoint={selectedPoint} />
@@ -100,7 +74,7 @@ export function FacilityInfo({ selectedPoint, onClose }: FacilityInfoProps) {
               className="dark:text-white"
               size={13}
             />
-            <p className="text-sm dark:text-white">Navigate</p>
+            <p className="text-sm dark:text-white">{t('map.navigate')}</p>
           </div>
         </div>
 
@@ -113,7 +87,7 @@ export function FacilityInfo({ selectedPoint, onClose }: FacilityInfoProps) {
               className="text-primary-foreground text-white"
               variant="default"
             >
-              Go to {(selectedPoint as Restaurant).name}
+              {t('map.goTo', { name: (selectedPoint as Restaurant).name })}
             </Button>
           )}
         </div>

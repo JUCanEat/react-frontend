@@ -12,9 +12,11 @@ import type { Dish } from '~/interfaces';
 import { useState } from 'react';
 import { useGetDailyMenu } from '~/api/menu_service';
 import { filterDishes } from '~/shadcn/lib/dish_filters';
+import { useTranslation } from 'react-i18next';
 
 export function DishListComponent({ restaurantId }: { restaurantId: string }) {
   const [filters, setFilters] = useState<FilterValue[]>([]);
+  const { t } = useTranslation();
 
   const { data, isLoading, error } = useGetDailyMenu(restaurantId);
 
@@ -42,7 +44,7 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
         >
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-            <p className="dark:text-white">Loading menu...</p>
+            <p className="dark:text-white">{t('menu.loadingMenu')}</p>
           </div>
         </div>
         <BottomNav page={'menu'} />
@@ -59,9 +61,11 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
           style={{ height: 'calc(100vh - 150px)' }}
         >
           <div className="text-center text-red-500 dark:text-red-400">
-            <p>Error loading menu:</p>
+            <p>{t('menu.errorLoadingMenu')}</p>
             <p className="text-sm mt-2">{error.message}</p>
-            <p className="text-xs mt-2 dark:text-gray-400">Restaurant ID: {restaurantId}</p>
+            <p className="text-xs mt-2 dark:text-gray-400">
+              {t('menu.restaurantId', { id: restaurantId })}
+            </p>
           </div>
         </div>
         <BottomNav page={'menu'} />
@@ -78,9 +82,9 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
           style={{ height: 'calc(100vh - 150px)' }}
         >
           <div className="text-center dark:text-white">
-            <p>No dishes available for this restaurant</p>
+            <p>{t('menu.noDishes')}</p>
             <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
-              Restaurant ID: {restaurantId}
+              {t('menu.restaurantId', { id: restaurantId })}
             </p>
           </div>
         </div>
