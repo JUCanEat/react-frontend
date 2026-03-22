@@ -1,12 +1,8 @@
-import { TopBar } from "~/components/shared/top_bar"
-import { DailyMenuForm } from "~/components/menu_form/menu_form"
-import { useKeycloak } from "@react-keycloak/web"
-import { useParams } from "react-router"
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "~/shadcn/components/ui/alert"
+import { TopBar } from '~/components/shared/top_bar';
+import { DailyMenuForm } from '~/components/menu_form/menu_form';
+import { useKeycloak } from '@react-keycloak/web';
+import { useParams } from 'react-router';
+import { Alert, AlertDescription, AlertTitle } from '~/shadcn/components/ui/alert';
 
 export default function DailyMenuPage() {
   const { keycloak, initialized } = useKeycloak();
@@ -18,7 +14,10 @@ export default function DailyMenuPage() {
     return (
       <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false}></TopBar>
-        <div className="w-full flex items-center justify-center dark:bg-zinc-950" style={{ height: "calc(100vh - 150px)"}}>
+        <div
+          className="w-full flex items-center justify-center dark:bg-zinc-950"
+          style={{ height: 'calc(100vh - 150px)' }}
+        >
           <div className="animate-spin dark:text-white">Loading authentication...</div>
         </div>
       </div>
@@ -46,7 +45,9 @@ export default function DailyMenuPage() {
         <div className="max-w-3xl mx-auto p-4 dark:bg-zinc-950">
           <Alert variant="destructive">
             <AlertTitle>Error</AlertTitle>
-            <AlertDescription>No restaurant specified. Please try again from your restaurant page.</AlertDescription>
+            <AlertDescription>
+              No restaurant specified. Please try again from your restaurant page.
+            </AlertDescription>
           </Alert>
         </div>
       </div>
@@ -54,11 +55,18 @@ export default function DailyMenuPage() {
   }
 
   return (
-      <div className="dark:bg-zinc-950">
-        <TopBar isLoginPage={false}></TopBar>
-        <div className = "w-full dark:bg-zinc-950" style={{ height: "calc(100vh - 150px)"}}>
-            <DailyMenuForm restaurantId={restaurantId} userId={userId || ""} token={keycloak.token}></DailyMenuForm>
-        </div>
+    <div className="dark:bg-zinc-950">
+      <TopBar isLoginPage={false}></TopBar>
+      <div
+        className="w-full dark:bg-zinc-950"
+        style={{ height: 'calc(100vh - 150px)' }}
+      >
+        <DailyMenuForm
+          restaurantId={restaurantId}
+          userId={userId || ''}
+          token={keycloak.token}
+        ></DailyMenuForm>
       </div>
-    );
+    </div>
+  );
 }

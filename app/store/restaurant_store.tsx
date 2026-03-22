@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import type { Restaurant } from "~/interfaces";
+import { create } from 'zustand';
+import type { Restaurant } from '~/interfaces';
 
 interface RestaurantStore {
   selectedRestaurant: Restaurant | null;
@@ -8,7 +8,7 @@ interface RestaurantStore {
   setMenuFormSuccess: (success: boolean) => void;
 }
 
-export const useRestaurantStore = create<RestaurantStore>((set) => ({
+export const useRestaurantStore = create<RestaurantStore>(set => ({
   selectedRestaurant: null,
   setSelectedRestaurant: (restaurant) => set({ selectedRestaurant: restaurant }),
   menuFormSuccess: false,
