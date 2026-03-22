@@ -1,7 +1,7 @@
 // eg. contains "Restaurants" and "See All", ...
-import { BadgeCheckIcon, ChevronRightIcon } from "lucide-react"
+import { BadgeCheckIcon, ChevronRightIcon } from 'lucide-react';
 
-import { Button } from "~/shadcn/components/ui/button"
+import { Button } from '~/shadcn/components/ui/button';
 import {
   Item,
   ItemActions,
@@ -9,13 +9,18 @@ import {
   ItemDescription,
   ItemMedia,
   ItemTitle,
-} from "~/shadcn/components/ui/item"
+} from '~/shadcn/components/ui/item';
 
-export function ServiceSectionStripe({stripeTitle} : {stripeTitle: string}) {
+export function ServiceSectionStripe({ stripeTitle }: { stripeTitle: string }) {
   return (
     <div className="flex w-full max-w-full flex-col gap-2">
-      <Item variant="outline" border="none" size="xsm" rounded="rounded">
-        <ItemContent className={"dark:text-jcablue"}>
+      <Item
+        variant="outline"
+        border="none"
+        size="xsm"
+        rounded="rounded"
+      >
+        <ItemContent className={'dark:text-jcablue'}>
           <ItemTitle>{stripeTitle}</ItemTitle>
         </ItemContent>
         <ItemActions>
@@ -26,5 +31,5 @@ export function ServiceSectionStripe({stripeTitle} : {stripeTitle: string}) {
         </ItemActions>
       </Item>
     </div>
-  )
+  );
 }

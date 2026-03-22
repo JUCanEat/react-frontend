@@ -8,6 +8,8 @@ import { ErrorState, EmptyState } from "~/components/staff/common/error_state";
 import { StatusBanner } from "~/components/staff/common/status_banner";
 import { DishEditor } from "~/components/staff/menu/dish_editor";
 import { MenuActionButtons } from "~/components/staff/menu/menu_action_buttons";
+import { useRestaurantStore } from "~/store/restaurant_store";
+import { Card } from "~/shadcn/components/ui/card";
 
 interface StaffMenuDraftProps {
     restaurantId: string;
@@ -16,6 +18,7 @@ interface StaffMenuDraftProps {
 export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     const { keycloak } = useKeycloak();
     const navigate = useNavigate();
+    const { menuFormSuccess, setMenuFormSuccess, setSelectedRestaurant } = useRestaurantStore();
     const [loading, setLoading] = React.useState(true);
     const [saving, setSaving] = React.useState(false);
     const [menu, setMenu] = React.useState<DailyMenu | null>(null);
@@ -38,6 +41,13 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
 
         fetchDraft();
     }, [keycloak.token, restaurantId]);
+
+    React.useEffect(() => {
+        if (menuFormSuccess) {
+            navigate(`/menu?restaurantId=${restaurantId}`);
+            setMenuFormSuccess(false);
+        }
+    }, [menuFormSuccess, navigate, restaurantId, setMenuFormSuccess]);
 
     const handleDishChange = (index: number, field: keyof Dish, value: any) => {
         if (!menu || !menu.dishes) return;
@@ -85,9 +95,8 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
 
         try {
             await menuService.approveMenu(restaurantId, menu, keycloak.token);
-            setTimeout(() => {
-                navigate(`/menu?restaurantId=${restaurantId}`);
-            }, 1500);
+            setSelectedRestaurant({ id: restaurantId });
+            setMenuFormSuccess(true);
         } catch (error) {
             console.error("Failed to approve menu:", error);
             setError("Failed to approve menu. Please try again.");
@@ -108,35 +117,34 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     }
 
     return (
-        <div className="w-full min-h-screen bg-white p-4">
-            <div className="max-w-4xl mx-auto">
-                {saving && <StatusBanner type="success" message="Approving menu..." showSpinner />}
-                {error && menu && <StatusBanner type="error" message={error} />}
-
-                <h1 className="text-2xl font-semibold mb-6" style={{ color: '#1B1B1B' }}>
-                    Review Menu Draft
-                </h1>
-
-                <div className="space-y-4">
-                    {menu.dishes.map((dish, index) => (
-                        <DishEditor
-                            key={index}
-                            dish={dish}
-                            index={index}
-                            onDishChange={handleDishChange}
-                            onAllergenToggle={handleAllergenToggle}
-                            onRemove={handleRemoveDish}
+            <div className="w-full min-h-screen bg-white dark:bg-zinc-950 p-4">
+                <div className="max-w-4xl mx-auto">
+                    {saving && <StatusBanner type="success" message="Approving menu..." showSpinner />}
+                    {error && menu && <StatusBanner type="error" message={error} />}
+                    <Card className="p-6 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 shadow-md">
+                        <h1 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
+                            Review Menu Draft
+                        </h1>
+                        <div className="space-y-4">
+                            {menu.dishes.map((dish, index) => (
+                                <DishEditor
+                                    key={index}
+                                    dish={dish}
+                                    index={index}
+                                    onDishChange={handleDishChange}
+                                    onAllergenToggle={handleAllergenToggle}
+                                    onRemove={handleRemoveDish}
+                                />
+                            ))}
+                        </div>
+                        <MenuActionButtons
+                            onApprove={handleApprove}
+                            onCancel={() => navigate("/profile")}
+                            isApproving={saving}
+                            isDisabled={menu.dishes.length === 0}
                         />
-                    ))}
+                    </Card>
                 </div>
-
-                <MenuActionButtons
-                    onApprove={handleApprove}
-                    onCancel={() => navigate("/profile")}
-                    isApproving={saving}
-                    isDisabled={menu.dishes.length === 0}
-                />
             </div>
-        </div>
     );
 }
