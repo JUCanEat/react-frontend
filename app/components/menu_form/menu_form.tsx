@@ -135,107 +135,108 @@ export function DailyMenuForm({ restaurantId, userId, token }: { restaurantId: s
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4 space-y-6 dark:bg-zinc-950">
-    {error && (
-      <div ref={errorRef}>
-        <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
+    <div className="relative min-h-screen bg-white dark:bg-zinc-950">
+      <div className="max-w-3xl mx-auto p-4">
+        <Button
+          variant="outline"
+          className="mb-6 w-fit bg-white text-gray-900 hover:bg-zinc-100 dark:bg-white dark:text- dark:hover:bg-zinc-200"
+          onClick={() => navigate(-1)}
+          >
+           ← Go Back
+        </Button>
+        {error && (
+          <div ref={errorRef}>
+            <Alert variant="destructive">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </div>
+        )}
+        <Card className="shadow-md rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700">
+          <CardHeader>
+            <CardTitle className="text-xl text-gray-900 dark:text-white">Create Daily Menu</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col space-y-2">
+              <Label className="text-gray-900 dark:text-white">Date</Label>
+              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-white dark:bg-zinc-800 text-gray-900 dark:text-white border-gray-300 dark:border-zinc-700" />
+            </div>
+            <div className="space-y-4">
+              {dishes.map((dish, index) => (
+                <Card key={index} className="p-4 border-2 border-[#009DE0] shadow-sm hover:shadow-md transition-shadow bg-gray-100 dark:bg-zinc-100/10">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Dish {index + 1}</h3>
+                    <Button variant="destructive" size="icon" onClick={() => removeDish(index)}>
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col space-y-2">
+                      <Label className="text-gray-900 dark:text-white">Name</Label>
+                      <Input
+                        value={dish.name}
+                        onChange={(e) => updateDish(index, "name", e.target.value)}
+                        className="bg-white dark:bg-zinc-800 text-gray-900 dark:text-white border-gray-300 dark:border-zinc-700"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-2">
+                      <Label className="text-gray-900 dark:text-white">Category</Label>
+                      <Select
+                        onValueChange={(v) => updateDish(index, "category", v)}
+                        value={dish.category}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CATEGORIES.map((c) => (
+                            <SelectItem key={c} value={c}>
+                              {c}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex flex-col space-y-2">
+                      <Label className="text-gray-900 dark:text-white">Price</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={dish.price}
+                        onChange={(e) => updateDish(index, "price", parseFloat(e.target.value))}
+                        className="bg-white dark:bg-zinc-800 text-gray-900 dark:text-white border-gray-300 dark:border-zinc-700"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-900 dark:text-white">Allergens</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {ALLERGENS.map((a) => (
+                        <label key={a} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={dish.allergens.includes(a)}
+                            onCheckedChange={() => toggleAllergen(index, a)}
+                          />
+                          <span className="text-sm text-gray-900 dark:text-white">{a}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+            <Button onClick={addDish} className="w-full flex items-center gap-2" disabled={isSubmitting}>
+              <Plus className="h-4 w-4" /> Add Dish
+            </Button>
+            <Button onClick={handleSubmit} className="w-full mt-2" variant="default" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit Menu"}
+            </Button>
+          </CardContent>
+        </Card>
       </div>
-    )}
-
-      <Card className="shadow-md rounded-2xl dark:bg-zinc-900">
-        <CardHeader>
-          <CardTitle className="text-xl dark:text-white">Create Daily Menu</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col space-y-2">
-            <Label className="dark:text-white">Date</Label>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="dark:bg-zinc-800 dark:text-white dark:border-zinc-700" />
-          </div>
-
-          <div className="space-y-4">
-            {dishes.map((dish, index) => (
-              <div
-                key={index}
-                className="p-4 border rounded-xl space-y-4 bg-gray-50 dark:bg-zinc-800 dark:border-zinc-700"
-              >
-                <div className="flex justify-between items-center">
-                  <h3 className="font-semibold dark:text-white">Dish {index + 1}</h3>
-                  <Button variant="destructive" size="icon" onClick={() => removeDish(index)}>
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col space-y-2">
-                    <Label className="dark:text-white">Name</Label>
-                    <Input
-                      value={dish.name}
-                      onChange={(e) => updateDish(index, "name", e.target.value)}
-                      className="dark:bg-zinc-700 dark:text-white dark:border-zinc-600"
-                    />
-                  </div>
-
-                  <div className="flex flex-col space-y-2">
-                    <Label className="dark:text-white">Category</Label>
-                    <Select
-                      onValueChange={(v) => updateDish(index, "category", v)}
-                      value={dish.category}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CATEGORIES.map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex flex-col space-y-2">
-                    <Label className="dark:text-white">Price</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={dish.price}
-                      onChange={(e) => updateDish(index, "price", parseFloat(e.target.value))}
-                      className="dark:bg-zinc-700 dark:text-white dark:border-zinc-600"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="dark:text-white">Allergens</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {ALLERGENS.map((a) => (
-                      <label key={a} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={dish.allergens.includes(a)}
-                          onCheckedChange={() => toggleAllergen(index, a)}
-                        />
-                        <span className="text-sm dark:text-white">{a}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <Button onClick={addDish} className="w-full flex items-center gap-2" disabled={isSubmitting}>
-            <Plus className="h-4 w-4" /> Add Dish
-          </Button>
-
-          <Button onClick={handleSubmit} className="w-full mt-2" variant="default" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit Menu"}
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="fixed bottom-0 left-0 w-full z-50">
+        {/* Navigation bar here if needed */}
+      </div>
     </div>
   );
 }
