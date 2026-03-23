@@ -7,16 +7,17 @@ import DrinksIcon from '~/assets/food_category_icons/drinks.svg';
 import BreakfastIcon from '~/assets/food_category_icons/breakfast.svg';
 import BurgerIcon from '~/assets/food_category_icons/burger.svg';
 import SnackIcon from '~/assets/food_category_icons/snack.svg';
+import { useTranslation } from 'react-i18next';
 
 const categories = [
-  { id: 'breakfast', label: 'Breakfast', icon: BreakfastIcon, color: '#7E4B4C' },
-  { id: 'burger', label: 'Burger', icon: BurgerIcon, color: '#313C53' },
-  { id: 'main', label: 'Main Courses', icon: MainIcon, color: '#445142' },
-  { id: 'soups', label: 'Soups', icon: SoupsIcon, color: '#7592A1' },
-  { id: 'pizza', label: 'Pizza', icon: PizzaIcon, color: '#503E62' },
-  { id: 'snack', label: 'Snack', icon: SnackIcon, color: '#927D5A' },
-  { id: 'desserts', label: 'Desserts', icon: DessertsIcon, color: '#AEA572' },
-  { id: 'drinks', label: 'Drinks', icon: DrinksIcon, color: '#325C55' },
+  { id: 'breakfast', labelKey: 'staff.categoryBreakfast', icon: BreakfastIcon, color: '#7E4B4C' },
+  { id: 'burger', labelKey: 'staff.categoryBurger', icon: BurgerIcon, color: '#313C53' },
+  { id: 'main', labelKey: 'staff.categoryMain', icon: MainIcon, color: '#445142' },
+  { id: 'soups', labelKey: 'staff.categorySoups', icon: SoupsIcon, color: '#7592A1' },
+  { id: 'pizza', labelKey: 'staff.categoryPizza', icon: PizzaIcon, color: '#503E62' },
+  { id: 'snack', labelKey: 'staff.categorySnack', icon: SnackIcon, color: '#927D5A' },
+  { id: 'desserts', labelKey: 'staff.categoryDesserts', icon: DessertsIcon, color: '#AEA572' },
+  { id: 'drinks', labelKey: 'staff.categoryDrinks', icon: DrinksIcon, color: '#325C55' },
 ];
 
 interface CategoryGridProps {
@@ -24,6 +25,7 @@ interface CategoryGridProps {
 }
 
 export function CategoryGrid({ onCategoryClick }: CategoryGridProps) {
+  const { t } = useTranslation();
   const rows = [];
   for (let i = 0; i < categories.length; i += 2) {
     rows.push(categories.slice(i, i + 2));
@@ -32,7 +34,7 @@ export function CategoryGrid({ onCategoryClick }: CategoryGridProps) {
   return (
     <>
       <div className="mb-6 text-center">
-        <p className="text-[20px] font-medium text-[#009DE0]">Change Manually</p>
+        <p className="text-[20px] font-medium text-[#009DE0]">{t('staff.changeManually')}</p>
       </div>
 
       <div className="flex flex-col items-center gap-y-[30px]">
@@ -45,7 +47,7 @@ export function CategoryGrid({ onCategoryClick }: CategoryGridProps) {
               <MealCategoryCard
                 key={category.id}
                 icon={category.icon}
-                label={category.label}
+                label={t(category.labelKey)}
                 color={category.color}
                 onClick={() => onCategoryClick(category.id)}
               />

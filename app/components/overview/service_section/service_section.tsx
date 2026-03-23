@@ -1,5 +1,6 @@
 // glues a "service_section_infostripe" atop a sequence of "service_vendors"
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { FilterValue } from '~/components/overview/filter_bar';
 import { SectionSkeleton } from '~/components/overview/service_section/section_skeleton';
@@ -24,6 +25,8 @@ interface ServiceSectionProps {
 }
 
 export function ServiceSection({ carouselItemSource, variant, filters = [] }: ServiceSectionProps) {
+  const { t } = useTranslation();
+
   if (variant === 'restaurant') {
     const { isPending, error, items } = useRestaurantItemsWithFilters({
       carouselItemSource,
@@ -39,7 +42,7 @@ export function ServiceSection({ carouselItemSource, variant, filters = [] }: Se
     }
 
     if (error) {
-      return <ErrorState message="Oops, something went wrong while loading restaurants." />;
+      return <ErrorState message={t('overview.loadingRestaurantsError')} />;
     }
 
     return (
@@ -61,7 +64,7 @@ export function ServiceSection({ carouselItemSource, variant, filters = [] }: Se
   }
 
   if (error || !data) {
-    return <ErrorState message="Oops, something went wrong while loading vending machines." />;
+    return <ErrorState message={t('overview.loadingVendingMachinesError')} />;
   }
 
   const items = Array.isArray(data) ? data : [];

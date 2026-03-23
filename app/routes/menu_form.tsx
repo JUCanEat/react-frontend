@@ -3,9 +3,11 @@ import { DailyMenuForm } from '~/components/menu_form/menu_form';
 import { useKeycloak } from '@react-keycloak/web';
 import { useParams } from 'react-router';
 import { Alert, AlertDescription, AlertTitle } from '~/shadcn/components/ui/alert';
+import { useTranslation } from 'react-i18next';
 
 export default function DailyMenuPage() {
   const { keycloak, initialized } = useKeycloak();
+  const { t } = useTranslation();
   const token = keycloak?.token;
   const userId = keycloak?.tokenParsed?.sub;
   const { restaurantId } = useParams<{ restaurantId: string }>();
@@ -18,7 +20,7 @@ export default function DailyMenuPage() {
           className="w-full flex items-center justify-center dark:bg-zinc-950"
           style={{ height: 'calc(100vh - 150px)' }}
         >
-          <div className="animate-spin dark:text-white">Loading authentication...</div>
+          <div className="animate-spin dark:text-white">{t('menuForm.loadingAuthentication')}</div>
         </div>
       </div>
     );
@@ -30,8 +32,8 @@ export default function DailyMenuPage() {
         <TopBar isLoginPage={false}></TopBar>
         <div className="max-w-3xl mx-auto p-4 dark:bg-zinc-950">
           <Alert variant="destructive">
-            <AlertTitle>Authentication required</AlertTitle>
-            <AlertDescription>Please log in to add a menu.</AlertDescription>
+            <AlertTitle>{t('menuForm.authenticationRequired')}</AlertTitle>
+            <AlertDescription>{t('menuForm.pleaseLoginToAddMenu')}</AlertDescription>
           </Alert>
         </div>
       </div>
@@ -44,10 +46,8 @@ export default function DailyMenuPage() {
         <TopBar isLoginPage={false}></TopBar>
         <div className="max-w-3xl mx-auto p-4 dark:bg-zinc-950">
           <Alert variant="destructive">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              No restaurant specified. Please try again from your restaurant page.
-            </AlertDescription>
+            <AlertTitle>{t('common.error')}</AlertTitle>
+            <AlertDescription>{t('menuForm.noRestaurantSpecified')}</AlertDescription>
           </Alert>
         </div>
       </div>

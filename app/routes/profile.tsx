@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import ProfileComponent from '~/components/profile/profile_component';
 import RestaurantOwnerProfile from '~/components/profile/restaurant_owner_profile';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileRoute() {
   const { keycloak, initialized } = useKeycloak();
+  const { t } = useTranslation();
   const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
@@ -15,7 +17,7 @@ export default function ProfileRoute() {
   }, [initialized, keycloak.tokenParsed]);
 
   if (!initialized) {
-    return <div>Loading...</div>;
+    return <div>{t('common.loading')}</div>;
   }
 
   if (isOwner) {

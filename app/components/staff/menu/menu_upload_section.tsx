@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { Camera, Upload } from 'lucide-react';
 import { UploadOptionCard } from '~/components/staff/menu/upload_option_card';
+import { useTranslation } from 'react-i18next';
 
 interface MenuUploadSectionProps {
   onFileSelect: (file: File) => void;
 }
 
 export function MenuUploadSection({ onFileSelect }: MenuUploadSectionProps) {
+  const { t } = useTranslation();
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const cameraInputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -50,11 +52,10 @@ export function MenuUploadSection({ onFileSelect }: MenuUploadSectionProps) {
         onChange={handleFileChange}
       />
 
-            <div className="mb-10 grid grid-cols-[auto_auto] justify-center gap-0">
-
+      <div className="mb-10 grid grid-cols-[auto_auto] justify-center gap-0">
         <UploadOptionCard
           Icon={Upload}
-          label="Upload File"
+          label={t('staff.uploadFile')}
           onClick={handleUploadFileClick}
         />
       </div>
