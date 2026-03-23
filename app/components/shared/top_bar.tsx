@@ -33,7 +33,10 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
             variant="logo"
             onClick={() => (window.location.href = '/')}
           >
-            <img src="/logo.svg" />
+            <img
+              className={'dark:invert'}
+              src="/logo.svg"
+            />
           </ItemMedia>
           <ItemContent>
             <ItemTitle>JU Can Eat</ItemTitle>

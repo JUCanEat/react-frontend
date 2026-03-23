@@ -18,7 +18,7 @@ export function OverviewComponent() {
   const [filters, setFilters] = React.useState<FilterValue[]>([]);
 
   return (
-    <div className={'flex justify-center'}>
+    <div className={'flex justify-center dark:bg-zinc-950'}>
       <div className={'dark:bg-zinc-950 max-w-3xl w-full'}>
         <TopBar isLoginPage={false} />
         <div className={'pt-5 pl-5 pr-5 dark:bg-zinc-950'}>
