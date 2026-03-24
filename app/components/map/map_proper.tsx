@@ -1,4 +1,5 @@
 import { useState, type CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
 import { zoom, mapStyles, type Place } from '~/components/map/map_config';
 
@@ -11,8 +12,12 @@ import { useGetAllRestaurants } from '~/api/restaurant_service';
 import { useGetAllVendingMachines } from '~/api/vending_machine_service';
 
 export function Map_proper() {
+  const { t, i18n } = useTranslation();
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<Facility | null>(null);
+
+  const mapsLanguage = i18n.language.startsWith('pl') ? 'pl' : 'en';
+  const mapsRegion = mapsLanguage === 'pl' ? 'PL' : 'US';
 
   const containerStyle: CSSProperties = {
     width: '100%',
@@ -26,11 +31,12 @@ export function Map_proper() {
   } = useGetAllVendingMachines();
   const { restaurantsPending, restaurantsError, data: restaurants } = useGetAllRestaurants();
 
-  if (restaurantsPending || vendingMachinesPending) return <p>Loading...</p>;
-  if (restaurantsError) return <p>Error loading restaurants</p>;
-  if (!restaurants || restaurants.length === 0) return <p>No restaurants found</p>;
-  if (vendingMachinesError) return <p>Error loading vending machines</p>;
-  if (!vendingMachines || vendingMachines.length === 0) return <p>No vending machines found</p>;
+  if (restaurantsPending || vendingMachinesPending) return <p>{t('map.loading')}</p>;
+  if (restaurantsError) return <p>{t('map.errorLoadingRestaurants')}</p>;
+  if (!restaurants || restaurants.length === 0) return <p>{t('map.noRestaurantsFound')}</p>;
+  if (vendingMachinesError) return <p>{t('map.errorLoadingVendingMachines')}</p>;
+  if (!vendingMachines || vendingMachines.length === 0)
+    return <p>{t('map.noVendingMachinesFound')}</p>;
 
   const lat = restaurants[0].location.latitude.value;
   const lng = restaurants[0].location.longitude.value;
@@ -47,7 +53,10 @@ export function Map_proper() {
   return (
     <div className="w-full h-full">
       <LoadScript
+        key={`google-maps-${mapsLanguage}`}
         googleMapsApiKey=""
+        language={mapsLanguage}
+        region={mapsRegion}
         onLoad={() => setMapsLoaded(true)}
       >
         {mapsLoaded && (

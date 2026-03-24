@@ -1,22 +1,26 @@
 import { TopBar } from '~/components/shared/top_bar';
 import { BottomNav } from '~/components/shared/bottom_nav';
 import { useKeycloak } from '@react-keycloak/web';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileComponent() {
   const { keycloak, initialized } = useKeycloak();
+  const { t } = useTranslation();
 
   if (!initialized) {
     return (
-      <div className="dark:bg-zinc-950">
+      <>
         <TopBar isLoginPage={false} />
         <div
           className="w-full flex items-center justify-center bg-white dark:bg-zinc-950"
           style={{ height: 'calc(100vh - 150px)' }}
         >
-          <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">Loading profile…</p>
+          <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
+            {t('profile.loadingProfile')}
+          </p>
         </div>
         <BottomNav />
-      </div>
+      </>
     );
   }
 
@@ -24,23 +28,23 @@ export default function ProfileComponent() {
 
   if (!token) {
     return (
-      <div className="dark:bg-zinc-950">
+      <>
         <TopBar isLoginPage={false} />
         <div
           className="w-full flex items-center justify-center bg-white dark:bg-zinc-950"
-          style={{ height: 'calc(100vh - 174px)' }}
+          style={{ height: 'calc(100vh - 150px)' }}
         >
           <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
-            You are not logged in
+            {t('profile.notLoggedIn')}
           </p>
         </div>
         <BottomNav />
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="dark:bg-zinc-950">
+    <>
       <TopBar isLoginPage={false} />
       <div
         className="w-full flex flex-col items-center justify-center gap-3 bg-white dark:bg-zinc-950"
@@ -55,6 +59,6 @@ export default function ProfileComponent() {
         </p>
       </div>
       <BottomNav />
-    </div>
+    </>
   );
 }

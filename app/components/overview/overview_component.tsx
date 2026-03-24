@@ -14,9 +14,10 @@ import { useGetAllVendingMachines } from '~/api/vending_machine_service';
 import * as React from 'react';
 import type { FilterValue } from '~/components/overview/filter_bar';
 
+import { useTranslation } from 'react-i18next';
 export function OverviewComponent() {
   const [filters, setFilters] = React.useState<FilterValue[]>([]);
-
+  const { t } = useTranslation();
   return (
     <div className={'flex justify-center dark:bg-zinc-950'}>
       <div className={'dark:bg-zinc-950 max-w-3xl w-full'}>
@@ -27,7 +28,7 @@ export function OverviewComponent() {
             style={{ height: 'calc(100vh - 200px)' }}
           >
             <div className={'pt-5'}>
-              <ServiceSectionStripe stripeTitle={'Restaurants'} />
+              <ServiceSectionStripe stripeTitle={t('overview.restaurants')} />
               <ServiceSection
                 carouselItemSource={useGetAllRestaurants}
                 variant="restaurant"
@@ -36,7 +37,7 @@ export function OverviewComponent() {
             </div>
 
             <div className={'pt-5'}>
-              <ServiceSectionStripe stripeTitle={'Vending Machines'} />
+              <ServiceSectionStripe stripeTitle={t('overview.vendingMachines')} />
               <ServiceSection
                 carouselItemSource={useGetAllVendingMachines}
                 variant="vending"
