@@ -9,18 +9,15 @@ export default function ProfileComponent() {
 
   if (!initialized) {
     return (
-      <>
+      <div className="min-h-screen flex flex-col bg-white dark:bg-zinc-950">
         <TopBar isLoginPage={false} />
-        <div
-          className="w-full flex items-center justify-center bg-white dark:bg-zinc-950"
-          style={{ height: 'calc(100vh - 150px)' }}
-        >
+        <div className="flex-1 flex items-center justify-center">
           <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
             {t('profile.loadingProfile')}
           </p>
         </div>
         <BottomNav />
-      </>
+      </div>
     );
   }
 
@@ -28,28 +25,22 @@ export default function ProfileComponent() {
 
   if (!token) {
     return (
-      <>
+      <div className="min-h-screen flex flex-col bg-white dark:bg-zinc-950">
         <TopBar isLoginPage={false} />
-        <div
-          className="w-full flex items-center justify-center bg-white dark:bg-zinc-950"
-          style={{ height: 'calc(100vh - 150px)' }}
-        >
+        <div className="flex-1 flex items-center justify-center">
           <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
             {t('profile.notLoggedIn')}
           </p>
         </div>
         <BottomNav />
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-white dark:bg-zinc-950">
       <TopBar isLoginPage={false} />
-      <div
-        className="w-full flex flex-col items-center justify-center gap-3 bg-white dark:bg-zinc-950"
-        style={{ height: 'calc(100vh - 150px)' }}
-      >
+      <div className="flex-1 flex flex-col items-center justify-center gap-3">
         <p className="text-lg font-semibold text-gray-900 dark:text-white">
           {token.given_name} {token.family_name}
         </p>
@@ -59,6 +50,6 @@ export default function ProfileComponent() {
         </p>
       </div>
       <BottomNav />
-    </>
+    </div>
   );
 }
