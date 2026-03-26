@@ -9,8 +9,11 @@ export default function ProfileComponent() {
         return (
             <>
                 <TopBar isLoginPage={false} />
-                <div className="w-full flex items-center justify-center bg-black" style={{ height: "calc(100vh - 150px)" }}>
-                    <p className="text-sm opacity-60">Loading profile…</p>
+                <div
+                    className="w-full flex items-center justify-center bg-white dark:bg-zinc-950"
+                    style={{ height: "calc(100vh - 150px)" }}
+                >
+                    <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">Loading profile…</p>
                 </div>
                 <BottomNav />
             </>
@@ -21,59 +24,39 @@ export default function ProfileComponent() {
 
     if (!token) {
         return (
-            <div className="flex flex-col h-screen w-full dark:bg-zinc-950">
+            <>
                 <TopBar isLoginPage={false} />
-                <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
-                    <p className="text-2xl font-semibold text-white">Your Profile</p>
-                    <p className="text-sm text-white opacity-50 mb-4">Log in or create an account to continue</p>
-                    <button
-                        className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white"
-                        style={{ backgroundColor: "#009DE0" }}
-                        onClick={() => keycloak.login({ redirectUri: window.location.origin + "/profile" })}
-                    >
-                        Log in
-                    </button>
-                    <button
-                        className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white"
-                        style={{ backgroundColor: "#1B1B1B" }}
-                        onClick={() => keycloak.register({ redirectUri: window.location.origin + "/profile" })}
-                    >
-                        Sign up
-                    </button>
+                <div
+                    className="w-full flex items-center justify-center bg-white dark:bg-zinc-950"
+                    style={{ height: "calc(100vh - 150px)" }}
+                >
+                    <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
+                        You are not logged in
+                    </p>
                 </div>
-                <BottomNav page={"profile"} />
-            </div>
+                <BottomNav />
+            </>
         );
     }
 
     return (
-        <div className="flex flex-col h-screen w-full dark:bg-zinc-950">
+        <>
             <TopBar isLoginPage={false} />
-            <div className="flex-1 flex items-center justify-center">
-                <div className="flex flex-col items-center gap-8 w-full max-w-sm px-6">
-
-                    <div className="flex flex-col items-center gap-1">
-                        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "#009DE0" }}>Name</p>
-                        <p className="text-2xl font-semibold text-white">{token.given_name} {token.family_name}</p>
-                    </div>
-
-                    <div className="w-full border-t border-white opacity-10" />
-
-                    <div className="flex flex-col items-center gap-1">
-                        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "#009DE0" }}>Username</p>
-                        <p className="text-lg text-white">@{token.preferred_username}</p>
-                    </div>
-
-                    <div className="w-full border-t border-white opacity-10" />
-
-                    <div className="flex flex-col items-center gap-1">
-                        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "#009DE0" }}>Email</p>
-                        <p className="text-lg text-white">{token.email}</p>
-                    </div>
-
-                </div>
+            <div
+                className="w-full flex flex-col items-center justify-center gap-3 bg-white dark:bg-zinc-950"
+                style={{ height: "calc(100vh - 150px)" }}
+            >
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {token.given_name} {token.family_name}
+                </p>
+                <p className="text-sm opacity-80 text-gray-800 dark:text-gray-300">
+                    {token.email}
+                </p>
+                <p className="text-sm opacity-60 text-gray-700 dark:text-gray-400">
+                    @{token.preferred_username}
+                </p>
             </div>
-            <BottomNav page={"profile"} />
-        </div>
+            <BottomNav />
+        </>
     );
 }
