@@ -325,7 +325,7 @@ function VerifyEmailPage({ kcContext }: { kcContext: KcContext & { pageId: "logi
                     </div>
                 )}
 
-                <p style={{ color: "#fff", textAlign: "center", marginBottom: "24px" }}>
+                <p style={{ color: "var(--text)", textAlign: "center", marginBottom: "24px" }}>
                     Check your inbox and click the verification link.
                 </p>
 
@@ -361,7 +361,7 @@ function DefaultPage({ kcContext }: { kcContext: KcContext }) {
         <div className="page">
             <div className="card">
                 <h1 className="title">JuCanEat</h1>
-                <p style={{ color: "#fff", textAlign: "center" }}>
+                <p style={{ color: "var(--text)", textAlign: "center" }}>
                     Page: {kcContext.pageId}
                 </p>
             </div>

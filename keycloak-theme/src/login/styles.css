@@ -4,16 +4,32 @@
 
 :root {
     --blue: #009DE0;
-    --black: #000000;
+    --bg: #000000;
     --white: #ffffff;
     --gray: #9ca3af;
+    --input-bg: #ffffff;
+    --input-color: #000000;
+    --text: #ffffff;
+    --error-color: #fecaca;
+    --req-color: #9ca3af;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg: #f8fafc;
+        --input-bg: #ffffff;
+        --input-color: #000000;
+        --text: #111827;
+        --error-color: #b91c1c;
+        --req-color: #6b7280;
+    }
 }
 
 body {
     margin: 0;
     padding: 0;
     font-family: Inter, system-ui, -apple-system, sans-serif;
-    background: var(--black);
+    background: var(--bg);
 }
 
 .page {
@@ -55,9 +71,9 @@ input {
     margin-top: 8px;
     padding: 14px 16px;
     border-radius: 12px;
-    background: var(--white);
+    background: var(--input-bg);
     border: none;
-    color: #000000;
+    color: var(--input-color);
     font-size: 15px;
 }
 
@@ -135,7 +151,7 @@ input:focus {
 
 .error {
     background: rgba(220, 38, 38, 0.15);
-    color: #fecaca;
+    color: var(--error-color);
     padding: 12px;
     border-radius: 12px;
     margin-bottom: 18px;
@@ -168,7 +184,7 @@ input:focus {
     align-items: center;
     gap: 6px;
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--req-color);
     transition: color 0.2s;
 }
 
