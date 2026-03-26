@@ -12,13 +12,14 @@ const stars = Array.from({ length: 80 }, (_, i) => ({
 
 export default function NotFound() {
     return (
-        <div className="flex flex-col h-screen w-full dark:bg-zinc-950" style={{ overflow: "hidden" }}>
+        <div className="flex flex-col h-screen w-full bg-sky-50 dark:bg-zinc-950" style={{ overflow: "hidden" }}>
             <TopBar isLoginPage={false} />
 
             <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }}>
                 {stars.map(star => (
                     <div
                         key={star.id}
+                        className="bg-zinc-400 dark:bg-white"
                         style={{
                             position: "absolute",
                             top: star.top,
@@ -26,7 +27,6 @@ export default function NotFound() {
                             width: star.size,
                             height: star.size,
                             borderRadius: "50%",
-                            backgroundColor: "white",
                             opacity: 0.8,
                             animation: `twinkle ${star.duration} ${star.delay} infinite alternate`,
                         }}
@@ -53,8 +53,8 @@ export default function NotFound() {
                 </div>
 
                 <p className="text-8xl font-bold mt-2" style={{ color: "#009DE0" }}>404</p>
-                <p className="text-xl font-semibold text-white">Lost in space</p>
-                <p className="text-sm text-white opacity-50 text-center">
+                <p className="text-xl font-semibold text-zinc-800 dark:text-white">Lost in space</p>
+                <p className="text-sm text-zinc-500 dark:text-white dark:opacity-50 text-center">
                     This page doesn't exist. Let's get you back to Earth.
                 </p>
 
