@@ -11,7 +11,7 @@ export function RestaurantTile({ name, description, openNow, onClick }: Restaura
   return (
     <div
       onClick={onClick}
-      className="w-[227px] h-[148px] rounded-xl overflow-hidden flex flex-col bg-black cursor-pointer"
+      className="w-[227px] h-[148px] rounded-xl overflow-hidden flex flex-col bg-white cursor-pointer border-1 border-[#000000]"
     >
       <div className="flex-1 bg-white" />
 
