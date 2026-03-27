@@ -1,150 +1,163 @@
-import * as React from "react";
-import { useKeycloak } from "@react-keycloak/web";
-import { useNavigate } from "react-router-dom";
-import { menuService } from "~/api/menu_service";
-import type { DailyMenu, Dish, Allergen } from "~/interfaces";
-import { LoadingSpinner } from "~/components/staff/common/loading_spinner";
-import { ErrorState, EmptyState } from "~/components/staff/common/error_state";
-import { StatusBanner } from "~/components/staff/common/status_banner";
-import { DishEditor } from "~/components/staff/menu/dish_editor";
-import { MenuActionButtons } from "~/components/staff/menu/menu_action_buttons";
-import { useRestaurantStore } from "~/store/restaurant_store";
-import { Card } from "~/shadcn/components/ui/card";
+import * as React from 'react';
+import { useKeycloak } from '@react-keycloak/web';
+import { useNavigate } from 'react-router-dom';
+import { menuService } from '~/api/menu_service';
+import type { DailyMenu, Dish, Allergen } from '~/interfaces';
+import { LoadingSpinner } from '~/components/staff/common/loading_spinner';
+import { ErrorState, EmptyState } from '~/components/staff/common/error_state';
+import { StatusBanner } from '~/components/staff/common/status_banner';
+import { DishEditor } from '~/components/staff/menu/dish_editor';
+import { MenuActionButtons } from '~/components/staff/menu/menu_action_buttons';
+import { useRestaurantStore } from '~/store/restaurant_store';
+import { Card } from '~/shadcn/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 interface StaffMenuDraftProps {
-    restaurantId: string;
+  restaurantId: string;
 }
 
 export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
-    const { keycloak } = useKeycloak();
-    const navigate = useNavigate();
-    const { menuFormSuccess, setMenuFormSuccess, setSelectedRestaurant } = useRestaurantStore();
-    const [loading, setLoading] = React.useState(true);
-    const [saving, setSaving] = React.useState(false);
-    const [menu, setMenu] = React.useState<DailyMenu | null>(null);
-    const [error, setError] = React.useState<string | null>(null);
+  const { keycloak } = useKeycloak();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { menuFormSuccess, setMenuFormSuccess, setSelectedRestaurant } = useRestaurantStore();
+  const [loading, setLoading] = React.useState(true);
+  const [saving, setSaving] = React.useState(false);
+  const [menu, setMenu] = React.useState<DailyMenu | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
 
-    React.useEffect(() => {
-        const fetchDraft = async () => {
-            if (!keycloak.token) return;
+  React.useEffect(() => {
+    const fetchDraft = async () => {
+      if (!keycloak.token) return;
 
-            try {
-                const draft = await menuService.getMenuDraft(restaurantId, keycloak.token);
-                setMenu(draft);
-            } catch (error) {
-                console.error("Failed to fetch draft:", error);
-                setError("Failed to load menu draft");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchDraft();
-    }, [keycloak.token, restaurantId]);
-
-    React.useEffect(() => {
-        if (menuFormSuccess) {
-            navigate(`/menu?restaurantId=${restaurantId}`);
-            setMenuFormSuccess(false);
-        }
-    }, [menuFormSuccess, navigate, restaurantId, setMenuFormSuccess]);
-
-    const handleDishChange = (index: number, field: keyof Dish, value: any) => {
-        if (!menu || !menu.dishes) return;
-
-        const updatedDishes = [...menu.dishes];
-        updatedDishes[index] = {
-            ...updatedDishes[index],
-            [field]: value,
-        };
-
-        setMenu({
-            ...menu,
-            dishes: updatedDishes,
-        });
+      try {
+        const draft = await menuService.getMenuDraft(restaurantId, keycloak.token);
+        setMenu(draft);
+      } catch (error) {
+        console.error('Failed to fetch draft:', error);
+        setError(t('staff.failedToLoadDraft'));
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleAllergenToggle = (dishIndex: number, allergen: Allergen) => {
-        if (!menu || !menu.dishes) return;
+    fetchDraft();
+  }, [keycloak.token, restaurantId]);
 
-        const dish = menu.dishes[dishIndex];
-        const allergens = dish.allergens || [];
-
-        const updatedAllergens = allergens.includes(allergen)
-            ? allergens.filter(a => a !== allergen)
-            : [...allergens, allergen];
-
-        handleDishChange(dishIndex, "allergens", updatedAllergens);
-    };
-
-    const handleRemoveDish = (index: number) => {
-        if (!menu || !menu.dishes) return;
-
-        const updatedDishes = menu.dishes.filter((_, i) => i !== index);
-        setMenu({
-            ...menu,
-            dishes: updatedDishes,
-        });
-    };
-
-    const handleApprove = async () => {
-        if (!menu || !keycloak.token) return;
-
-        setSaving(true);
-        setError(null);
-
-        try {
-            await menuService.approveMenu(restaurantId, menu, keycloak.token);
-            setSelectedRestaurant({ id: restaurantId });
-            setMenuFormSuccess(true);
-        } catch (error) {
-            console.error("Failed to approve menu:", error);
-            setError("Failed to approve menu. Please try again.");
-            setSaving(false);
-        }
-    };
-
-    if (loading) {
-        return <LoadingSpinner message="Loading draft..." />;
+  React.useEffect(() => {
+    if (menuFormSuccess) {
+      navigate(`/menu?restaurantId=${restaurantId}`);
+      setMenuFormSuccess(false);
     }
+  }, [menuFormSuccess, navigate, restaurantId, setMenuFormSuccess]);
 
-    if (error && !menu) {
-        return <ErrorState message={error} />;
+  const handleDishChange = (index: number, field: keyof Dish, value: any) => {
+    if (!menu || !menu.dishes) return;
+
+    const updatedDishes = [...menu.dishes];
+    updatedDishes[index] = {
+      ...updatedDishes[index],
+      [field]: value,
+    };
+
+    setMenu({
+      ...menu,
+      dishes: updatedDishes,
+    });
+  };
+
+  const handleAllergenToggle = (dishIndex: number, allergen: Allergen) => {
+    if (!menu || !menu.dishes) return;
+
+    const dish = menu.dishes[dishIndex];
+    const allergens = dish.allergens || [];
+
+    const updatedAllergens = allergens.includes(allergen)
+      ? allergens.filter(a => a !== allergen)
+      : [...allergens, allergen];
+
+    handleDishChange(dishIndex, 'allergens', updatedAllergens);
+  };
+
+  const handleRemoveDish = (index: number) => {
+    if (!menu || !menu.dishes) return;
+
+    const updatedDishes = menu.dishes.filter((_, i) => i !== index);
+    setMenu({
+      ...menu,
+      dishes: updatedDishes,
+    });
+  };
+
+  const handleApprove = async () => {
+    if (!menu || !keycloak.token) return;
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      await menuService.approveMenu(restaurantId, menu, keycloak.token);
+      setSelectedRestaurant({ id: restaurantId });
+      setMenuFormSuccess(true);
+    } catch (error) {
+      console.error('Failed to approve menu:', error);
+      setError(t('staff.failedToApproveMenu'));
+      setSaving(false);
     }
+  };
 
-    if (!menu || !menu.dishes) {
-        return <EmptyState message="No draft found" />;
-    }
+  if (loading) {
+    return <LoadingSpinner message={t('staff.loadingDraft')} />;
+  }
 
-    return (
-            <div className="w-full min-h-screen bg-white dark:bg-zinc-950 p-4">
-                <div className="max-w-4xl mx-auto">
-                    {saving && <StatusBanner type="success" message="Approving menu..." showSpinner />}
-                    {error && menu && <StatusBanner type="error" message={error} />}
-                    <Card className="p-6 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 shadow-md">
-                        <h1 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
-                            Review Menu Draft
-                        </h1>
-                        <div className="space-y-4">
-                            {menu.dishes.map((dish, index) => (
-                                <DishEditor
-                                    key={index}
-                                    dish={dish}
-                                    index={index}
-                                    onDishChange={handleDishChange}
-                                    onAllergenToggle={handleAllergenToggle}
-                                    onRemove={handleRemoveDish}
-                                />
-                            ))}
-                        </div>
-                        <MenuActionButtons
-                            onApprove={handleApprove}
-                            onCancel={() => navigate("/profile")}
-                            isApproving={saving}
-                            isDisabled={menu.dishes.length === 0}
-                        />
-                    </Card>
-                </div>
-            </div>
-    );
+  if (error && !menu) {
+    return <ErrorState message={error} />;
+  }
+
+  if (!menu || !menu.dishes) {
+    return <EmptyState message={t('staff.noDraftFound')} />;
+  }
+
+  return (
+    <div className="w-full min-h-screen bg-white dark:bg-zinc-950 p-4">
+      <div className="max-w-4xl mx-auto">
+        {saving && (
+          <StatusBanner
+            type="success"
+            message={t('staff.approvingMenu')}
+            showSpinner
+          />
+        )}
+        {error && menu && (
+          <StatusBanner
+            type="error"
+            message={error}
+          />
+        )}
+        <Card className="p-6 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 shadow-md">
+          <h1 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
+            {t('staff.reviewMenuDraft')}
+          </h1>
+          <div className="space-y-4">
+            {menu.dishes.map((dish, index) => (
+              <DishEditor
+                key={index}
+                dish={dish}
+                index={index}
+                onDishChange={handleDishChange}
+                onAllergenToggle={handleAllergenToggle}
+                onRemove={handleRemoveDish}
+              />
+            ))}
+          </div>
+          <MenuActionButtons
+            onApprove={handleApprove}
+            onCancel={() => navigate('/profile')}
+            isApproving={saving}
+            isDisabled={menu.dishes.length === 0}
+          />
+        </Card>
+      </div>
+    </div>
+  );
 }

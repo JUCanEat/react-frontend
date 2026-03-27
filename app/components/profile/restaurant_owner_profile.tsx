@@ -2,8 +2,9 @@ import { TopBar } from '~/components/shared/top_bar';
 import { BottomNav } from '~/components/shared/bottom_nav';
 import { useKeycloak } from '@react-keycloak/web';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import type { Restaurant } from '~/interfaces';
+import { useTranslation } from 'react-i18next';
 
 interface UserData {
   firstName: string;
@@ -23,6 +24,7 @@ interface CreateRestaurantData {
 
 export default function RestaurantOwnerProfile() {
   const { keycloak, initialized } = useKeycloak();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,7 +97,9 @@ export default function RestaurantOwnerProfile() {
           className="w-full flex items-center justify-center"
           style={{ height: 'calc(100vh - 150px)' }}
         >
-          <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">Loading profile…</p>
+          <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
+            {t('profile.loadingProfile')}
+          </p>
         </div>
         <div className="fixed bottom-0 left-0 w-full z-50">
           <BottomNav />
@@ -113,7 +117,7 @@ export default function RestaurantOwnerProfile() {
           style={{ height: 'calc(100vh - 150px)' }}
         >
           <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
-            Failed to load profile
+            {t('profile.failedToLoadProfile')}
           </p>
         </div>
         <div className="fixed bottom-0 left-0 w-full z-50">
@@ -139,18 +143,18 @@ export default function RestaurantOwnerProfile() {
     const lng = parseFloat(formData.longitude);
 
     if (isNaN(lat) || lat < -90 || lat > 90) {
-      errors.latitude = 'Latitude must be a number between -90 and 90';
+      errors.latitude = t('profile.validationLatitude');
     }
 
     if (isNaN(lng) || lng < -180 || lng > 180) {
-      errors.longitude = 'Longitude must be a number between -180 and 180';
+      errors.longitude = t('profile.validationLongitude');
     }
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const handleCreateRestaurant = async (e: React.FormEvent) => {
+  const handleCreateRestaurant = async (e: FormEvent) => {
     e.preventDefault();
     if (!keycloak.token) return;
 
@@ -197,11 +201,11 @@ export default function RestaurantOwnerProfile() {
       } else {
         const errorText = await response.text();
         console.error('Failed to create restaurant:', response.status, errorText);
-        alert('Failed to create restaurant. Please try again.');
+        alert(t('profile.failedToCreateRestaurant'));
       }
     } catch (error) {
       console.error('Error creating restaurant:', error);
-      alert('An error occurred while creating the restaurant.');
+      alert(t('profile.errorCreatingRestaurant'));
     } finally {
       setCreating(false);
     }
@@ -219,7 +223,7 @@ export default function RestaurantOwnerProfile() {
     setValidationErrors({});
   };
 
-  const handleUpdateRestaurant = async (e: React.FormEvent) => {
+  const handleUpdateRestaurant = async (e: FormEvent) => {
     e.preventDefault();
     if (!keycloak.token || !editingRestaurant) return;
 
@@ -271,11 +275,11 @@ export default function RestaurantOwnerProfile() {
       } else {
         const errorText = await response.text();
         console.error('Failed to update restaurant:', response.status, errorText);
-        alert('Failed to update restaurant. Please try again.');
+        alert(t('profile.failedToUpdateRestaurant'));
       }
     } catch (error) {
       console.error('Error updating restaurant:', error);
-      alert('An error occurred while updating the restaurant.');
+      alert(t('profile.errorUpdatingRestaurant'));
     } finally {
       setUpdating(false);
     }
@@ -303,18 +307,18 @@ export default function RestaurantOwnerProfile() {
           <div className="mt-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Your restaurants
+                {t('profile.yourRestaurants')}
               </h2>
               <button
                 onClick={() => setShowCreateForm(true)}
                 className="px-4 py-2 text-sm font-medium text-white bg-[#009DE0] rounded hover:bg-[#007bb8] transition-colors"
               >
-                + Add Restaurant
+                + {t('profile.addRestaurant')}
               </button>
             </div>
             {!userData.ownedRestaurants || userData.ownedRestaurants.length === 0 ? (
               <p className="text-center text-gray-900 dark:text-gray-300">
-                You don't have any restaurants yet.
+                {t('profile.noRestaurantsYet')}
               </p>
             ) : (
               <div className="space-y-3">
@@ -338,19 +342,19 @@ export default function RestaurantOwnerProfile() {
                         className="flex-1 px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
                         onClick={() => handleRestaurantSelect(restaurant.id)}
                       >
-                        Add menu from photo
+                        {t('profile.addMenuFromPhoto')}
                       </button>
                       <button
                         className="flex-1 px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
                         onClick={() => handleMenuFormSelect(restaurant.id)}
                       >
-                        Add manually
+                        {t('profile.addManually')}
                       </button>
                       <button
                         className="px-3 py-2 rounded text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-zinc-700 hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors"
                         onClick={() => handleEditRestaurant(restaurant)}
                       >
-                        Edit
+                        {t('profile.editRestaurant')}
                       </button>
                     </div>
                   </div>
@@ -365,7 +369,7 @@ export default function RestaurantOwnerProfile() {
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Create New Restaurant
+                      {t('profile.createNewRestaurant')}
                     </h3>
                     <button
                       onClick={() => setShowCreateForm(false)}
@@ -381,7 +385,7 @@ export default function RestaurantOwnerProfile() {
                   >
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Restaurant Name *
+                        {t('profile.restaurantNameRequired')}
                       </label>
                       <input
                         type="text"
@@ -396,7 +400,7 @@ export default function RestaurantOwnerProfile() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Description
+                        {t('profile.description')}
                       </label>
                       <textarea
                         value={createFormData.description}
@@ -411,7 +415,7 @@ export default function RestaurantOwnerProfile() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Latitude * (-90 to 90)
+                          {t('profile.latitudeLabel')}
                         </label>
                         <input
                           type="text"
@@ -437,7 +441,7 @@ export default function RestaurantOwnerProfile() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Longitude * (-180 to 180)
+                          {t('profile.longitudeLabel')}
                         </label>
                         <input
                           type="text"
@@ -465,7 +469,7 @@ export default function RestaurantOwnerProfile() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Photo URL
+                        {t('profile.photoUrl')}
                       </label>
                       <input
                         type="text"
@@ -484,14 +488,14 @@ export default function RestaurantOwnerProfile() {
                         onClick={() => setShowCreateForm(false)}
                         className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-zinc-700 rounded hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors"
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </button>
                       <button
                         type="submit"
                         disabled={creating}
                         className="flex-1 px-4 py-2 text-white bg-[#009DE0] rounded hover:bg-[#007bb8] disabled:bg-gray-400 transition-colors"
                       >
-                        {creating ? 'Creating...' : 'Create Restaurant'}
+                        {creating ? t('profile.creating') : t('profile.createRestaurant')}
                       </button>
                     </div>
                   </form>
@@ -506,7 +510,7 @@ export default function RestaurantOwnerProfile() {
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Edit Restaurant
+                      {t('profile.editRestaurantTitle')}
                     </h3>
                     <button
                       onClick={() => setEditingRestaurant(null)}
@@ -522,7 +526,7 @@ export default function RestaurantOwnerProfile() {
                   >
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Restaurant Name *
+                        {t('profile.restaurantNameRequired')}
                       </label>
                       <input
                         type="text"
@@ -535,7 +539,7 @@ export default function RestaurantOwnerProfile() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Description
+                        {t('profile.description')}
                       </label>
                       <textarea
                         value={editFormData.description}
@@ -550,7 +554,7 @@ export default function RestaurantOwnerProfile() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Latitude * (-90 to 90)
+                          {t('profile.latitudeLabel')}
                         </label>
                         <input
                           type="text"
@@ -576,7 +580,7 @@ export default function RestaurantOwnerProfile() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Longitude * (-180 to 180)
+                          {t('profile.longitudeLabel')}
                         </label>
                         <input
                           type="text"
@@ -604,7 +608,7 @@ export default function RestaurantOwnerProfile() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Photo URL
+                        {t('profile.photoUrl')}
                       </label>
                       <input
                         type="text"
@@ -623,14 +627,14 @@ export default function RestaurantOwnerProfile() {
                         onClick={() => setEditingRestaurant(null)}
                         className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-zinc-700 rounded hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors"
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </button>
                       <button
                         type="submit"
                         disabled={updating}
                         className="flex-1 px-4 py-2 text-white bg-[#009DE0] rounded hover:bg-[#007bb8] disabled:bg-gray-400 transition-colors"
                       >
-                        {updating ? 'Updating...' : 'Update Restaurant'}
+                        {updating ? t('profile.updating') : t('profile.updateRestaurant')}
                       </button>
                     </div>
                   </form>
