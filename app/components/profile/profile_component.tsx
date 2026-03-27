@@ -1,11 +1,9 @@
-import { TopBar } from '~/components/shared/top_bar';
-import { BottomNav } from '~/components/shared/bottom_nav';
-import { useKeycloak } from '@react-keycloak/web';
-import { useTranslation } from 'react-i18next';
+import { TopBar } from "~/components/shared/top_bar";
+import { BottomNav } from "~/components/shared/bottom_nav";
+import { useKeycloak } from "@react-keycloak/web";
 
 export default function ProfileComponent() {
-  const { keycloak, initialized } = useKeycloak();
-  const { t } = useTranslation();
+    const { keycloak, initialized } = useKeycloak();
 
     if (!initialized) {
         return (
@@ -47,7 +45,6 @@ export default function ProfileComponent() {
         );
     }
 
-  if (!token) {
     return (
         <div className="flex flex-col h-screen w-full bg-white dark:bg-zinc-950">
             <TopBar isLoginPage={false} />
@@ -78,24 +75,4 @@ export default function ProfileComponent() {
             <BottomNav page={"profile"} />
         </div>
     );
-  }
-
-  return (
-    <>
-      <TopBar isLoginPage={false} />
-      <div
-        className="w-full flex flex-col items-center justify-center gap-3 bg-white dark:bg-zinc-950"
-        style={{ height: 'calc(100vh - 150px)' }}
-      >
-        <p className="text-lg font-semibold text-gray-900 dark:text-white">
-          {token.given_name} {token.family_name}
-        </p>
-        <p className="text-sm opacity-80 text-gray-800 dark:text-gray-300">{token.email}</p>
-        <p className="text-sm opacity-60 text-gray-700 dark:text-gray-400">
-          @{token.preferred_username}
-        </p>
-      </div>
-      <BottomNav />
-    </>
-  );
 }
