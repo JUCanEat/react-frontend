@@ -19,9 +19,9 @@ export function OverviewComponent() {
   const [filters, setFilters] = React.useState<FilterValue[]>([]);
   const { t } = useTranslation();
   return (
-    <div className={'flex justify-center dark:bg-zinc-950 min-h-screen overflow-hidden'}>
-      <div className={'dark:bg-zinc-950 max-w-3xl w-full flex flex-col'}>
-        <TopBar isLoginPage={false} />
+    <div className={'w-full dark:bg-zinc-950 min-h-screen overflow-hidden flex flex-col'}>
+      <TopBar isLoginPage={false} />
+      <div className={'dark:bg-zinc-950 max-w-3xl w-full mx-auto flex-1 flex flex-col'}>
         <div className={'pt-5 pl-5 pr-5 dark:bg-zinc-950 flex-1 flex flex-col'}>
           <div className="flex-1">
             <div className={'pt-5'}>
