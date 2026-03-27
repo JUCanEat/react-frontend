@@ -5,6 +5,7 @@ export default [
     index('routes/overview.tsx'),
     route('staff/menu-from-photo/:restaurantId', 'routes/staff_menu_from_photo.tsx'),
     route('staff/menu-draft/:restaurantId', 'routes/staff_menu_draft.tsx'),
+    route('*', 'routes/not-found.tsx'),
   ]),
   route('login', 'routes/login.tsx'),
   route('profile', 'routes/profile.tsx'),
