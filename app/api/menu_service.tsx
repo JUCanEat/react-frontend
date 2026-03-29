@@ -1,13 +1,15 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { rootQueryUrl, menusEndpoint } from '~/root';
-import { apiGet } from '~/api/api';
 import type { DailyMenu, DailyMenuDTO } from '~/interfaces';
 import { getAccessToken } from '~/api/user_service';
+import i18n from '~/i18n';
 
 const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 const MENU_DRAFTS_STORAGE_KEY = 'jucaneat.menu.drafts.v1';
 
 export type MenuDraftSource = 'photo' | 'manual';
+export type MenuStatus = 'ACTIVE' | 'SCHEDULED' | string;
+export type PublishedMenu = DailyMenu & { status?: MenuStatus };
 
 export type StoredMenuDraft = {
   id: string;
@@ -60,14 +62,74 @@ function toStoredDraft(
   };
 }
 
+function getUiLanguageCode() {
+  return (i18n.language || 'en').split('-')[0].toLowerCase();
+}
+
+function mapLocalizedDishes(rawDishes: any[]): DailyMenu['dishes'] {
+  return (rawDishes || []).map((item: any) => {
+    const dishData = item?.dish ?? item;
+    return {
+      id: dishData?.id ?? '',
+      name: item?.displayName || dishData?.name || '',
+      description: dishData?.description || '',
+      image: dishData?.image || '',
+      category: dishData?.category || 'MAIN_COURSE',
+      price: String(item?.price ?? dishData?.price ?? '0'),
+      allergens: Array.isArray(dishData?.allergens) ? dishData.allergens : [],
+    } as any;
+  });
+}
+
+function mapMenuResponse(raw: any): DailyMenu {
+  return {
+    id: raw?.id ?? '',
+    date: raw?.date ?? '',
+    dishes: mapLocalizedDishes(raw?.dishes || []),
+  } as DailyMenu;
+}
+
+function normalizeMenuStatus(rawStatus?: string, date?: string): 'ACTIVE' | 'SCHEDULED' {
+  const normalized = (rawStatus || '').toUpperCase();
+  if (normalized === 'SCHEDULED') return 'SCHEDULED';
+  if (normalized === 'ACTIVE' || normalized === 'PUBLISHED') return 'ACTIVE';
+
+  if (date) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const menuDate = new Date(`${date.slice(0, 10)}T00:00:00`);
+    if (!Number.isNaN(menuDate.getTime()) && menuDate > today) {
+      return 'SCHEDULED';
+    }
+  }
+
+  return 'ACTIVE';
+}
+
 // React Query hooks
 export const useGetDailyMenu = (restaurantId: string) =>
-  apiGet<DailyMenu>('dailyMenu', `${rootQueryUrl}/${menusEndpoint}/${restaurantId}`);
+  useQuery<DailyMenu>({
+    queryKey: ['dailyMenu', restaurantId, i18n.language],
+    queryFn: async () => {
+      const currentLanguage = getUiLanguageCode();
+      const response = await fetch(
+        `${rootQueryUrl}/${menusEndpoint}/${restaurantId}/localized?language=${currentLanguage}`
+      );
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`API Error: ${response.status} - ${text}`);
+      }
+      const data = await response.json();
+
+      return mapMenuResponse(data);
+    },
+  });
 
 export const useUpdateDailyMenu = () =>
   useMutation({
     mutationFn: async ({ restaurantId, menu }: { restaurantId: string; menu: any }) => {
       const token = getAccessToken();
+      const currentLanguage = getUiLanguageCode();
 
       if (!token) {
         throw new Error('No authentication token available. Please login first.');
@@ -78,6 +140,7 @@ export const useUpdateDailyMenu = () =>
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
+          'Accept-Language': currentLanguage,
         },
         body: JSON.stringify(menu),
       });
@@ -99,11 +162,14 @@ export const useUpdateDailyMenuWithToken = (token: string) =>
         throw new Error('No authentication token available. Please login first.');
       }
 
+      const currentLanguage = getUiLanguageCode();
+
       const response = await fetch(`${rootQueryUrl}/${menusEndpoint}/${restaurantId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
+          'Accept-Language': currentLanguage,
         },
         body: JSON.stringify(menu),
       });
@@ -157,10 +223,65 @@ export const menuService = {
   },
 
   hasActiveMenuForDate: async (restaurantId: string, date: string): Promise<boolean> => {
-    const activeMenu = await menuService.getActiveMenu(restaurantId);
-    if (!activeMenu?.date) return false;
+    const menus = await menuService.getPublishedMenus(restaurantId);
+    const normalizedDate = date.slice(0, 10);
 
-    return activeMenu.date.slice(0, 10) === date.slice(0, 10);
+    return menus.some(menu => {
+      if (!menu?.date) return false;
+      const status = (menu.status ?? 'ACTIVE').toString().toUpperCase();
+      const isBlockingStatus =
+        status === 'ACTIVE' || status === 'SCHEDULED' || status === 'PUBLISHED';
+      return isBlockingStatus && menu.date.slice(0, 10) === normalizedDate;
+    });
+  },
+
+  getPublishedMenus: async (restaurantId: string): Promise<PublishedMenu[]> => {
+    try {
+      const token = getAccessToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const currentLanguage = getUiLanguageCode();
+
+      const response = await fetch(
+        `${API_BASE_URL}/menus/${restaurantId}/planned/localized?language=${currentLanguage}`,
+        {
+          headers,
+        }
+      );
+
+      if (response.status === 404) {
+        return [];
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        const list = Array.isArray(data) ? data : data?.menus;
+
+        if (Array.isArray(list)) {
+          return list.map((item: any) => ({
+            ...mapMenuResponse(item),
+            status: normalizeMenuStatus(item?.status, item?.date),
+          })) as PublishedMenu[];
+        }
+
+        return [];
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching published menus:', err);
+      // Fallback below.
+    }
+
+    const activeMenu = await menuService.getActiveMenu(restaurantId);
+    if (!activeMenu) return [];
+
+    return [{ ...activeMenu, status: 'ACTIVE' }];
   },
 
   uploadMenuImage: async (restaurantId: string, imageFile: File, token: string): Promise<void> => {
@@ -182,12 +303,17 @@ export const menuService = {
     }
   },
 
-  getMenuDraft: async (restaurantId: string, token: string): Promise<DailyMenu> => {
-    const response = await fetch(`${API_BASE_URL}/menus/${restaurantId}/draft`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  getMenuDraft: async (restaurantId: string, token: string): Promise<any> => {
+    const currentLanguage = getUiLanguageCode();
+    const response = await fetch(
+      `${API_BASE_URL}/menus/${restaurantId}/draft?language=${currentLanguage}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Accept-Language': currentLanguage,
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error('Failed to fetch menu draft');
@@ -199,10 +325,11 @@ export const menuService = {
   getManagedDraft: async (restaurantId: string, token: string): Promise<DailyMenuDTO | null> => {
     try {
       const serverDraft = await menuService.getMenuDraft(restaurantId, token);
+      const normalizedDraft = mapMenuResponse(serverDraft);
       return {
-        id: serverDraft.id,
-        date: serverDraft.date,
-        dishes: (serverDraft.dishes ?? []).map((dish: any) => ({
+        id: normalizedDraft.id,
+        date: normalizedDraft.date,
+        dishes: (normalizedDraft.dishes ?? []).map((dish: any) => ({
           id: dish.id,
           name: dish.name,
           category: dish.category ?? 'MAIN_COURSE',
@@ -230,11 +357,13 @@ export const menuService = {
     draftId?: string
   ): Promise<{ savedTo: 'backend' | 'local'; draftId?: string }> => {
     try {
+      const currentLanguage = getUiLanguageCode();
       const response = await fetch(`${API_BASE_URL}/menus/${restaurantId}/draft`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
+          'Accept-Language': currentLanguage,
         },
         body: JSON.stringify(menu),
       });
@@ -274,11 +403,13 @@ export const menuService = {
   },
 
   approveMenu: async (restaurantId: string, menu: DailyMenu, token: string): Promise<void> => {
+    const currentLanguage = getUiLanguageCode();
     const response = await fetch(`${API_BASE_URL}/menus/${restaurantId}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'Accept-Language': currentLanguage,
       },
       body: JSON.stringify(menu),
     });

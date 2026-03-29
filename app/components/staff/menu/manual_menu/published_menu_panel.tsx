@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
-import { menuService } from '~/api/menu_service';
+import { menuService, type PublishedMenu } from '~/api/menu_service';
 import type { DailyMenu, Dish, Allergen } from '~/interfaces';
 import { LoadingSpinner } from '~/components/staff/common/loading_spinner';
 import { ErrorState, EmptyState } from '~/components/staff/common/error_state';
@@ -12,7 +12,6 @@ import { MenuActionButtons } from '~/components/staff/menu/common/menu_action_bu
 import { Card } from '~/shadcn/components/ui/card';
 import { useRestaurantStore } from '~/store/restaurant_store';
 import { useTranslation } from 'react-i18next';
-import { menuRoutes } from '~/components/staff/menu/menu_routes';
 
 interface PublishedMenuPanelProps {
   restaurantId: string;
@@ -25,37 +24,80 @@ function isPastDate(dateString: string) {
   return selected < today;
 }
 
+function resolveStatusForSave(
+  status: string | undefined,
+  menuDate: string
+): 'ACTIVE' | 'SCHEDULED' {
+  const normalized = (status ?? '').toUpperCase();
+  if (normalized === 'SCHEDULED') return 'SCHEDULED';
+  if (normalized === 'ACTIVE' || normalized === 'PUBLISHED') return 'ACTIVE';
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(`${menuDate.slice(0, 10)}T00:00:00`);
+  return target > today ? 'SCHEDULED' : 'ACTIVE';
+}
+
 export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
   const { keycloak } = useKeycloak();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { setMenuFormSuccess, setSelectedRestaurant } = useRestaurantStore();
+  const { setSelectedRestaurant } = useRestaurantStore();
 
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [menu, setMenu] = React.useState<DailyMenu | null>(null);
+  const [originalMenu, setOriginalMenu] = React.useState<PublishedMenu | null>(null);
+  const [publishedMenus, setPublishedMenus] = React.useState<PublishedMenu[]>([]);
+  const [selectedMenuId, setSelectedMenuId] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
 
-  useEffect(() => {
-    const loadPublishedMenu = async () => {
-      try {
-        const activeMenu = await menuService.getActiveMenu(restaurantId);
+  const normalizeMenu = (item: PublishedMenu): DailyMenu => ({
+    ...item,
+    dishes: (item.dishes ?? []).map((dish: any) => ({
+      ...dish,
+      category: dish.category ?? 'MAIN_COURSE',
+      allergens: Array.isArray(dish.allergens) ? dish.allergens : [],
+      price: typeof dish.price === 'string' ? dish.price : String(dish.price ?? ''),
+    })),
+  });
 
-        if (!activeMenu) {
+  const getStatusLabel = (status?: string) => {
+    const normalized = (status ?? 'ACTIVE').toUpperCase();
+    if (normalized === 'SCHEDULED') return t('staff.menuStatusScheduled');
+    if (normalized === 'ACTIVE' || normalized === 'PUBLISHED') {
+      return t('staff.menuStatusPublished');
+    }
+    return t('staff.menuStatusUnknown');
+  };
+
+  const getStatusBadgeClass = (status?: string) => {
+    const normalized = (status ?? 'ACTIVE').toUpperCase();
+    if (normalized === 'SCHEDULED') {
+      return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
+    }
+    return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300';
+  };
+
+  useEffect(() => {
+    const loadPublishedMenus = async () => {
+      try {
+        const menus = await menuService.getPublishedMenus(restaurantId);
+        const sorted = [...menus].sort((a, b) => a.date.localeCompare(b.date));
+
+        setPublishedMenus(sorted);
+
+        if (sorted.length === 0) {
           setMenu(null);
+          setSelectedMenuId(null);
           return;
         }
 
-        setMenu({
-          ...activeMenu,
-          dishes: (activeMenu.dishes ?? []).map((dish: any) => ({
-            ...dish,
-            category: dish.category ?? 'MAIN_COURSE',
-            allergens: Array.isArray(dish.allergens) ? dish.allergens : [],
-            price: typeof dish.price === 'string' ? dish.price : String(dish.price ?? ''),
-          })),
-        });
+        const initial = sorted[0];
+        setSelectedMenuId(initial.id);
+        setMenu(normalizeMenu(initial));
+        setOriginalMenu(initial);
       } catch {
         setError(t('staff.failedToLoadPublishedMenu'));
       } finally {
@@ -63,8 +105,16 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
       }
     };
 
-    loadPublishedMenu();
-  }, [restaurantId, t]);
+    loadPublishedMenus();
+  }, [restaurantId, t, i18n.language]);
+
+  const handleSelectPublishedMenu = (menuItem: PublishedMenu) => {
+    setSelectedMenuId(menuItem.id);
+    setMenu(normalizeMenu(menuItem));
+    setOriginalMenu(menuItem);
+    setError(null);
+    setSuccess(null);
+  };
 
   const handleDishChange = (index: number, field: keyof Dish | 'category', value: any) => {
     if (!menu || !menu.dishes) return;
@@ -166,12 +216,31 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
         })),
       };
 
-      await menuService.approveMenu(restaurantId, payload, keycloak.token);
+      // Preserve or infer status so backend gets ACTIVE/SCHEDULED consistently.
+      const menuWithStatus = {
+        ...payload,
+        status: resolveStatusForSave(originalMenu?.status, payload.date),
+      } as any;
+
+      await menuService.approveMenu(restaurantId, menuWithStatus, keycloak.token);
       setSuccess(t('staff.publishedMenuUpdated'));
       setSelectedRestaurant({ id: restaurantId } as any);
-      setMenuFormSuccess(true);
-      navigate(menuRoutes.viewForRestaurant(restaurantId));
-    } catch {
+
+      const refreshed = await menuService.getPublishedMenus(restaurantId);
+      const sorted = [...refreshed].sort((a, b) => a.date.localeCompare(b.date));
+      setPublishedMenus(sorted);
+
+      const selected =
+        sorted.find(item => item.id === (menu as any).id) ?? (sorted.length > 0 ? sorted[0] : null);
+
+      if (selected) {
+        setSelectedMenuId(selected.id);
+        setMenu(normalizeMenu(selected));
+        setOriginalMenu(selected);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to approve menu:', err);
       setError(t('staff.failedToApproveMenu'));
     } finally {
       setSaving(false);
@@ -213,21 +282,71 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
           />
         )}
 
+        {publishedMenus.length > 0 && (
+          <Card className="mb-4 p-4 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700">
+            <p className="text-sm font-medium mb-3 text-gray-900 dark:text-white">
+              {t('staff.publishedMenusList')}
+            </p>
+
+            <div className="space-y-2">
+              {publishedMenus.map(item => {
+                const isSelected = selectedMenuId === item.id;
+                const status = (item.status ?? 'PUBLISHED').toUpperCase();
+
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleSelectPublishedMenu(item)}
+                    className={`w-full text-left rounded-md border px-3 py-2 transition-colors ${
+                      isSelected
+                        ? 'border-[#009DE0] bg-sky-50 dark:bg-sky-900/20'
+                        : 'border-gray-200 dark:border-zinc-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm text-gray-900 dark:text-white">
+                        {item.date.slice(0, 10)}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusBadgeClass(status)}`}
+                      >
+                        {getStatusLabel(status)}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+
         <Card className="p-6 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 shadow-md">
           <h1 className="text-2xl font-semibold mb-3 text-gray-900 dark:text-white">
             {t('staff.reviewPublishedMenu')}
           </h1>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-900 dark:text-white">
-              {t('menuForm.date')}
-            </label>
-            <input
-              type="date"
-              value={menu.date.slice(0, 10)}
-              onChange={e => setMenu({ ...menu, date: e.target.value })}
-              className="w-full border border-gray-300 dark:border-zinc-700 rounded px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-            />
+          <div className="mb-4 flex gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-1 text-gray-900 dark:text-white">
+                {t('menuForm.date')}
+              </label>
+              <input
+                type="date"
+                value={menu.date.slice(0, 10)}
+                onChange={e => setMenu({ ...menu, date: e.target.value })}
+                className="w-full border border-gray-300 dark:border-zinc-700 rounded px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div className="flex items-end">
+              <span
+                className={`px-3 py-2 rounded text-sm font-medium ${getStatusBadgeClass(
+                  (originalMenu?.status ?? 'PUBLISHED').toUpperCase()
+                )}`}
+              >
+                {getStatusLabel(originalMenu?.status)}
+              </span>
+            </div>
           </div>
 
           <div className="space-y-4">

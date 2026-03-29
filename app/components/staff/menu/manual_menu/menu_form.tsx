@@ -255,7 +255,7 @@ export function DailyMenuForm({
           </Alert>
         )}
         {info && (
-          <Alert className="mb-6">
+          <Alert className="mb-6 border-green-400 bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-200">
             <AlertTitle>{t('menuForm.draftSavedTitle')}</AlertTitle>
             <AlertDescription>{info}</AlertDescription>
           </Alert>
@@ -287,7 +287,7 @@ export function DailyMenuForm({
               {dishes.map((dish, index) => (
                 <Card
                   key={index}
-                  className="p-4 border-2 border-[#009DE0] shadow-sm hover:shadow-md transition-shadow bg-gray-100 dark:bg-zinc-100/10"
+                  className="p-4 border-2 border-[#009DE0] shadow-sm hover:shadow-md transition-shadow bg-gray-50 dark:bg-zinc-800"
                 >
                   <div className="flex justify-between items-center">
                     <h3 className="font-semibold text-gray-900 dark:text-white">
@@ -318,14 +318,15 @@ export function DailyMenuForm({
                         onValueChange={v => updateDish(index, 'category', v)}
                         value={dish.category}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white dark:bg-zinc-800 text-gray-900 dark:text-white border-gray-300 dark:border-zinc-700">
                           <SelectValue placeholder={t('menuForm.selectCategory')} />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700">
                           {CATEGORIES.map(c => (
                             <SelectItem
                               key={c}
                               value={c}
+                              className="text-gray-900 dark:text-white focus:bg-blue-50 dark:focus:bg-blue-900/30"
                             >
                               {translateCategory(c, t)}
                             </SelectItem>
@@ -370,14 +371,14 @@ export function DailyMenuForm({
             </div>
             <Button
               onClick={addDish}
-              className="w-full flex items-center gap-2"
+              className="w-full flex items-center gap-2 bg-[#009DE0] hover:bg-[#007bb8] text-white dark:bg-[#009DE0] dark:hover:bg-[#007bb8]"
               disabled={isSubmitting}
             >
               <Plus className="h-4 w-4" /> {t('menuForm.addDish')}
             </Button>
             <Button
               onClick={handleSubmit}
-              className="w-full mt-2"
+              className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white dark:bg-green-600 dark:hover:bg-green-700"
               variant="default"
               disabled={isSubmitting || isSavingDraft}
             >
@@ -385,7 +386,7 @@ export function DailyMenuForm({
             </Button>
             <Button
               onClick={handleSaveDraft}
-              className="w-full mt-2"
+              className="w-full mt-2 bg-white text-gray-900 border border-gray-300 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:hover:bg-zinc-700"
               variant="outline"
               disabled={isSubmitting || isSavingDraft}
             >
