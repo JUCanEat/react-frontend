@@ -1,4 +1,4 @@
-import { MealCategoryCard } from '~/components/staff/menu/meal_category_card';
+import { MealCategoryCard } from '~/components/staff/menu/menu_from_photo/meal_category_card';
 import MainIcon from '~/assets/food_category_icons/main.svg';
 import SoupsIcon from '~/assets/food_category_icons/soups.svg';
 import PizzaIcon from '~/assets/food_category_icons/pizza.svg';

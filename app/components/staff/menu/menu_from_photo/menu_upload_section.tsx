@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Camera, Upload } from 'lucide-react';
-import { UploadOptionCard } from '~/components/staff/menu/upload_option_card';
+import { Upload } from 'lucide-react';
+import { UploadOptionCard } from '~/components/staff/menu/menu_from_photo/upload_option_card';
 import { useTranslation } from 'react-i18next';
 
 interface MenuUploadSectionProps {

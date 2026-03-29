@@ -1,10 +1,64 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { rootQueryUrl, menusEndpoint } from '~/root';
 import { apiGet } from '~/api/api';
-import type { DailyMenu } from '~/interfaces';
+import type { DailyMenu, DailyMenuDTO } from '~/interfaces';
 import { getAccessToken } from '~/api/user_service';
 
 const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
+const MENU_DRAFTS_STORAGE_KEY = 'jucaneat.menu.drafts.v1';
+
+export type MenuDraftSource = 'photo' | 'manual';
+
+export type StoredMenuDraft = {
+  id: string;
+  restaurantId: string;
+  date: string;
+  dishes: DailyMenuDTO['dishes'];
+  updatedAt: string;
+  source: MenuDraftSource;
+};
+
+function readLocalDrafts(): StoredMenuDraft[] {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const raw = window.localStorage.getItem(MENU_DRAFTS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as StoredMenuDraft[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalDrafts(drafts: StoredMenuDraft[]) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(MENU_DRAFTS_STORAGE_KEY, JSON.stringify(drafts));
+}
+
+function createDraftId() {
+  if (typeof window !== 'undefined' && typeof window.crypto?.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function toStoredDraft(
+  restaurantId: string,
+  menu: DailyMenuDTO,
+  source: MenuDraftSource,
+  id?: string
+): StoredMenuDraft {
+  return {
+    id: id ?? createDraftId(),
+    restaurantId,
+    date: menu.date,
+    dishes: menu.dishes,
+    updatedAt: new Date().toISOString(),
+    source,
+  };
+}
 
 // React Query hooks
 export const useGetDailyMenu = (restaurantId: string) =>
@@ -64,8 +118,51 @@ export const useUpdateDailyMenuWithToken = (token: string) =>
     },
   });
 
+export const useSaveMenuDraftWithToken = (token: string) =>
+  useMutation({
+    mutationFn: async ({
+      restaurantId,
+      menu,
+      source = 'manual',
+      draftId,
+    }: {
+      restaurantId: string;
+      menu: DailyMenuDTO;
+      source?: MenuDraftSource;
+      draftId?: string;
+    }) => {
+      if (!token) {
+        throw new Error('No authentication token available. Please login first.');
+      }
+
+      return menuService.saveMenuDraft(restaurantId, menu, token, source, draftId);
+    },
+  });
+
 // Direct API calls for menu management (for staff features)
 export const menuService = {
+  getActiveMenu: async (restaurantId: string): Promise<DailyMenu | null> => {
+    const response = await fetch(`${API_BASE_URL}/menus/${restaurantId}`);
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    if (!response.ok) {
+      const error = await response.text().catch(() => '');
+      throw new Error(`Failed to fetch active menu (${response.status}): ${error}`);
+    }
+
+    return response.json();
+  },
+
+  hasActiveMenuForDate: async (restaurantId: string, date: string): Promise<boolean> => {
+    const activeMenu = await menuService.getActiveMenu(restaurantId);
+    if (!activeMenu?.date) return false;
+
+    return activeMenu.date.slice(0, 10) === date.slice(0, 10);
+  },
+
   uploadMenuImage: async (restaurantId: string, imageFile: File, token: string): Promise<void> => {
     const formData = new FormData();
     formData.append('restaurantId', restaurantId);
@@ -97,6 +194,83 @@ export const menuService = {
     }
 
     return response.json();
+  },
+
+  getManagedDraft: async (restaurantId: string, token: string): Promise<DailyMenuDTO | null> => {
+    try {
+      const serverDraft = await menuService.getMenuDraft(restaurantId, token);
+      return {
+        id: serverDraft.id,
+        date: serverDraft.date,
+        dishes: (serverDraft.dishes ?? []).map((dish: any) => ({
+          id: dish.id,
+          name: dish.name,
+          category: dish.category ?? 'MAIN_COURSE',
+          price: typeof dish.price === 'number' ? dish.price : Number(dish.price ?? 0),
+          allergens: dish.allergens ?? [],
+        })),
+      };
+    } catch {
+      const local = menuService.listLocalDrafts(restaurantId)[0];
+      if (!local) return null;
+
+      return {
+        id: local.id,
+        date: local.date,
+        dishes: local.dishes,
+      };
+    }
+  },
+
+  saveMenuDraft: async (
+    restaurantId: string,
+    menu: DailyMenuDTO,
+    token: string,
+    source: MenuDraftSource,
+    draftId?: string
+  ): Promise<{ savedTo: 'backend' | 'local'; draftId?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/menus/${restaurantId}/draft`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(menu),
+      });
+
+      if (response.ok) {
+        const drafts = readLocalDrafts().filter(d => d.restaurantId !== restaurantId);
+        writeLocalDrafts(drafts);
+        return { savedTo: 'backend' };
+      }
+    } catch {
+      // Fall back to local storage when backend is unavailable / CORS / network fails.
+    }
+
+    const drafts = readLocalDrafts();
+    const stored = toStoredDraft(restaurantId, menu, source, draftId);
+    const nextDrafts = drafts.filter(d => d.id !== stored.id);
+    nextDrafts.push(stored);
+    writeLocalDrafts(nextDrafts);
+    return { savedTo: 'local', draftId: stored.id };
+  },
+
+  getLocalDraftById: (draftId: string): StoredMenuDraft | null => {
+    const draft = readLocalDrafts().find(d => d.id === draftId);
+    return draft ?? null;
+  },
+
+  deleteLocalDraft: (draftId: string) => {
+    const drafts = readLocalDrafts().filter(d => d.id !== draftId);
+    writeLocalDrafts(drafts);
+  },
+
+  listLocalDrafts: (restaurantId?: string): StoredMenuDraft[] => {
+    const drafts = readLocalDrafts();
+    const filtered = restaurantId ? drafts.filter(d => d.restaurantId === restaurantId) : drafts;
+
+    return filtered.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   },
 
   approveMenu: async (restaurantId: string, menu: DailyMenu, token: string): Promise<void> => {

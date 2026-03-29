@@ -1,5 +1,5 @@
-import { DishListComponent } from '~/dishlist/dish_list';
+import MenuClient from '~/components/menu/menu_client';
 
 export default function Dishes() {
-  return <DishListComponent />;
+  return <MenuClient />;
 }

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, type FormEvent } from 'react';
 import type { Restaurant } from '~/interfaces';
 import { useTranslation } from 'react-i18next';
+import { menuRoutes } from '~/components/staff/menu/menu_routes';
 
 interface UserData {
   firstName: string;
@@ -128,11 +129,19 @@ export default function RestaurantOwnerProfile() {
   }
 
   const handleRestaurantSelect = (restaurantId: string) => {
-    navigate(`/staff/menu-from-photo/${restaurantId}`);
+    navigate(menuRoutes.staffPhoto(restaurantId));
   };
 
   const handleMenuFormSelect = (restaurantId: string) => {
-    navigate(`/staff/menu-from-form/${restaurantId}`);
+    navigate(menuRoutes.staffForm(restaurantId));
+  };
+
+  const handleManageDraftSelect = (restaurantId: string) => {
+    navigate(menuRoutes.staffDrafts(restaurantId));
+  };
+
+  const handleManagePublishedMenuSelect = (restaurantId: string) => {
+    navigate(menuRoutes.staffPublished(restaurantId));
   };
 
   const validateCoordinates = () => {
@@ -355,6 +364,21 @@ export default function RestaurantOwnerProfile() {
                         onClick={() => handleEditRestaurant(restaurant)}
                       >
                         {t('profile.editRestaurant')}
+                      </button>
+                    </div>
+
+                    <div className="mt-2 flex flex-col gap-2">
+                      <button
+                        className="w-full px-3 py-2 rounded text-sm font-medium text-[#009DE0] bg-white border border-[#009DE0] hover:bg-sky-50 transition-colors"
+                        onClick={() => handleManageDraftSelect(restaurant.id)}
+                      >
+                        {t('profile.manageDrafts')}
+                      </button>
+                      <button
+                        className="w-full px-3 py-2 rounded text-sm font-medium text-[#009DE0] bg-white border border-[#009DE0] hover:bg-sky-50 transition-colors"
+                        onClick={() => handleManagePublishedMenuSelect(restaurant.id)}
+                      >
+                        {t('profile.managePublishedMenu')}
                       </button>
                     </div>
                   </div>

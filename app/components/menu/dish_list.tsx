@@ -6,7 +6,6 @@
 import { FilterBar, type FilterValue } from '~/components/overview/filter_bar';
 import { TopBar } from '~/components/shared/top_bar';
 import { BottomNav } from '~/components/shared/bottom_nav';
-//import { mockDishes } from "~/dishlist/mock_dishes"
 import { DishInfo } from '~/components/menu/dish/dish_info_box';
 import type { Dish } from '~/interfaces';
 import { useState } from 'react';
@@ -14,7 +13,13 @@ import { useGetDailyMenu } from '~/api/menu_service';
 import { filterDishes } from '~/shadcn/lib/dish_filters';
 import { useTranslation } from 'react-i18next';
 
-export function DishListComponent({ restaurantId }: { restaurantId: string }) {
+export function DishListComponent({
+  restaurantId,
+  restaurantName,
+}: {
+  restaurantId: string;
+  restaurantName: string;
+}) {
   const [filters, setFilters] = useState<FilterValue[]>([]);
   const { t } = useTranslation();
 
@@ -33,6 +38,7 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
   const dishFilterStrings = filters.map(f => filterValueMap[f]);
 
   const filteredDishes: Dish[] = filterDishes(dishes, dishFilterStrings);
+  const isMenuNotFound = !!error && /API Error:\s*404\b/.test(error.message);
 
   if (isLoading) {
     return (
@@ -52,7 +58,7 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
     );
   }
 
-  if (error) {
+  if (error && !isMenuNotFound) {
     return (
       <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false} />
@@ -64,7 +70,7 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
             <p>{t('menu.errorLoadingMenu')}</p>
             <p className="text-sm mt-2">{error.message}</p>
             <p className="text-xs mt-2 dark:text-gray-400">
-              {t('menu.restaurantId', { id: restaurantId })}
+              {t('menu.restaurantName', { name: restaurantName })}
             </p>
           </div>
         </div>
@@ -73,7 +79,7 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
     );
   }
 
-  if (!dishes || dishes.length === 0) {
+  if (isMenuNotFound || !dishes || dishes.length === 0) {
     return (
       <div className="dark:bg-zinc-950">
         <TopBar isLoginPage={false} />
@@ -82,9 +88,9 @@ export function DishListComponent({ restaurantId }: { restaurantId: string }) {
           style={{ height: 'calc(100vh - 150px)' }}
         >
           <div className="text-center dark:text-white">
-            <p>{t('menu.noDishes')}</p>
+            <p>{t('menu.noMenuYet')}</p>
             <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
-              {t('menu.restaurantId', { id: restaurantId })}
+              {t('menu.restaurantName', { name: restaurantName })}
             </p>
           </div>
         </div>
