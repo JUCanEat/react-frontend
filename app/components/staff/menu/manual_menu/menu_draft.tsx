@@ -270,7 +270,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         {localDrafts.length > 0 && (
           <Card className="mb-4 p-4 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700">
             <p className="text-sm font-medium mb-3 text-gray-900 dark:text-white">
-              {t('profile.manageDrafts')}
+              {t('manager.manageDrafts')}
             </p>
             <div className="space-y-2">
               {localDrafts.map(draft => {
