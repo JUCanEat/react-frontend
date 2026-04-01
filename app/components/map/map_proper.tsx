@@ -11,7 +11,11 @@ import { FacilityMarker } from '~/components/map/facility_marker';
 import { useGetAllRestaurants } from '~/api/restaurant_service';
 import { useGetAllVendingMachines } from '~/api/vending_machine_service';
 
-export function Map_proper() {
+interface MapProperProps {
+  searchQuery: string;
+}
+
+export function Map_proper({ searchQuery }: MapProperProps) {
   const { t, i18n } = useTranslation();
   const [selectedPlace, setSelectedPlace] = useState<Facility | null>(null);
 
@@ -51,8 +55,23 @@ export function Map_proper() {
   if (loadError) return <p>{t('common.error')}</p>;
   if (!isLoaded) return <p>{t('map.loading')}</p>;
 
-  const lat = restaurants[0].location.latitude.value;
-  const lng = restaurants[0].location.longitude.value;
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const matchesQuery = (value?: string) =>
+    !normalizedQuery || (value ?? '').toLowerCase().includes(normalizedQuery);
+
+  const filteredRestaurants = restaurants.filter(
+    restaurant => matchesQuery(restaurant.name) || matchesQuery(restaurant.description)
+  );
+
+  const filteredVendingMachines = vendingMachines.filter(vendingMachine =>
+    matchesQuery(vendingMachine.description)
+  );
+
+  const primaryFacility =
+    filteredRestaurants[0] ?? filteredVendingMachines[0] ?? restaurants[0] ?? vendingMachines[0];
+
+  const lat = primaryFacility.location.latitude.value;
+  const lng = primaryFacility.location.longitude.value;
 
   const bounds: google.maps.LatLngBoundsLiteral = {
     north: lat + 0.008,
@@ -75,7 +94,7 @@ export function Map_proper() {
           zoomControl: true,
         }}
       >
-        {restaurants.map(p => (
+        {filteredRestaurants.map(p => (
           <FacilityMarker
             key={p.name}
             facility={p}
@@ -83,7 +102,7 @@ export function Map_proper() {
           />
         ))}
 
-        {vendingMachines.map(vm => (
+        {filteredVendingMachines.map(vm => (
           <FacilityMarker
             key={vm.id}
             facility={vm}
