@@ -46,14 +46,18 @@ export function Map_proper({ searchQuery }: MapProperProps) {
     data: restaurants,
   } = useGetAllRestaurants();
 
-  if (restaurantsPending || vendingMachinesPending) return <p>{t('map.loading')}</p>;
+  if (restaurantsPending || vendingMachinesPending) {
+    return <MapLoadingScreen message={t('map.loading')} />;
+  }
   if (restaurantsError) return <p>{t('map.errorLoadingRestaurants')}</p>;
   if (!restaurants || restaurants.length === 0) return <p>{t('map.noRestaurantsFound')}</p>;
   if (vendingMachinesError) return <p>{t('map.errorLoadingVendingMachines')}</p>;
   if (!vendingMachines || vendingMachines.length === 0)
     return <p>{t('map.noVendingMachinesFound')}</p>;
   if (loadError) return <p>{t('common.error')}</p>;
-  if (!isLoaded) return <p>{t('map.loading')}</p>;
+  if (!isLoaded) {
+    return <MapLoadingScreen message={t('map.loading')} />;
+  }
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const matchesQuery = (value?: string) =>
@@ -115,6 +119,17 @@ export function Map_proper({ searchQuery }: MapProperProps) {
         selectedPoint={selectedPlace}
         onClose={() => setSelectedPlace(null)}
       />
+    </div>
+  );
+}
+
+function MapLoadingScreen({ message }: { message: string }) {
+  return (
+    <div className="w-full h-full flex items-center justify-center bg-white dark:bg-zinc-950">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#009DE0] border-t-transparent mx-auto mb-3" />
+        <p className="text-sm text-gray-700 dark:text-gray-200">{message}</p>
+      </div>
     </div>
   );
 }
