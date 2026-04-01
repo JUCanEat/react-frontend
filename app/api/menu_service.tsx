@@ -238,40 +238,60 @@ export const menuService = {
   getPublishedMenus: async (restaurantId: string): Promise<PublishedMenu[]> => {
     try {
       const token = getAccessToken();
+      const currentLanguage = getUiLanguageCode();
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
+        'Accept-Language': currentLanguage,
       };
 
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const currentLanguage = getUiLanguageCode();
+      const parsePublishedMenuList = (data: any): PublishedMenu[] => {
+        const list = Array.isArray(data) ? data : data?.menus;
 
-      const response = await fetch(
+        if (!Array.isArray(list)) {
+          return [];
+        }
+
+        return list.map((item: any) => ({
+          ...mapMenuResponse(item),
+          status: normalizeMenuStatus(item?.status, item?.date),
+        })) as PublishedMenu[];
+      };
+
+      // Prefer planned/localized because it includes SCHEDULED menus used in edit-published panel.
+      const plannedResponse = await fetch(
         `${API_BASE_URL}/menus/${restaurantId}/planned/localized?language=${currentLanguage}`,
         {
           headers,
         }
       );
 
-      if (response.status === 404) {
-        return [];
+      if (plannedResponse.ok) {
+        const plannedData = await plannedResponse.json();
+        return parsePublishedMenuList(plannedData);
       }
 
-      if (response.ok) {
-        const data = await response.json();
-        const list = Array.isArray(data) ? data : data?.menus;
+      // Fallback to /published for backends exposing this route only.
+      if (plannedResponse.status === 404) {
+        const publishedResponse = await fetch(`${API_BASE_URL}/menus/${restaurantId}/published`, {
+          headers,
+        });
 
-        if (Array.isArray(list)) {
-          return list.map((item: any) => ({
-            ...mapMenuResponse(item),
-            status: normalizeMenuStatus(item?.status, item?.date),
-          })) as PublishedMenu[];
+        if (publishedResponse.status === 404) {
+          return [];
         }
 
-        return [];
+        if (publishedResponse.ok) {
+          const publishedData = await publishedResponse.json();
+          return parsePublishedMenuList(publishedData);
+        }
       }
+
+      const errorText = await plannedResponse.text().catch(() => '');
+      throw new Error(`Failed to fetch planned menus (${plannedResponse.status}): ${errorText}`);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Error fetching published menus:', err);

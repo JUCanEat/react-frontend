@@ -1,10 +1,19 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { useTranslation } from 'react-i18next';
 import RestaurantManagerPanel from '~/components/staff/restaurant_manager_panel';
+import { RequireAuth } from '~/auth/RequireAuth';
 import { TopBar } from '~/components/shared/top_bar';
 import { BottomNav } from '~/components/shared/bottom_nav';
 
 export default function ManagerRoute() {
+  return (
+    <RequireAuth>
+      <ManagerRouteInner />
+    </RequireAuth>
+  );
+}
+
+function ManagerRouteInner() {
   const { keycloak, initialized } = useKeycloak();
   const { t } = useTranslation();
 
