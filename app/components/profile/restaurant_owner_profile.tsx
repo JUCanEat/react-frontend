@@ -298,10 +298,10 @@ export default function RestaurantOwnerProfile() {
     <div className="relative min-h-screen bg-white dark:bg-zinc-950">
       <TopBar isLoginPage={false} />
       <div
-        className="w-full flex flex-col items-center px-4 py-6"
+        className="w-full overflow-y-auto flex flex-col items-center px-4 pt-6 pb-28 md:pb-10"
         style={{ minHeight: 'calc(100vh - 150px)' }}
       >
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-6xl">
           <div className="mb-6 text-center">
             <p className="text-lg font-semibold text-gray-900 dark:text-white">
               {userData.firstName} {userData.lastName}
@@ -314,15 +314,17 @@ export default function RestaurantOwnerProfile() {
             </p>
           </div>
           <div className="mt-8">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <div className="mb-4 inline-flex max-w-full items-center gap-2 md:gap-3">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white truncate">
                 {t('profile.yourRestaurants')}
               </h2>
               <button
                 onClick={() => setShowCreateForm(true)}
-                className="px-4 py-2 text-sm font-medium text-white bg-[#009DE0] rounded hover:bg-[#007bb8] transition-colors"
+                aria-label={t('profile.addRestaurant')}
+                title={t('profile.addRestaurant')}
+                className="shrink-0 h-8 w-8 flex items-center justify-center text-base font-semibold text-white bg-[#009DE0] rounded hover:bg-[#007bb8] transition-colors"
               >
-                + {t('profile.addRestaurant')}
+                +
               </button>
             </div>
             {!userData.ownedRestaurants || userData.ownedRestaurants.length === 0 ? (
@@ -330,11 +332,11 @@ export default function RestaurantOwnerProfile() {
                 {t('profile.noRestaurantsYet')}
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {userData.ownedRestaurants.map(restaurant => (
                   <div
                     key={restaurant.id}
-                    className="p-4 border rounded-lg border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+                    className="p-4 border rounded-lg border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 flex flex-col h-full"
                   >
                     <div className="mb-3">
                       <p className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -346,15 +348,16 @@ export default function RestaurantOwnerProfile() {
                         </p>
                       )}
                     </div>
-                    <div className="flex gap-2">
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <button
-                        className="flex-1 px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
+                        className="px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
                         onClick={() => handleRestaurantSelect(restaurant.id)}
                       >
                         {t('profile.addMenuFromPhoto')}
                       </button>
                       <button
-                        className="flex-1 px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
+                        className="px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
                         onClick={() => handleMenuFormSelect(restaurant.id)}
                       >
                         {t('profile.addManually')}
@@ -367,7 +370,7 @@ export default function RestaurantOwnerProfile() {
                       </button>
                     </div>
 
-                    <div className="mt-2 flex flex-col gap-2">
+                    <div className="mt-3 flex flex-col gap-2">
                       <button
                         className="w-full px-3 py-2 rounded text-sm font-medium text-[#009DE0] bg-white border border-[#009DE0] hover:bg-sky-50 transition-colors"
                         onClick={() => handleManageDraftSelect(restaurant.id)}
