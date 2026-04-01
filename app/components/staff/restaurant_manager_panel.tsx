@@ -38,7 +38,10 @@ export default function RestaurantOwnerProfile() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!keycloak.token) return;
+      if (!keycloak.token) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const data = await restaurantManagerService.getCurrentUserData(keycloak.token);
@@ -51,7 +54,10 @@ export default function RestaurantOwnerProfile() {
     };
 
     if (initialized && keycloak.authenticated) {
+      setLoading(true);
       fetchUserData();
+    } else if (initialized && !keycloak.authenticated) {
+      setLoading(false);
     }
   }, [initialized, keycloak.authenticated, keycloak.token]);
 

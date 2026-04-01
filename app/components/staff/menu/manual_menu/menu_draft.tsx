@@ -89,10 +89,10 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
 
   useEffect(() => {
     if (menuFormSuccess) {
-      navigate(menuRoutes.viewForRestaurant(restaurantId));
+      navigate(appRoutes.staffManager);
       setMenuFormSuccess(false);
     }
-  }, [menuFormSuccess, navigate, restaurantId, setMenuFormSuccess]);
+  }, [menuFormSuccess, navigate, setMenuFormSuccess]);
 
   const handleDishChange = (index: number, field: keyof Dish | 'category', value: any) => {
     if (!menu || !menu.dishes) return;

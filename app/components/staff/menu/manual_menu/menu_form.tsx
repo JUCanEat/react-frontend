@@ -24,6 +24,7 @@ import { useRestaurantStore } from '~/store/restaurant_store';
 import { useTranslation } from 'react-i18next';
 import { translateAllergen, translateCategory } from '~/components/menu/menu_translations';
 import { menuRoutes } from '../menu_routes';
+import { appRoutes } from '~/lib/app_routes';
 
 const CATEGORIES = ['SOUP', 'MAIN_COURSE'] as const;
 
@@ -49,10 +50,10 @@ export function DailyMenuForm({
   const [searchParams] = useSearchParams();
   useEffect(() => {
     if (menuFormSuccess) {
-      navigate(menuRoutes.viewForRestaurant(restaurantId));
+      navigate(appRoutes.staffManager);
       setMenuFormSuccess(false);
     }
-  }, [menuFormSuccess, navigate, restaurantId, setMenuFormSuccess]);
+  }, [menuFormSuccess, navigate, setMenuFormSuccess]);
   const [date, setDate] = useState('');
   const [dishes, setDishes] = useState<DishDTO[]>([]);
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
