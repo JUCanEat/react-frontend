@@ -12,6 +12,7 @@ import { useRestaurantStore } from '~/store/restaurant_store';
 import { Card } from '~/shadcn/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { menuRoutes } from '~/components/staff/menu/menu_routes';
+import { appRoutes } from '~/lib/app_routes';
 
 interface StaffMenuDraftProps {
   restaurantId: string;
@@ -228,7 +229,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     return (
       <ErrorState
         message={error}
-        backPath="/staff/manager"
+        backPath={appRoutes.staffManager}
         backLabel={t('common.goBack')}
       />
     );
@@ -238,7 +239,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     return (
       <EmptyState
         message={t('staff.noDraftFound')}
-        backPath="/staff/manager"
+        backPath={appRoutes.staffManager}
         backLabel={t('common.goBack')}
       />
     );
@@ -323,7 +324,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
           <MenuActionButtons
             onApprove={handleApprove}
             onSaveDraft={handleSaveDraft}
-            onCancel={() => navigate('/staff/manager')}
+            onCancel={() => navigate(appRoutes.staffManager)}
             isApproving={saving}
             isSavingDraft={savingDraft}
             isDisabled={menu.dishes.length === 0}

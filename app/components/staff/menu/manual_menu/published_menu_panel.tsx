@@ -12,6 +12,7 @@ import { MenuActionButtons } from '~/components/staff/menu/common/menu_action_bu
 import { Card } from '~/shadcn/components/ui/card';
 import { useRestaurantStore } from '~/store/restaurant_store';
 import { useTranslation } from 'react-i18next';
+import { appRoutes } from '~/lib/app_routes';
 
 interface PublishedMenuPanelProps {
   restaurantId: string;
@@ -261,7 +262,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
     return (
       <ErrorState
         message={error}
-        backPath="/staff/manager"
+        backPath={appRoutes.staffManager}
         backLabel={t('common.goBack')}
       />
     );
@@ -271,7 +272,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
     return (
       <EmptyState
         message={t('staff.noPublishedMenuFound')}
-        backPath="/staff/manager"
+        backPath={appRoutes.staffManager}
         backLabel={t('common.goBack')}
       />
     );

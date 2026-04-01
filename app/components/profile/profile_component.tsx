@@ -2,10 +2,13 @@ import { TopBar } from '~/components/shared/top_bar';
 import { BottomNav } from '~/components/shared/bottom_nav';
 import { useKeycloak } from '@react-keycloak/web';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { appRoutes } from '~/lib/app_routes';
 
 export default function ProfileComponent() {
   const { keycloak, initialized } = useKeycloak();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   if (!initialized) {
     return (
@@ -103,7 +106,7 @@ export default function ProfileComponent() {
             <button
               className="w-full mt-2 py-3 rounded-xl text-sm font-semibold text-white"
               style={{ backgroundColor: '#009DE0' }}
-              onClick={() => (window.location.href = '/staff/manager')}
+              onClick={() => navigate(appRoutes.staffManager)}
             >
               {t('profile.openManagerPanel')}
             </button>

@@ -1,4 +1,5 @@
 import { type RouteConfig, layout, index, route } from '@react-router/dev/routes';
+import { appRoutePatterns } from './lib/app_routes';
 
 export default [
   layout('./routes/mainui.tsx', [
@@ -11,7 +12,7 @@ export default [
   ]),
   route('login', 'routes/login.tsx'),
   route('profile', 'routes/profile.tsx'),
-  route('staff/manager', 'routes/staff_manager_panel.tsx'),
+  route(appRoutePatterns.staffManager, 'routes/staff_manager_panel.tsx'),
   route('map', 'routes/map.tsx'),
   route('menu', 'routes/menu.tsx'),
   route('dishes', 'routes/dishes.tsx'),
