@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useEffect } from 'react';
 import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -52,6 +51,8 @@ function Carousel({
     {
       ...opts,
       axis: orientation === 'horizontal' ? 'x' : 'y',
+      containScroll: false,
+      dragFree: true,
     },
     plugins
   );
@@ -85,12 +86,12 @@ function Carousel({
     [scrollPrev, scrollNext]
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!api || !setApi) return;
     setApi(api);
   }, [api, setApi]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!api) return;
     onSelect(api);
     api.on('reInit', onSelect);

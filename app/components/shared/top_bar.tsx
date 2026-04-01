@@ -35,6 +35,7 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
     <div className="flex w-full max-w-full flex-col gap-6">
       <Item
         variant="outline"
+        border="no_outline"
         size="xsm"
         width="default"
         className={itemClassName}
@@ -44,7 +45,10 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
             variant="logo"
             onClick={() => (window.location.href = '/')}
           >
-            <img src="/logo.svg" />
+            <img
+              className={'dark:invert'}
+              src="/logo.svg"
+            />
           </ItemMedia>
           <ItemContent>
             <ItemTitle>JU Can Eat</ItemTitle>
