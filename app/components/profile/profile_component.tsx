@@ -103,7 +103,7 @@ export default function ProfileComponent() {
             <button
               className="w-full mt-2 py-3 rounded-xl text-sm font-semibold text-white"
               style={{ backgroundColor: '#009DE0' }}
-              onClick={() => (window.location.href = '/manager')}
+              onClick={() => (window.location.href = '/staff/manager')}
             >
               {t('profile.openManagerPanel')}
             </button>

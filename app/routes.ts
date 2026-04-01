@@ -11,7 +11,7 @@ export default [
   ]),
   route('login', 'routes/login.tsx'),
   route('profile', 'routes/profile.tsx'),
-  route('manager', 'routes/manager.tsx'),
+  route('staff/manager', 'routes/staff_manager_panel.tsx'),
   route('map', 'routes/map.tsx'),
   route('menu', 'routes/menu.tsx'),
   route('dishes', 'routes/dishes.tsx'),

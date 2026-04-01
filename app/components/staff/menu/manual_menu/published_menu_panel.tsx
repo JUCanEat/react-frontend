@@ -261,7 +261,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
     return (
       <ErrorState
         message={error}
-        backPath="/manager"
+        backPath="/staff/manager"
         backLabel={t('common.goBack')}
       />
     );
@@ -271,7 +271,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
     return (
       <EmptyState
         message={t('staff.noPublishedMenuFound')}
-        backPath="/manager"
+        backPath="/staff/manager"
         backLabel={t('common.goBack')}
       />
     );

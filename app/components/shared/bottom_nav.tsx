@@ -42,7 +42,7 @@ export function BottomNav({ page }: { page?: string }) {
             variant={page === 'manager' ? 'highlight' : 'ghost'}
             border="none"
             aria-label={t('nav.manager')}
-            onClick={() => (window.location.href = '/manager')}
+            onClick={() => (window.location.href = '/staff/manager')}
           >
             <BriefcaseBusiness className="" />
           </Button>
