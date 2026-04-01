@@ -28,6 +28,7 @@ export function OverviewComponent() {
             <SearchBar
               value={query}
               onChange={setQuery}
+              className="!bg-white dark:!bg-black border-gray-300 dark:border-zinc-700 shadow-md"
             />
             <FilterBar
               value={filters}
