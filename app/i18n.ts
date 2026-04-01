@@ -21,6 +21,7 @@ const resources = {
         home: 'Home',
         map: 'Map',
         profile: 'Profile',
+        manager: 'Manager',
       },
       overview: {
         restaurants: 'Restaurants',
@@ -56,6 +57,7 @@ const resources = {
         nameLabel: 'Name',
         usernameLabel: 'Username',
         emailLabel: 'Email',
+        openManagerPanel: 'Open manager panel',
         notLoggedIn: 'You are not logged in',
         failedToLoadProfile: 'Failed to load profile',
         yourRestaurants: 'Your restaurants',
@@ -209,6 +211,7 @@ const resources = {
         home: 'Strona główna',
         map: 'Mapa',
         profile: 'Profil',
+        manager: 'Panel menedżera',
       },
       overview: {
         restaurants: 'Restauracje',
@@ -244,6 +247,7 @@ const resources = {
         nameLabel: 'Imię i nazwisko',
         usernameLabel: 'Nazwa użytkownika',
         emailLabel: 'E-mail',
+        openManagerPanel: 'Otwórz panel menedżera',
         notLoggedIn: 'Nie jesteś zalogowany/a',
         failedToLoadProfile: 'Nie udało się załadować profilu',
         yourRestaurants: 'Twoje restauracje',

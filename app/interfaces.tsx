@@ -85,3 +85,20 @@ export interface RestaurantDetailsDTO {
   openNow: boolean;
   owners?: string[];
 }
+
+// Restaurant manager panel interfaces
+export interface RestaurantManagerUserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  ownedRestaurants: Restaurant[];
+}
+
+export interface RestaurantCreateFormData {
+  name: string;
+  description: string;
+  latitude: string;
+  longitude: string;
+  photoPath: string;
+}

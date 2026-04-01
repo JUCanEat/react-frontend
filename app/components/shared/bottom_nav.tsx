@@ -1,10 +1,14 @@
 import { ItemActions } from '~/shadcn/components/ui/item';
 import { Button } from '~/shadcn/components/ui/button';
-import { Home, Map, User } from 'lucide-react';
+import { Home, Map, User, BriefcaseBusiness } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useKeycloak } from '@react-keycloak/web';
 
 export function BottomNav({ page }: { page?: string }) {
   const { t } = useTranslation();
+  const { keycloak } = useKeycloak();
+  const roles = keycloak.tokenParsed?.realm_access?.roles || [];
+  const isOwner = roles.includes('restaurant_owner');
 
   return (
     <div className="flex w-full justify-center">
@@ -33,6 +37,16 @@ export function BottomNav({ page }: { page?: string }) {
         >
           <User className="" />
         </Button>
+        {isOwner && (
+          <Button
+            variant={page === 'manager' ? 'highlight' : 'ghost'}
+            border="none"
+            aria-label={t('nav.manager')}
+            onClick={() => (window.location.href = '/manager')}
+          >
+            <BriefcaseBusiness className="" />
+          </Button>
+        )}
       </nav>
     </div>
   );

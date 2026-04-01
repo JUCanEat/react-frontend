@@ -24,6 +24,10 @@ function isPastDate(dateString: string) {
   return selected < today;
 }
 
+function isTodayOrFuture(dateString: string) {
+  return !isPastDate(dateString);
+}
+
 function resolveStatusForSave(
   status: string | undefined,
   menuDate: string
@@ -84,7 +88,8 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
     const loadPublishedMenus = async () => {
       try {
         const menus = await menuService.getPublishedMenus(restaurantId);
-        const sorted = [...menus].sort((a, b) => a.date.localeCompare(b.date));
+        const filtered = menus.filter(item => isTodayOrFuture(item.date.slice(0, 10)));
+        const sorted = [...filtered].sort((a, b) => a.date.localeCompare(b.date));
 
         setPublishedMenus(sorted);
 
@@ -227,7 +232,8 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
       setSelectedRestaurant({ id: restaurantId } as any);
 
       const refreshed = await menuService.getPublishedMenus(restaurantId);
-      const sorted = [...refreshed].sort((a, b) => a.date.localeCompare(b.date));
+      const filtered = refreshed.filter(item => isTodayOrFuture(item.date.slice(0, 10)));
+      const sorted = [...filtered].sort((a, b) => a.date.localeCompare(b.date));
       setPublishedMenus(sorted);
 
       const selected =
@@ -252,11 +258,23 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
   }
 
   if (error && !menu) {
-    return <ErrorState message={error} />;
+    return (
+      <ErrorState
+        message={error}
+        backPath="/manager"
+        backLabel={t('common.goBack')}
+      />
+    );
   }
 
   if (!menu || !menu.dishes) {
-    return <EmptyState message={t('staff.noPublishedMenuFound')} />;
+    return (
+      <EmptyState
+        message={t('staff.noPublishedMenuFound')}
+        backPath="/manager"
+        backLabel={t('common.goBack')}
+      />
+    );
   }
 
   return (
@@ -291,7 +309,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
             <div className="space-y-2">
               {publishedMenus.map(item => {
                 const isSelected = selectedMenuId === item.id;
-                const status = (item.status ?? 'PUBLISHED').toUpperCase();
+                const status = (item.status ?? 'ACTIVE').toUpperCase();
 
                 return (
                   <button
@@ -341,7 +359,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
             <div className="flex items-end">
               <span
                 className={`px-3 py-2 rounded text-sm font-medium ${getStatusBadgeClass(
-                  (originalMenu?.status ?? 'PUBLISHED').toUpperCase()
+                  (originalMenu?.status ?? 'ACTIVE').toUpperCase()
                 )}`}
               >
                 {getStatusLabel(originalMenu?.status)}

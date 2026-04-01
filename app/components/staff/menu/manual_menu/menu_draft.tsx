@@ -225,11 +225,23 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
   }
 
   if (error && !menu) {
-    return <ErrorState message={error} />;
+    return (
+      <ErrorState
+        message={error}
+        backPath="/manager"
+        backLabel={t('common.goBack')}
+      />
+    );
   }
 
   if (!menu || !menu.dishes) {
-    return <EmptyState message={t('staff.noDraftFound')} />;
+    return (
+      <EmptyState
+        message={t('staff.noDraftFound')}
+        backPath="/manager"
+        backLabel={t('common.goBack')}
+      />
+    );
   }
 
   return (
@@ -311,7 +323,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
           <MenuActionButtons
             onApprove={handleApprove}
             onSaveDraft={handleSaveDraft}
-            onCancel={() => navigate('/profile')}
+            onCancel={() => navigate('/manager')}
             isApproving={saving}
             isSavingDraft={savingDraft}
             isDisabled={menu.dishes.length === 0}

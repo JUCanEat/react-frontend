@@ -25,6 +25,8 @@ export default function ProfileComponent() {
   }
 
   const token = keycloak.tokenParsed;
+  const roles = token?.realm_access?.roles || [];
+  const isOwner = roles.includes('restaurant_owner');
 
   if (!token) {
     return (
@@ -96,6 +98,16 @@ export default function ProfileComponent() {
             </p>
             <p className="text-lg text-gray-800 dark:text-white">{token.email}</p>
           </div>
+
+          {isOwner && (
+            <button
+              className="w-full mt-2 py-3 rounded-xl text-sm font-semibold text-white"
+              style={{ backgroundColor: '#009DE0' }}
+              onClick={() => (window.location.href = '/manager')}
+            >
+              {t('profile.openManagerPanel')}
+            </button>
+          )}
         </div>
       </div>
       <BottomNav page={'profile'} />
