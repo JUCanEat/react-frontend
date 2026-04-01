@@ -6,6 +6,18 @@ import { useEffect, useState, type FormEvent } from 'react';
 import type { Restaurant, RestaurantCreateFormData, RestaurantManagerUserData } from '~/interfaces';
 import { useTranslation } from 'react-i18next';
 import { menuRoutes } from '~/components/staff/menu/menu_routes';
+import { restaurantManagerService } from '~/api/restaurant_manager_service';
+import { RestaurantSectionHeader } from '~/components/staff/manager/restaurant_section_header';
+import { RestaurantCard } from '~/components/staff/manager/restaurant_card';
+import { RestaurantFormModal } from '~/components/staff/manager/restaurant_form_modal';
+
+const EMPTY_FORM_DATA: RestaurantCreateFormData = {
+  name: '',
+  description: '',
+  latitude: '',
+  longitude: '',
+  photoPath: '',
+};
 
 export default function RestaurantOwnerProfile() {
   const { keycloak, initialized } = useKeycloak();
@@ -15,53 +27,22 @@ export default function RestaurantOwnerProfile() {
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [createFormData, setCreateFormData] = useState<RestaurantCreateFormData>({
-    name: '',
-    description: '',
-    latitude: '',
-    longitude: '',
-    photoPath: '',
-  });
+  const [createFormData, setCreateFormData] = useState<RestaurantCreateFormData>(EMPTY_FORM_DATA);
   const [validationErrors, setValidationErrors] = useState<{
     latitude?: string;
     longitude?: string;
   }>({});
   const [editingRestaurant, setEditingRestaurant] = useState<Restaurant | null>(null);
-  const [editFormData, setEditFormData] = useState<RestaurantCreateFormData>({
-    name: '',
-    description: '',
-    latitude: '',
-    longitude: '',
-    photoPath: '',
-  });
+  const [editFormData, setEditFormData] = useState<RestaurantCreateFormData>(EMPTY_FORM_DATA);
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!keycloak.token) {
-        console.log('No token available');
-        return;
-      }
-
-      console.log('Fetching user data...');
+      if (!keycloak.token) return;
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/me`, {
-          headers: {
-            Authorization: `Bearer ${keycloak.token}`,
-          },
-        });
-
-        console.log('Response status:', response.status);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('User data:', data);
-          setUserData(data);
-        } else {
-          const errorText = await response.text();
-          console.error('Failed to fetch user data. Status:', response.status, 'Error:', errorText);
-        }
+        const data = await restaurantManagerService.getCurrentUserData(keycloak.token);
+        setUserData(data);
       } catch (error) {
         console.error('Failed to fetch user data:', error);
       } finally {
@@ -83,7 +64,7 @@ export default function RestaurantOwnerProfile() {
           style={{ height: 'calc(100vh - 150px)' }}
         >
           <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
-            {t('profile.loadingProfile')}
+            {t('manager.loadingProfile')}
           </p>
         </div>
         <div className="fixed bottom-0 left-0 w-full z-50">
@@ -102,7 +83,7 @@ export default function RestaurantOwnerProfile() {
           style={{ height: 'calc(100vh - 150px)' }}
         >
           <p className="text-sm opacity-60 text-gray-900 dark:text-gray-200">
-            {t('profile.failedToLoadProfile')}
+            {t('manager.failedToLoadProfile')}
           </p>
         </div>
         <div className="fixed bottom-0 left-0 w-full z-50">
@@ -136,11 +117,11 @@ export default function RestaurantOwnerProfile() {
     const lng = parseFloat(formData.longitude);
 
     if (isNaN(lat) || lat < -90 || lat > 90) {
-      errors.latitude = t('profile.validationLatitude');
+      errors.latitude = t('manager.validationLatitude');
     }
 
     if (isNaN(lng) || lng < -180 || lng > 180) {
-      errors.longitude = t('profile.validationLongitude');
+      errors.longitude = t('manager.validationLongitude');
     }
 
     setValidationErrors(errors);
@@ -157,48 +138,26 @@ export default function RestaurantOwnerProfile() {
 
     setCreating(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${keycloak.token}`,
-        },
-        body: JSON.stringify({
-          ...createFormData,
-          latitude: parseFloat(createFormData.latitude),
-          longitude: parseFloat(createFormData.longitude),
-        }),
-      });
+      const newRestaurant = await restaurantManagerService.createRestaurant(
+        keycloak.token,
+        createFormData
+      );
 
-      if (response.ok) {
-        const newRestaurant = await response.json();
+      setUserData(prev =>
+        prev
+          ? {
+              ...prev,
+              ownedRestaurants: [...prev.ownedRestaurants, newRestaurant],
+            }
+          : null
+      );
 
-        setUserData(prev =>
-          prev
-            ? {
-                ...prev,
-                ownedRestaurants: [...prev.ownedRestaurants, newRestaurant],
-              }
-            : null
-        );
-
-        setCreateFormData({
-          name: '',
-          description: '',
-          latitude: '',
-          longitude: '',
-          photoPath: '',
-        });
-        setValidationErrors({});
-        setShowCreateForm(false);
-      } else {
-        const errorText = await response.text();
-        console.error('Failed to create restaurant:', response.status, errorText);
-        alert(t('profile.failedToCreateRestaurant'));
-      }
+      setCreateFormData(EMPTY_FORM_DATA);
+      setValidationErrors({});
+      setShowCreateForm(false);
     } catch (error) {
       console.error('Error creating restaurant:', error);
-      alert(t('profile.errorCreatingRestaurant'));
+      alert(t('manager.errorCreatingRestaurant'));
     } finally {
       setCreating(false);
     }
@@ -216,6 +175,20 @@ export default function RestaurantOwnerProfile() {
     setValidationErrors({});
   };
 
+  const handleCreateFormChange = (next: RestaurantCreateFormData) => {
+    setCreateFormData(next);
+    if (validationErrors.latitude || validationErrors.longitude) {
+      setValidationErrors({});
+    }
+  };
+
+  const handleEditFormChange = (next: RestaurantCreateFormData) => {
+    setEditFormData(next);
+    if (validationErrors.latitude || validationErrors.longitude) {
+      setValidationErrors({});
+    }
+  };
+
   const handleUpdateRestaurant = async (e: FormEvent) => {
     e.preventDefault();
     if (!keycloak.token || !editingRestaurant) return;
@@ -226,53 +199,29 @@ export default function RestaurantOwnerProfile() {
 
     setUpdating(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/restaurants/${editingRestaurant.id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${keycloak.token}`,
-          },
-          body: JSON.stringify({
-            ...editFormData,
-            latitude: parseFloat(editFormData.latitude),
-            longitude: parseFloat(editFormData.longitude),
-          }),
-        }
+      const updatedRestaurant = await restaurantManagerService.updateRestaurant(
+        keycloak.token,
+        editingRestaurant.id,
+        editFormData
       );
 
-      if (response.ok) {
-        const updatedRestaurant = await response.json();
+      setUserData(prev =>
+        prev
+          ? {
+              ...prev,
+              ownedRestaurants: prev.ownedRestaurants.map(r =>
+                r.id === editingRestaurant.id ? updatedRestaurant : r
+              ),
+            }
+          : null
+      );
 
-        setUserData(prev =>
-          prev
-            ? {
-                ...prev,
-                ownedRestaurants: prev.ownedRestaurants.map(r =>
-                  r.id === editingRestaurant.id ? updatedRestaurant : r
-                ),
-              }
-            : null
-        );
-
-        setEditingRestaurant(null);
-        setEditFormData({
-          name: '',
-          description: '',
-          latitude: '',
-          longitude: '',
-          photoPath: '',
-        });
-        setValidationErrors({});
-      } else {
-        const errorText = await response.text();
-        console.error('Failed to update restaurant:', response.status, errorText);
-        alert(t('profile.failedToUpdateRestaurant'));
-      }
+      setEditingRestaurant(null);
+      setEditFormData(EMPTY_FORM_DATA);
+      setValidationErrors({});
     } catch (error) {
       console.error('Error updating restaurant:', error);
-      alert(t('profile.errorUpdatingRestaurant'));
+      alert(t('manager.errorUpdatingRestaurant'));
     } finally {
       setUpdating(false);
     }
@@ -287,360 +236,79 @@ export default function RestaurantOwnerProfile() {
       >
         <div className="w-full max-w-6xl">
           <div>
-            <div className="mb-4 inline-flex max-w-full items-center gap-2 md:gap-3">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white truncate">
-                {t('profile.yourRestaurants')}
-              </h2>
-              <button
-                onClick={() => setShowCreateForm(true)}
-                aria-label={t('profile.addRestaurant')}
-                title={t('profile.addRestaurant')}
-                className="shrink-0 h-8 w-8 flex items-center justify-center text-base font-semibold text-white bg-[#009DE0] rounded hover:bg-[#007bb8] transition-colors"
-              >
-                +
-              </button>
-            </div>
+            <RestaurantSectionHeader
+              title={t('manager.yourRestaurants')}
+              addLabel={t('manager.addRestaurant')}
+              onAdd={() => setShowCreateForm(true)}
+            />
             {!userData.ownedRestaurants || userData.ownedRestaurants.length === 0 ? (
               <p className="text-center text-gray-900 dark:text-gray-300">
-                {t('profile.noRestaurantsYet')}
+                {t('manager.noRestaurantsYet')}
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {userData.ownedRestaurants.map(restaurant => (
-                  <div
+                  <RestaurantCard
                     key={restaurant.id}
-                    className="p-4 border rounded-lg border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 flex flex-col h-full"
-                  >
-                    <div className="mb-3">
-                      <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {restaurant.name}
-                      </p>
-                      {restaurant.description && (
-                        <p className="text-sm opacity-60 mt-1 text-gray-700 dark:text-gray-400">
-                          {restaurant.description}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      <button
-                        className="px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
-                        onClick={() => handleRestaurantSelect(restaurant.id)}
-                      >
-                        {t('profile.addMenuFromPhoto')}
-                      </button>
-                      <button
-                        className="px-3 py-2 rounded text-sm font-medium text-white bg-[#009DE0] hover:bg-[#007bb8] transition-colors"
-                        onClick={() => handleMenuFormSelect(restaurant.id)}
-                      >
-                        {t('profile.addManually')}
-                      </button>
-                      <button
-                        className="px-3 py-2 rounded text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-zinc-700 hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors"
-                        onClick={() => handleEditRestaurant(restaurant)}
-                      >
-                        {t('profile.editRestaurant')}
-                      </button>
-                    </div>
-
-                    <div className="mt-3 flex flex-col gap-2">
-                      <button
-                        className="w-full px-3 py-2 rounded text-sm font-medium text-[#009DE0] bg-white border border-[#009DE0] hover:bg-sky-50 transition-colors"
-                        onClick={() => handleManageDraftSelect(restaurant.id)}
-                      >
-                        {t('profile.manageDrafts')}
-                      </button>
-                      <button
-                        className="w-full px-3 py-2 rounded text-sm font-medium text-[#009DE0] bg-white border border-[#009DE0] hover:bg-sky-50 transition-colors"
-                        onClick={() => handleManagePublishedMenuSelect(restaurant.id)}
-                      >
-                        {t('profile.managePublishedMenu')}
-                      </button>
-                    </div>
-                  </div>
+                    restaurant={restaurant}
+                    labels={{
+                      addMenuFromPhoto: t('manager.addMenuFromPhoto'),
+                      addManually: t('manager.addManually'),
+                      editRestaurant: t('manager.editRestaurant'),
+                      manageDrafts: t('manager.manageDrafts'),
+                      managePublishedMenu: t('manager.managePublishedMenu'),
+                    }}
+                    onAddPhoto={handleRestaurantSelect}
+                    onAddManual={handleMenuFormSelect}
+                    onEdit={handleEditRestaurant}
+                    onManageDrafts={handleManageDraftSelect}
+                    onManagePublished={handleManagePublishedMenuSelect}
+                  />
                 ))}
               </div>
             )}
           </div>
-          {showCreateForm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white dark:bg-zinc-900 rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {t('profile.createNewRestaurant')}
-                    </h3>
-                    <button
-                      onClick={() => setShowCreateForm(false)}
-                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                    >
-                      ✕
-                    </button>
-                  </div>
+          <RestaurantFormModal
+            isOpen={showCreateForm}
+            title={t('manager.createNewRestaurant')}
+            formData={createFormData}
+            validationErrors={validationErrors}
+            submitLabel={creating ? t('manager.creating') : t('manager.createRestaurant')}
+            cancelLabel={t('common.cancel')}
+            isSubmitting={creating}
+            onClose={() => setShowCreateForm(false)}
+            onSubmit={handleCreateRestaurant}
+            onValidateCoordinates={validateCoordinates}
+            onChange={handleCreateFormChange}
+            labels={{
+              restaurantNameRequired: t('manager.restaurantNameRequired'),
+              description: t('manager.description'),
+              latitudeLabel: t('manager.latitudeLabel'),
+              longitudeLabel: t('manager.longitudeLabel'),
+              photoUrl: t('manager.photoUrl'),
+            }}
+          />
 
-                  <form
-                    onSubmit={handleCreateRestaurant}
-                    className="space-y-4"
-                  >
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('profile.restaurantNameRequired')}
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={createFormData.name}
-                        onChange={e =>
-                          setCreateFormData(prev => ({ ...prev, name: e.target.value }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('profile.description')}
-                      </label>
-                      <textarea
-                        value={createFormData.description}
-                        onChange={e =>
-                          setCreateFormData(prev => ({ ...prev, description: e.target.value }))
-                        }
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          {t('profile.latitudeLabel')}
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={createFormData.latitude}
-                          onChange={e => {
-                            setCreateFormData(prev => ({ ...prev, latitude: e.target.value }));
-                            if (validationErrors.latitude) {
-                              setValidationErrors(prev => ({ ...prev, latitude: undefined }));
-                            }
-                          }}
-                          onBlur={validateCoordinates}
-                          className={`w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white ${
-                            validationErrors.latitude
-                              ? 'border-red-500 dark:border-red-400'
-                              : 'border-gray-300 dark:border-zinc-600'
-                          }`}
-                          placeholder="e.g., 40.7128"
-                        />
-                        {validationErrors.latitude && (
-                          <p className="text-red-500 text-xs mt-1">{validationErrors.latitude}</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          {t('profile.longitudeLabel')}
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={createFormData.longitude}
-                          onChange={e => {
-                            setCreateFormData(prev => ({ ...prev, longitude: e.target.value }));
-                            if (validationErrors.longitude) {
-                              setValidationErrors(prev => ({ ...prev, longitude: undefined }));
-                            }
-                          }}
-                          onBlur={validateCoordinates}
-                          className={`w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white ${
-                            validationErrors.longitude
-                              ? 'border-red-500 dark:border-red-400'
-                              : 'border-gray-300 dark:border-zinc-600'
-                          }`}
-                          placeholder="e.g., -74.0060"
-                        />
-                        {validationErrors.longitude && (
-                          <p className="text-red-500 text-xs mt-1">{validationErrors.longitude}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('profile.photoUrl')}
-                      </label>
-                      <input
-                        type="text"
-                        value={createFormData.photoPath}
-                        onChange={e =>
-                          setCreateFormData(prev => ({ ...prev, photoPath: e.target.value }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-                        placeholder="https://example.com/photo.jpg"
-                      />
-                    </div>
-
-                    <div className="flex gap-3 pt-4">
-                      <button
-                        type="button"
-                        onClick={() => setShowCreateForm(false)}
-                        className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-zinc-700 rounded hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors"
-                      >
-                        {t('common.cancel')}
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={creating}
-                        className="flex-1 px-4 py-2 text-white bg-[#009DE0] rounded hover:bg-[#007bb8] disabled:bg-gray-400 transition-colors"
-                      >
-                        {creating ? t('profile.creating') : t('profile.createRestaurant')}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {editingRestaurant && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white dark:bg-zinc-900 rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {t('profile.editRestaurantTitle')}
-                    </h3>
-                    <button
-                      onClick={() => setEditingRestaurant(null)}
-                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <form
-                    onSubmit={handleUpdateRestaurant}
-                    className="space-y-4"
-                  >
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('profile.restaurantNameRequired')}
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={editFormData.name}
-                        onChange={e => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('profile.description')}
-                      </label>
-                      <textarea
-                        value={editFormData.description}
-                        onChange={e =>
-                          setEditFormData(prev => ({ ...prev, description: e.target.value }))
-                        }
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          {t('profile.latitudeLabel')}
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={editFormData.latitude}
-                          onChange={e => {
-                            setEditFormData(prev => ({ ...prev, latitude: e.target.value }));
-                            if (validationErrors.latitude) {
-                              setValidationErrors(prev => ({ ...prev, latitude: undefined }));
-                            }
-                          }}
-                          onBlur={validateCoordinates}
-                          className={`w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white ${
-                            validationErrors.latitude
-                              ? 'border-red-500 dark:border-red-400'
-                              : 'border-gray-300 dark:border-zinc-600'
-                          }`}
-                          placeholder="e.g., 40.7128"
-                        />
-                        {validationErrors.latitude && (
-                          <p className="text-red-500 text-xs mt-1">{validationErrors.latitude}</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          {t('profile.longitudeLabel')}
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={editFormData.longitude}
-                          onChange={e => {
-                            setEditFormData(prev => ({ ...prev, longitude: e.target.value }));
-                            if (validationErrors.longitude) {
-                              setValidationErrors(prev => ({ ...prev, longitude: undefined }));
-                            }
-                          }}
-                          onBlur={validateCoordinates}
-                          className={`w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white ${
-                            validationErrors.longitude
-                              ? 'border-red-500 dark:border-red-400'
-                              : 'border-gray-300 dark:border-zinc-600'
-                          }`}
-                          placeholder="e.g., -74.0060"
-                        />
-                        {validationErrors.longitude && (
-                          <p className="text-red-500 text-xs mt-1">{validationErrors.longitude}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('profile.photoUrl')}
-                      </label>
-                      <input
-                        type="text"
-                        value={editFormData.photoPath}
-                        onChange={e =>
-                          setEditFormData(prev => ({ ...prev, photoPath: e.target.value }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-                        placeholder="https://example.com/photo.jpg"
-                      />
-                    </div>
-
-                    <div className="flex gap-3 pt-4">
-                      <button
-                        type="button"
-                        onClick={() => setEditingRestaurant(null)}
-                        className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-zinc-700 rounded hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors"
-                      >
-                        {t('common.cancel')}
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={updating}
-                        className="flex-1 px-4 py-2 text-white bg-[#009DE0] rounded hover:bg-[#007bb8] disabled:bg-gray-400 transition-colors"
-                      >
-                        {updating ? t('profile.updating') : t('profile.updateRestaurant')}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          )}
+          <RestaurantFormModal
+            isOpen={!!editingRestaurant}
+            title={t('manager.editRestaurantTitle')}
+            formData={editFormData}
+            validationErrors={validationErrors}
+            submitLabel={updating ? t('manager.updating') : t('manager.updateRestaurant')}
+            cancelLabel={t('common.cancel')}
+            isSubmitting={updating}
+            onClose={() => setEditingRestaurant(null)}
+            onSubmit={handleUpdateRestaurant}
+            onValidateCoordinates={validateCoordinates}
+            onChange={handleEditFormChange}
+            labels={{
+              restaurantNameRequired: t('manager.restaurantNameRequired'),
+              description: t('manager.description'),
+              latitudeLabel: t('manager.latitudeLabel'),
+              longitudeLabel: t('manager.longitudeLabel'),
+              photoUrl: t('manager.photoUrl'),
+            }}
+          />
         </div>
       </div>
       <div className="fixed bottom-0 left-0 w-full z-50">
