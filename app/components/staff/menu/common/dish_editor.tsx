@@ -1,9 +1,8 @@
 import * as React from 'react';
-import type { Dish, Allergen } from '~/interfaces';
+import { MENU_ALLERGENS, type Dish, type Allergen } from '~/interfaces';
 import { useTranslation } from 'react-i18next';
 import { translateAllergen, translateCategory } from '~/components/menu/menu_translations';
 
-const ALLERGEN_OPTIONS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS'];
 const CATEGORY_OPTIONS = ['SOUP', 'MAIN_COURSE'];
 
 interface DishEditorProps {
@@ -88,7 +87,7 @@ export function DishEditor({
             {t('menuForm.allergens')}
           </label>
           <div className="flex flex-wrap gap-2">
-            {ALLERGEN_OPTIONS.map(allergen => {
+            {MENU_ALLERGENS.map(allergen => {
               const selected = (dish.allergens || []).includes(allergen);
               return (
                 <button

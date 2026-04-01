@@ -14,7 +14,7 @@ import {
 import { Checkbox } from '~/shadcn/components/ui/checkbox';
 import { Plus, Trash } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '~/shadcn/components/ui/alert';
-import { type DishDTO } from '~/interfaces';
+import { MENU_ALLERGENS, type DishDTO } from '~/interfaces';
 import {
   menuService,
   useSaveMenuDraftWithToken,
@@ -24,8 +24,6 @@ import { useRestaurantStore } from '~/store/restaurant_store';
 import { useTranslation } from 'react-i18next';
 import { translateAllergen, translateCategory } from '~/components/menu/menu_translations';
 import { menuRoutes } from '../menu_routes';
-
-const ALLERGENS = ['GLUTEN', 'LACTOSE', 'MEAT'];
 
 const CATEGORIES = ['SOUP', 'MAIN_COURSE'] as const;
 
@@ -350,7 +348,7 @@ export function DailyMenuForm({
                       {t('menuForm.allergens')}
                     </Label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {ALLERGENS.map(a => (
+                      {MENU_ALLERGENS.map(a => (
                         <label
                           key={a}
                           className="flex items-center space-x-2"

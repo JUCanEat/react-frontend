@@ -14,6 +14,8 @@ export interface Restaurant {
 
 export type Allergen = 'NUTS' | 'GLUTEN' | 'MEAT' | 'LACTOSE';
 
+export const MENU_ALLERGENS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS'];
+
 export interface DailyMenu {
   id: string;
   date: string;
