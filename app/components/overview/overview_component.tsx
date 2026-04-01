@@ -17,12 +17,23 @@ import type { FilterValue } from '~/components/overview/filter_bar';
 import { useTranslation } from 'react-i18next';
 export function OverviewComponent() {
   const [filters, setFilters] = React.useState<FilterValue[]>([]);
+  const [query, setQuery] = React.useState('');
   const { t } = useTranslation();
   return (
     <div className={'flex justify-center dark:bg-zinc-950 min-h-screen overflow-hidden'}>
       <div className={'dark:bg-zinc-950 max-w-3xl w-full flex flex-col'}>
         <TopBar isLoginPage={false} />
         <div className={'pt-5 pl-5 pr-5 dark:bg-zinc-950 flex-1 flex flex-col'}>
+          <div className="space-y-3">
+            <SearchBar
+              value={query}
+              onChange={setQuery}
+            />
+            <FilterBar
+              value={filters}
+              onChange={setFilters}
+            />
+          </div>
           <div className="flex-1">
             <div className={'pt-5'}>
               <ServiceSectionStripe stripeTitle={t('overview.restaurants')} />
@@ -30,6 +41,7 @@ export function OverviewComponent() {
                 carouselItemSource={useGetAllRestaurants}
                 variant="restaurant"
                 filters={filters}
+                query={query}
               />
             </div>
 
@@ -38,6 +50,7 @@ export function OverviewComponent() {
               <ServiceSection
                 carouselItemSource={useGetAllVendingMachines}
                 variant="vending"
+                query={query}
               />
             </div>
           </div>
