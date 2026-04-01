@@ -40,91 +40,78 @@ export function DishListComponent({
   const filteredDishes: Dish[] = filterDishes(dishes, dishFilterStrings);
   const isMenuNotFound = !!error && /API Error:\s*404\b/.test(error.message);
 
-  if (isLoading) {
-    return (
-      <div className="dark:bg-zinc-950">
-        <TopBar isLoginPage={false} />
-        <div
-          className="w-full dark:bg-zinc-950 flex items-center justify-center"
-          style={{ height: 'calc(100vh - 150px)' }}
-        >
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-            <p className="dark:text-white">{t('menu.loadingMenu')}</p>
-          </div>
-        </div>
-        <BottomNav page={'menu'} />
-      </div>
-    );
-  }
-
-  if (error && !isMenuNotFound) {
-    return (
-      <div className="dark:bg-zinc-950">
-        <TopBar isLoginPage={false} />
-        <div
-          className="w-full dark:bg-zinc-950 flex items-center justify-center"
-          style={{ height: 'calc(100vh - 150px)' }}
-        >
-          <div className="text-center text-red-500 dark:text-red-400">
-            <p>{t('menu.errorLoadingMenu')}</p>
-            <p className="text-sm mt-2">{error.message}</p>
-            <p className="text-xs mt-2 dark:text-gray-400">
-              {t('menu.restaurantName', { name: restaurantName })}
-            </p>
-          </div>
-        </div>
-        <BottomNav page={'menu'} />
-      </div>
-    );
-  }
-
-  if (isMenuNotFound || !dishes || dishes.length === 0) {
-    return (
-      <div className="dark:bg-zinc-950">
-        <TopBar isLoginPage={false} />
-        <div
-          className="w-full dark:bg-zinc-950 flex items-center justify-center"
-          style={{ height: 'calc(100vh - 150px)' }}
-        >
-          <div className="text-center dark:text-white">
-            <p>{t('menu.noMenuYet')}</p>
-            <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
-              {t('menu.restaurantName', { name: restaurantName })}
-            </p>
-          </div>
-        </div>
-        <BottomNav page={'menu'} />
-      </div>
-    );
-  }
-
   return (
-    <div className="dark:bg-zinc-950">
-      <TopBar isLoginPage={false} />
-      <div
-        className="w-full dark:bg-zinc-950"
-        style={{ height: 'calc(100vh - 150px)' }}
-      >
-        <div className="px-4 pt-2">
-          <FilterBar
-            value={filters}
-            onChange={setFilters}
-          />
-        </div>
+    <div className="flex justify-center dark:bg-zinc-950 min-h-screen overflow-hidden">
+      <div className="dark:bg-zinc-950 max-w-3xl w-full flex flex-col">
+        <TopBar isLoginPage={false} />
+        <div className="pt-5 pl-5 pr-5 dark:bg-zinc-950 flex-1 flex flex-col">
+          <div className="flex-1">
+            {isLoading && (
+              <div
+                className="w-full dark:bg-zinc-950 flex items-center justify-center"
+                style={{ height: 'calc(100vh - 230px)' }}
+              >
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                  <p className="dark:text-white">{t('menu.loadingMenu')}</p>
+                </div>
+              </div>
+            )}
 
-        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2 dark:bg-zinc-950">
-          <div className="flex flex-col gap-4">
-            {filteredDishes.map(dish => (
-              <DishInfo
-                key={dish.id}
-                dish={dish}
-              />
-            ))}
+            {!isLoading && error && !isMenuNotFound && (
+              <div
+                className="w-full dark:bg-zinc-950 flex items-center justify-center"
+                style={{ height: 'calc(100vh - 230px)' }}
+              >
+                <div className="text-center text-red-500 dark:text-red-400">
+                  <p>{t('menu.errorLoadingMenu')}</p>
+                  <p className="text-sm mt-2">{error.message}</p>
+                  <p className="text-xs mt-2 dark:text-gray-400">
+                    {t('menu.restaurantName', { name: restaurantName })}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {!isLoading && (isMenuNotFound || !dishes || dishes.length === 0) && (
+              <div
+                className="w-full dark:bg-zinc-950 flex items-center justify-center"
+                style={{ height: 'calc(100vh - 230px)' }}
+              >
+                <div className="text-center dark:text-white">
+                  <p>{t('menu.noMenuYet')}</p>
+                  <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
+                    {t('menu.restaurantName', { name: restaurantName })}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {!isLoading && !error && dishes.length > 0 && (
+              <>
+                <div className="pt-2">
+                  <FilterBar
+                    value={filters}
+                    onChange={setFilters}
+                  />
+                </div>
+
+                <div className="flex-1 overflow-y-auto pb-24 pt-2 dark:bg-zinc-950">
+                  <div className="flex flex-col gap-4">
+                    {filteredDishes.map(dish => (
+                      <DishInfo
+                        key={dish.id}
+                        dish={dish}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
+          <BottomNav page={'menu'} />
         </div>
       </div>
-      <BottomNav page={'menu'} />
     </div>
   );
 }
