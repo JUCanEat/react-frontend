@@ -1,18 +1,18 @@
 import { RequireAuth } from '~/auth/RequireAuth';
-import { StaffMenuFromPhoto } from '~/components/staff/menu/menu_from_photo/menu_from_photo';
+import { PublishedMenuPanel } from '~/components/staff/menu/manual_menu/published_menu_panel';
 import { useKeycloak } from '@react-keycloak/web';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-export default function StaffMenuFromPhotoRoute() {
+export default function StaffPublishedMenuRoute() {
   return (
     <RequireAuth>
-      <StaffMenuFromPhotoInner />
+      <StaffPublishedMenuInner />
     </RequireAuth>
   );
 }
 
-function StaffMenuFromPhotoInner() {
+function StaffPublishedMenuInner() {
   const { keycloak } = useKeycloak();
   const { t } = useTranslation();
   const { restaurantId } = useParams<{ restaurantId: string }>();
@@ -26,5 +26,5 @@ function StaffMenuFromPhotoInner() {
     return <div className="p-6 text-white">{t('auth.restaurantIdMissing')}</div>;
   }
 
-  return <StaffMenuFromPhoto restaurantId={restaurantId} />;
+  return <PublishedMenuPanel restaurantId={restaurantId} />;
 }

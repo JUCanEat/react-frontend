@@ -1,14 +1,14 @@
 import * as React from 'react';
-import type { Dish, Allergen } from '~/interfaces';
+import { MENU_ALLERGENS, type Dish, type Allergen } from '~/interfaces';
 import { useTranslation } from 'react-i18next';
+import { translateAllergen, translateCategory } from '~/components/menu/menu_translations';
 
-const ALLERGEN_OPTIONS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS'];
 const CATEGORY_OPTIONS = ['SOUP', 'MAIN_COURSE'];
 
 interface DishEditorProps {
-  dish: Dish;
+  dish: Dish & { category?: string };
   index: number;
-  onDishChange: (index: number, field: keyof Dish, value: any) => void;
+  onDishChange: (index: number, field: keyof Dish | 'category', value: any) => void;
   onAllergenToggle: (index: number, allergen: Allergen) => void;
   onRemove: (index: number) => void;
 }
@@ -63,7 +63,7 @@ export function DishEditor({
                 key={cat}
                 value={cat}
               >
-                {cat}
+                {translateCategory(cat, t)}
               </option>
             ))}
           </select>
@@ -87,7 +87,7 @@ export function DishEditor({
             {t('menuForm.allergens')}
           </label>
           <div className="flex flex-wrap gap-2">
-            {ALLERGEN_OPTIONS.map(allergen => {
+            {MENU_ALLERGENS.map(allergen => {
               const selected = (dish.allergens || []).includes(allergen);
               return (
                 <button
@@ -96,7 +96,7 @@ export function DishEditor({
                   onClick={() => onAllergenToggle(index, allergen)}
                   className={`px-3 py-1 rounded text-sm border transition-colors ${selected ? 'bg-[#009DE0] text-white border-[#009DE0]' : 'bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white border-gray-300 dark:border-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-700'}`}
                 >
-                  {allergen}
+                  {translateAllergen(allergen, t)}
                 </button>
               );
             })}
