@@ -21,10 +21,5 @@ export default function MenuClient() {
 
   if (!selectedRestaurant) return null; // redirecting
 
-  return (
-    <DishListComponent
-      restaurantId={selectedRestaurant.id}
-      restaurantName={selectedRestaurant.name}
-    />
-  );
+  return <DishListComponent restaurantId={selectedRestaurant.id} />;
 }

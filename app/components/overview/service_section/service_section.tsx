@@ -22,29 +22,10 @@ interface ServiceSectionProps {
   carouselItemSource: () => any;
   variant: ServiceVariant;
   filters?: FilterValue[];
-  query?: string;
 }
 
-export function ServiceSection({
-  carouselItemSource,
-  variant,
-  filters = [],
-  query = '',
-}: ServiceSectionProps) {
+export function ServiceSection({ carouselItemSource, variant, filters = [] }: ServiceSectionProps) {
   const { t } = useTranslation();
-  const normalizedQuery = query.trim().toLowerCase();
-
-  const matchesQuery = React.useCallback(
-    (item: { name?: string; description?: string }) => {
-      if (!normalizedQuery) return true;
-
-      const name = (item.name ?? '').toLowerCase();
-      const description = (item.description ?? '').toLowerCase();
-
-      return name.includes(normalizedQuery) || description.includes(normalizedQuery);
-    },
-    [normalizedQuery]
-  );
 
   if (variant === 'restaurant') {
     const { isPending, error, items } = useRestaurantItemsWithFilters({
@@ -66,7 +47,7 @@ export function ServiceSection({
 
     return (
       <SectionCarousel
-        items={items.filter(matchesQuery)}
+        items={items}
         variant="restaurant"
       />
     );
@@ -89,7 +70,7 @@ export function ServiceSection({
   const items = Array.isArray(data) ? data : [];
   return (
     <SectionCarousel
-      items={items.filter(matchesQuery)}
+      items={items}
       variant="vending"
     />
   );
