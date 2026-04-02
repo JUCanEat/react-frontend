@@ -100,7 +100,7 @@ export function RestaurantFormModal({
                       ? 'border-red-500 dark:border-red-400'
                       : 'border-gray-300 dark:border-zinc-600'
                   }`}
-                  placeholder="e.g., 40.7128"
+                  placeholder="e.g., 50.03000"
                 />
                 {validationErrors.latitude && (
                   <p className="text-red-500 text-xs mt-1">{validationErrors.latitude}</p>
@@ -121,7 +121,7 @@ export function RestaurantFormModal({
                       ? 'border-red-500 dark:border-red-400'
                       : 'border-gray-300 dark:border-zinc-600'
                   }`}
-                  placeholder="e.g., -74.0060"
+                  placeholder="e.g., 19.90000"
                 />
                 {validationErrors.longitude && (
                   <p className="text-red-500 text-xs mt-1">{validationErrors.longitude}</p>

@@ -15,6 +15,16 @@ interface MapProperProps {
   searchQuery: string;
 }
 
+const latCtr = 50.028405;
+const lngCtr = 19.905503;
+
+export const mapBounds: google.maps.LatLngBoundsLiteral = {
+  north: latCtr + 0.008,
+  south: latCtr - 0.008,
+  west: lngCtr - 0.02,
+  east: lngCtr + 0.02,
+};
+
 export function Map_proper({ searchQuery }: MapProperProps) {
   const { t, i18n } = useTranslation();
   const [selectedPlace, setSelectedPlace] = useState<Facility | null>(null);
@@ -74,26 +84,16 @@ export function Map_proper({ searchQuery }: MapProperProps) {
   const primaryFacility =
     filteredRestaurants[0] ?? filteredVendingMachines[0] ?? restaurants[0] ?? vendingMachines[0];
 
-  const lat = primaryFacility.location.latitude.value;
-  const lng = primaryFacility.location.longitude.value;
-
-  const bounds: google.maps.LatLngBoundsLiteral = {
-    north: lat + 0.008,
-    south: lat - 0.008,
-    west: lng - 0.02,
-    east: lng + 0.02,
-  };
-
   return (
     <div className="w-full h-full">
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={{ lat, lng }}
+        center={{ lat: latCtr, lng: lngCtr }}
         zoom={zoom}
         options={{
           styles: mapStyles,
           clickableIcons: false,
-          restriction: { latLngBounds: bounds, strictBounds: true },
+          restriction: { latLngBounds: mapBounds, strictBounds: true },
           disableDefaultUI: true,
           zoomControl: true,
         }}

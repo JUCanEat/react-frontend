@@ -10,6 +10,7 @@ import { restaurantManagerService } from '~/api/restaurant_manager_service';
 import { RestaurantSectionHeader } from '~/components/staff/manager/restaurant_section_header';
 import { RestaurantCard } from '~/components/staff/manager/restaurant_card';
 import { RestaurantFormModal } from '~/components/staff/manager/restaurant_form_modal';
+import { mapBounds } from '~/components/map/map_proper';
 
 const EMPTY_FORM_DATA: RestaurantCreateFormData = {
   name: '',
@@ -122,11 +123,12 @@ export default function RestaurantOwnerProfile() {
     const lat = parseFloat(formData.latitude);
     const lng = parseFloat(formData.longitude);
 
-    if (isNaN(lat) || lat < -90 || lat > 90) {
+    //TODO
+    if (isNaN(lat) || lat < mapBounds.south || lat > mapBounds.north) {
       errors.latitude = t('manager.validationLatitude');
     }
 
-    if (isNaN(lng) || lng < -180 || lng > 180) {
+    if (isNaN(lng) || lng < mapBounds.west || lng > mapBounds.east) {
       errors.longitude = t('manager.validationLongitude');
     }
 
