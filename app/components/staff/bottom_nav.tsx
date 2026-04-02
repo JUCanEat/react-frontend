@@ -10,7 +10,7 @@ export function BottomNav() {
             <Grid className="h-6 w-6 text-white" />
           </button>
 
-          <button onClick={() => (window.location.href = '/profile')}>
+          <button onClick={() => (window.location.href = '/staff/menu-from-photo')}>
             <Utensils className="h-6 w-6 text-[#009DE0]" />
           </button>
 

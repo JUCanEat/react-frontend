@@ -1,5 +1,5 @@
 import { RequireAuth } from '~/auth/RequireAuth';
-import { StaffMenuFromPhoto } from '~/components/staff/menu/menu_from_photo/menu_from_photo';
+import { StaffMenuFromPhoto } from '~/components/staff/menu/menu_from_photo';
 import { useKeycloak } from '@react-keycloak/web';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';

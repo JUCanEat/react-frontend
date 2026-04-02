@@ -1,5 +1,5 @@
 import { TopBar } from '~/components/shared/top_bar';
-import { DailyMenuForm } from '~/components/staff/menu/manual_menu/menu_form';
+import { DailyMenuForm } from '~/components/menu_form/menu_form';
 import { useKeycloak } from '@react-keycloak/web';
 import { useParams } from 'react-router';
 import { Alert, AlertDescription, AlertTitle } from '~/shadcn/components/ui/alert';
