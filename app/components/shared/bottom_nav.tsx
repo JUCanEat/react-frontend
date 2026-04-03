@@ -1,10 +1,16 @@
-import { ItemActions } from '~/shadcn/components/ui/item';
 import { Button } from '~/shadcn/components/ui/button';
-import { Home, Map, User } from 'lucide-react';
+import { Home, Map, User, BriefcaseBusiness } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useKeycloak } from '@react-keycloak/web';
+import { useNavigate } from 'react-router-dom';
+import { appRoutes } from '~/lib/app_routes';
 
 export function BottomNav({ page }: { page?: string }) {
   const { t } = useTranslation();
+  const { keycloak } = useKeycloak();
+  const navigate = useNavigate();
+  const roles = keycloak.tokenParsed?.realm_access?.roles || [];
+  const isOwner = roles.includes('restaurant_owner');
 
   return (
     <div className="flex w-full justify-center">
@@ -13,7 +19,7 @@ export function BottomNav({ page }: { page?: string }) {
           variant={page === 'overview' ? 'highlight' : 'ghost'}
           border="none"
           aria-label={t('nav.home')}
-          onClick={() => (window.location.href = '/')}
+          onClick={() => navigate(appRoutes.home)}
         >
           <Home className="" />
         </Button>
@@ -21,7 +27,7 @@ export function BottomNav({ page }: { page?: string }) {
           variant={page === 'map' ? 'highlight' : 'ghost'}
           border="none"
           aria-label={t('nav.map')}
-          onClick={() => (window.location.href = '/map')}
+          onClick={() => navigate(appRoutes.map)}
         >
           <Map className="" />
         </Button>
@@ -29,10 +35,20 @@ export function BottomNav({ page }: { page?: string }) {
           variant={page === 'profile' ? 'highlight' : 'ghost'}
           border="none"
           aria-label={t('nav.profile')}
-          onClick={() => (window.location.href = '/profile')}
+          onClick={() => navigate(appRoutes.profile)}
         >
           <User className="" />
         </Button>
+        {isOwner && (
+          <Button
+            variant={page === 'manager' ? 'highlight' : 'ghost'}
+            border="none"
+            aria-label={t('nav.manager')}
+            onClick={() => navigate(appRoutes.staffManager)}
+          >
+            <BriefcaseBusiness className="" />
+          </Button>
+        )}
       </nav>
     </div>
   );
