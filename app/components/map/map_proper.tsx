@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react';
+import { useState, useMemo, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import { zoom, mapStyles } from '~/components/map/map_config';
@@ -19,16 +19,17 @@ export function Map_proper({ searchQuery }: MapProperProps) {
   const { t, i18n } = useTranslation();
   const [selectedPlace, setSelectedPlace] = useState<Facility | null>(null);
 
-  const mapsLanguage = i18n.language.startsWith('pl') ? 'pl' : 'en';
-  const mapsRegion = mapsLanguage === 'pl' ? 'PL' : 'US';
   const mapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? '';
 
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: 'jucaneat-google-maps-script',
-    googleMapsApiKey: mapsApiKey,
-    language: mapsLanguage,
-    region: mapsRegion,
-  });
+  const loaderOptions = useMemo(
+    () => ({
+      id: 'jucaneat-google-maps-script',
+      googleMapsApiKey: mapsApiKey,
+    }),
+    [mapsApiKey]
+  );
+
+  const { isLoaded, loadError } = useJsApiLoader(loaderOptions);
 
   const containerStyle: CSSProperties = {
     width: '100%',
