@@ -27,9 +27,30 @@ export function StaffMenuFromPhoto({ restaurantId }: StaffMenuFromPhotoProps) {
     const interval = setInterval(async () => {
       try {
         await menuService.getMenuDraft(restaurantId, keycloak.token!);
+
+        const managedDraft = await menuService.getManagedDraft(restaurantId, keycloak.token!);
+        let latestDraftId: string | undefined;
+
+        if (managedDraft) {
+          const saveResult = await menuService.saveMenuDraft(
+            restaurantId,
+            {
+              date: managedDraft.date || new Date().toISOString().slice(0, 10),
+              dishes: managedDraft.dishes,
+            },
+            keycloak.token!,
+            'photo'
+          );
+          latestDraftId = saveResult.draftId;
+        }
+
         setProcessing(false);
         clearInterval(interval);
-        navigate(menuRoutes.staffDrafts(restaurantId));
+        navigate(
+          latestDraftId
+            ? `${menuRoutes.staffDrafts(restaurantId)}?draftId=${encodeURIComponent(latestDraftId)}`
+            : menuRoutes.staffDrafts(restaurantId)
+        );
       } catch (error) {
         console.log('Draft not ready yet, checking again in 3s...');
       }

@@ -62,6 +62,20 @@ function toStoredDraft(
   };
 }
 
+function upsertLocalDraft(
+  restaurantId: string,
+  menu: DailyMenuDTO,
+  source: MenuDraftSource,
+  draftId?: string
+) {
+  const drafts = readLocalDrafts();
+  const stored = toStoredDraft(restaurantId, menu, source, draftId);
+  const nextDrafts = drafts.filter(d => d.id !== stored.id);
+  nextDrafts.push(stored);
+  writeLocalDrafts(nextDrafts);
+  return stored;
+}
+
 function getUiLanguageCode() {
   return (i18n.language || 'en').split('-')[0].toLowerCase();
 }
@@ -376,6 +390,8 @@ export const menuService = {
     source: MenuDraftSource,
     draftId?: string
   ): Promise<{ savedTo: 'backend' | 'local'; draftId?: string }> => {
+    const stored = upsertLocalDraft(restaurantId, menu, source, draftId);
+
     try {
       const currentLanguage = getUiLanguageCode();
       const response = await fetch(`${API_BASE_URL}/menus/${restaurantId}/draft`, {
@@ -389,19 +405,12 @@ export const menuService = {
       });
 
       if (response.ok) {
-        const drafts = readLocalDrafts().filter(d => d.restaurantId !== restaurantId);
-        writeLocalDrafts(drafts);
-        return { savedTo: 'backend' };
+        return { savedTo: 'backend', draftId: stored.id };
       }
     } catch {
       // Fall back to local storage when backend is unavailable / CORS / network fails.
     }
 
-    const drafts = readLocalDrafts();
-    const stored = toStoredDraft(restaurantId, menu, source, draftId);
-    const nextDrafts = drafts.filter(d => d.id !== stored.id);
-    nextDrafts.push(stored);
-    writeLocalDrafts(nextDrafts);
     return { savedTo: 'local', draftId: stored.id };
   },
 
@@ -435,7 +444,8 @@ export const menuService = {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to approve menu');
+      const text = await response.text().catch(() => '');
+      throw new Error(`Failed to approve menu (${response.status}): ${text}`);
     }
   },
 };

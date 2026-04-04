@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { menuService, type StoredMenuDraft } from '~/api/menu_service';
 import type { DailyMenu, DailyMenuDTO, Dish, Allergen } from '~/interfaces';
 import { LoadingSpinner } from '~/components/staff/common/loading_spinner';
@@ -25,10 +25,22 @@ function isPastDate(dateString: string) {
   return selected < today;
 }
 
+function isFutureDate(dateString: string) {
+  const selected = new Date(`${dateString}T00:00:00`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return selected > today;
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
   const { keycloak } = useKeycloak();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { menuFormSuccess, setMenuFormSuccess, setSelectedRestaurant } = useRestaurantStore();
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
@@ -36,6 +48,9 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
   const [menu, setMenu] = React.useState<DailyMenu | null>(null);
   const [localDrafts, setLocalDrafts] = React.useState<StoredMenuDraft[]>([]);
   const [selectedLocalDraftId, setSelectedLocalDraftId] = React.useState<string | null>(null);
+  const [selectedDraftSource, setSelectedDraftSource] = React.useState<'photo' | 'manual'>(
+    'manual'
+  );
   const [error, setError] = React.useState<string | null>(null);
   const [warning, setWarning] = React.useState<string | null>(null);
 
@@ -47,6 +62,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
 
   const loadLocalDraftIntoEditor = React.useCallback((draft: StoredMenuDraft) => {
     setSelectedLocalDraftId(draft.id);
+    setSelectedDraftSource(draft.source);
     setMenu({
       id: draft.id,
       date: draft.date,
@@ -60,13 +76,18 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
 
       try {
         const drafts = refreshLocalDrafts();
+        const requestedDraftId = searchParams.get('draftId');
 
         if (drafts.length > 0) {
-          loadLocalDraftIntoEditor(drafts[0]);
+          const requestedDraft = requestedDraftId
+            ? drafts.find(d => d.id === requestedDraftId)
+            : null;
+          loadLocalDraftIntoEditor(requestedDraft ?? drafts[0]);
         } else {
           const draft = await menuService.getManagedDraft(restaurantId, keycloak.token);
           if (draft) {
             setSelectedLocalDraftId(null);
+            setSelectedDraftSource('photo');
             setMenu({
               id: draft.id ?? '',
               date: draft.date,
@@ -85,7 +106,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     };
 
     fetchDraft();
-  }, [keycloak.token, restaurantId, refreshLocalDrafts, loadLocalDraftIntoEditor, t]);
+  }, [keycloak.token, restaurantId, refreshLocalDrafts, loadLocalDraftIntoEditor, searchParams, t]);
 
   useEffect(() => {
     if (menuFormSuccess) {
@@ -156,7 +177,29 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         return;
       }
 
-      await menuService.approveMenu(restaurantId, menu, keycloak.token);
+      const payload = {
+        date: publishDate,
+        dishes: (menu.dishes ?? []).map((dish: any) => {
+          const normalizedPrice =
+            typeof dish.price === 'number' ? dish.price : Number(dish.price ?? 0);
+
+          const normalizedDish: any = {
+            name: dish.name,
+            category: dish.category ?? 'MAIN_COURSE',
+            price: normalizedPrice,
+            allergens: dish.allergens ?? [],
+          };
+
+          if (typeof dish.id === 'string' && isUuid(dish.id)) {
+            normalizedDish.id = dish.id;
+          }
+
+          return normalizedDish;
+        }),
+        status: isFutureDate(publishDate) ? 'SCHEDULED' : 'ACTIVE',
+      } as any;
+
+      await menuService.approveMenu(restaurantId, payload, keycloak.token);
       setSelectedRestaurant({ id: restaurantId } as any);
       setMenuFormSuccess(true);
     } catch (error) {
@@ -188,7 +231,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         restaurantId,
         draftPayload,
         keycloak.token,
-        selectedLocalDraftId ? 'manual' : 'photo',
+        selectedDraftSource,
         selectedLocalDraftId ?? undefined
       );
 
@@ -309,6 +352,17 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
           <h1 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
             {t('staff.reviewMenuDraft')}
           </h1>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-900 dark:text-white">
+              {t('menuForm.date')}
+            </label>
+            <input
+              type="date"
+              value={(menu.date || '').slice(0, 10)}
+              onChange={e => setMenu({ ...menu, date: e.target.value })}
+              className="w-full border border-gray-300 dark:border-zinc-700 rounded px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
+            />
+          </div>
           <div className="space-y-4">
             {menu.dishes.map((dish, index) => (
               <DishEditor
