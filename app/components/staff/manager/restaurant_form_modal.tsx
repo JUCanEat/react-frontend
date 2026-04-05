@@ -26,6 +26,7 @@ interface RestaurantFormModalProps {
     photoUrl: string;
     openingTimeLabel: string;
     closingTimeLabel: string;
+    timeFormatHint: string;
   };
 }
 
@@ -186,6 +187,9 @@ export function RestaurantFormModal({
                 )}
               </div>
             </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 -mt-2">
+              {labels.timeFormatHint}
+            </p>
 
             <div className="flex gap-3 pt-4">
               <button

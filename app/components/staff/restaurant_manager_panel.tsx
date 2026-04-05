@@ -26,6 +26,12 @@ function toTimeInputValue(value?: string) {
   return value.slice(0, 5);
 }
 
+function toMinutes(value: string) {
+  const [hours, minutes] = value.split(':').map(Number);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
+  return hours * 60 + minutes;
+}
+
 function getDefaultOpeningRange(restaurant: Restaurant) {
   const weeklyHours = restaurant.openingHours ?? [];
   const mondayRange = weeklyHours.find(hours => hours.dayOfWeek === 'MONDAY');
@@ -161,6 +167,15 @@ export default function RestaurantOwnerProfile() {
 
     if (!formData.closingTime) {
       errors.closingTime = t('manager.validationClosingTimeRequired');
+    }
+
+    if (formData.openingTime && formData.closingTime) {
+      const openMinutes = toMinutes(formData.openingTime);
+      const closeMinutes = toMinutes(formData.closingTime);
+
+      if (openMinutes !== null && closeMinutes !== null && closeMinutes < openMinutes) {
+        errors.closingTime = t('manager.validationClosingNotEarlierThanOpening');
+      }
     }
 
     setValidationErrors(errors);
@@ -356,6 +371,7 @@ export default function RestaurantOwnerProfile() {
               photoUrl: t('manager.photoUrl'),
               openingTimeLabel: t('manager.openingTimeLabel'),
               closingTimeLabel: t('manager.closingTimeLabel'),
+              timeFormatHint: t('manager.timeFormatHint'),
             }}
           />
 
@@ -379,6 +395,7 @@ export default function RestaurantOwnerProfile() {
               photoUrl: t('manager.photoUrl'),
               openingTimeLabel: t('manager.openingTimeLabel'),
               closingTimeLabel: t('manager.closingTimeLabel'),
+              timeFormatHint: t('manager.timeFormatHint'),
             }}
           />
         </div>
