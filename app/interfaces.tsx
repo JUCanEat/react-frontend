@@ -1,9 +1,27 @@
 // backend
+export type DayOfWeek =
+  | 'MONDAY'
+  | 'TUESDAY'
+  | 'WEDNESDAY'
+  | 'THURSDAY'
+  | 'FRIDAY'
+  | 'SATURDAY'
+  | 'SUNDAY';
+
+export interface OpeningHoursDTO {
+  dayOfWeek: DayOfWeek;
+  openTime: string;
+  closeTime: string;
+}
+
 export interface Restaurant {
   id: string;
   name: string;
   description: string;
   photoPath: string;
+  openingTime?: string;
+  closingTime?: string;
+  openingHours?: OpeningHoursDTO[];
   location: {
     id: string;
     latitude: { value: number };
@@ -68,6 +86,9 @@ export interface UpdateRestaurantRequest {
   name?: string;
   description?: string;
   photoPath?: string;
+  openingTime?: string;
+  closingTime?: string;
+  openingHours?: OpeningHoursDTO[];
   location?: {
     latitude: number;
     longitude: number;
@@ -79,6 +100,9 @@ export interface RestaurantDetailsDTO {
   name: string;
   description: string;
   photoPath: string;
+  openingTime?: string;
+  closingTime?: string;
+  openingHours?: OpeningHoursDTO[];
   location: {
     id: string;
     latitude: { value: number };
@@ -103,4 +127,6 @@ export interface RestaurantCreateFormData {
   latitude: string;
   longitude: string;
   photoPath: string;
+  openingTime: string;
+  closingTime: string;
 }
