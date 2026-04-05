@@ -17,7 +17,25 @@ const EMPTY_FORM_DATA: RestaurantCreateFormData = {
   latitude: '',
   longitude: '',
   photoPath: '',
+  openingTime: '',
+  closingTime: '',
 };
+
+function toTimeInputValue(value?: string) {
+  if (!value) return '';
+  return value.slice(0, 5);
+}
+
+function getDefaultOpeningRange(restaurant: Restaurant) {
+  const weeklyHours = restaurant.openingHours ?? [];
+  const mondayRange = weeklyHours.find(hours => hours.dayOfWeek === 'MONDAY');
+  const firstRange = mondayRange ?? weeklyHours[0];
+
+  return {
+    openingTime: toTimeInputValue(firstRange?.openTime ?? restaurant.openingTime),
+    closingTime: toTimeInputValue(firstRange?.closeTime ?? restaurant.closingTime),
+  };
+}
 
 export default function RestaurantOwnerProfile() {
   const { keycloak, initialized } = useKeycloak();
@@ -31,6 +49,8 @@ export default function RestaurantOwnerProfile() {
   const [validationErrors, setValidationErrors] = useState<{
     latitude?: string;
     longitude?: string;
+    openingTime?: string;
+    closingTime?: string;
   }>({});
   const [editingRestaurant, setEditingRestaurant] = useState<Restaurant | null>(null);
   const [editFormData, setEditFormData] = useState<RestaurantCreateFormData>(EMPTY_FORM_DATA);
@@ -116,7 +136,12 @@ export default function RestaurantOwnerProfile() {
   };
 
   const validateCoordinates = () => {
-    const errors: { latitude?: string; longitude?: string } = {};
+    const errors: {
+      latitude?: string;
+      longitude?: string;
+      openingTime?: string;
+      closingTime?: string;
+    } = {};
 
     const formData = editingRestaurant ? editFormData : createFormData;
     const lat = parseFloat(formData.latitude);
@@ -128,6 +153,14 @@ export default function RestaurantOwnerProfile() {
 
     if (isNaN(lng) || lng < -180 || lng > 180) {
       errors.longitude = t('manager.validationLongitude');
+    }
+
+    if (!formData.openingTime) {
+      errors.openingTime = t('manager.validationOpeningTimeRequired');
+    }
+
+    if (!formData.closingTime) {
+      errors.closingTime = t('manager.validationClosingTimeRequired');
     }
 
     setValidationErrors(errors);
@@ -169,28 +202,57 @@ export default function RestaurantOwnerProfile() {
     }
   };
 
-  const handleEditRestaurant = (restaurant: Restaurant) => {
-    setEditingRestaurant(restaurant);
+  const handleEditRestaurant = async (restaurant: Restaurant) => {
+    const source = { ...restaurant };
+
+    if (keycloak.token) {
+      try {
+        const details = await restaurantManagerService.getRestaurantDetails(
+          keycloak.token,
+          restaurant.id
+        );
+        Object.assign(source, details);
+      } catch (error) {
+        // Fallback to list data if details endpoint fails.
+        console.error('Failed to fetch restaurant details for editing:', error);
+      }
+    }
+
+    const openingRange = getDefaultOpeningRange(source);
+
+    setEditingRestaurant(source);
     setEditFormData({
-      name: restaurant.name,
-      description: restaurant.description || '',
-      latitude: restaurant.location.latitude.value.toString(),
-      longitude: restaurant.location.longitude.value.toString(),
-      photoPath: restaurant.photoPath || '',
+      name: source.name,
+      description: source.description || '',
+      latitude: source.location.latitude.value.toString(),
+      longitude: source.location.longitude.value.toString(),
+      photoPath: source.photoPath || '',
+      openingTime: openingRange.openingTime,
+      closingTime: openingRange.closingTime,
     });
     setValidationErrors({});
   };
 
   const handleCreateFormChange = (next: RestaurantCreateFormData) => {
     setCreateFormData(next);
-    if (validationErrors.latitude || validationErrors.longitude) {
+    if (
+      validationErrors.latitude ||
+      validationErrors.longitude ||
+      validationErrors.openingTime ||
+      validationErrors.closingTime
+    ) {
       setValidationErrors({});
     }
   };
 
   const handleEditFormChange = (next: RestaurantCreateFormData) => {
     setEditFormData(next);
-    if (validationErrors.latitude || validationErrors.longitude) {
+    if (
+      validationErrors.latitude ||
+      validationErrors.longitude ||
+      validationErrors.openingTime ||
+      validationErrors.closingTime
+    ) {
       setValidationErrors({});
     }
   };
@@ -292,6 +354,8 @@ export default function RestaurantOwnerProfile() {
               latitudeLabel: t('manager.latitudeLabel'),
               longitudeLabel: t('manager.longitudeLabel'),
               photoUrl: t('manager.photoUrl'),
+              openingTimeLabel: t('manager.openingTimeLabel'),
+              closingTimeLabel: t('manager.closingTimeLabel'),
             }}
           />
 
@@ -313,6 +377,8 @@ export default function RestaurantOwnerProfile() {
               latitudeLabel: t('manager.latitudeLabel'),
               longitudeLabel: t('manager.longitudeLabel'),
               photoUrl: t('manager.photoUrl'),
+              openingTimeLabel: t('manager.openingTimeLabel'),
+              closingTimeLabel: t('manager.closingTimeLabel'),
             }}
           />
         </div>

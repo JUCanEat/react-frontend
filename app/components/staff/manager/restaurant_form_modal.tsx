@@ -8,6 +8,8 @@ interface RestaurantFormModalProps {
   validationErrors: {
     latitude?: string;
     longitude?: string;
+    openingTime?: string;
+    closingTime?: string;
   };
   submitLabel: string;
   cancelLabel: string;
@@ -22,6 +24,8 @@ interface RestaurantFormModalProps {
     latitudeLabel: string;
     longitudeLabel: string;
     photoUrl: string;
+    openingTimeLabel: string;
+    closingTimeLabel: string;
   };
 }
 
@@ -140,6 +144,47 @@ export function RestaurantFormModal({
                 className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
                 placeholder="https://example.com/photo.jpg"
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {labels.openingTimeLabel}
+                </label>
+                <input
+                  type="time"
+                  required
+                  value={formData.openingTime}
+                  onChange={e => onChange({ ...formData, openingTime: e.target.value })}
+                  className={`w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white ${
+                    validationErrors.openingTime
+                      ? 'border-red-500 dark:border-red-400'
+                      : 'border-gray-300 dark:border-zinc-600'
+                  }`}
+                />
+                {validationErrors.openingTime && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.openingTime}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {labels.closingTimeLabel}
+                </label>
+                <input
+                  type="time"
+                  required
+                  value={formData.closingTime}
+                  onChange={e => onChange({ ...formData, closingTime: e.target.value })}
+                  className={`w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white ${
+                    validationErrors.closingTime
+                      ? 'border-red-500 dark:border-red-400'
+                      : 'border-gray-300 dark:border-zinc-600'
+                  }`}
+                />
+                {validationErrors.closingTime && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.closingTime}</p>
+                )}
+              </div>
             </div>
 
             <div className="flex gap-3 pt-4">
