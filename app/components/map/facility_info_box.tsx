@@ -1,57 +1,123 @@
 'use client';
 
-import { Button } from '~/shadcn/components/ui/button';
+import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRestaurantStore } from '~/store/restaurant_store';
 import type { FacilityInfoProps, Restaurant, Facility } from '~/interfaces';
 import { useTranslation } from 'react-i18next';
+import { allRestaurantsEndpoint, rootQueryUrl } from '~/root';
+import { appRoutes } from '~/lib/app_routes';
 
-import { Route, DollarSign, Smile } from 'lucide-react';
-
-function PricingIcon({ selectedPoint }: { selectedPoint: Facility }) {
-  const isRestaurant = 'name' in selectedPoint;
-  return (
-    <div className="flex items-center gap-1">
-      <DollarSign
-        className="-mr-2 dark:text-white"
-        size={14}
-      />
-      {isRestaurant && (
-        <DollarSign
-          className="dark:text-white"
-          size={14}
-        />
-      )}
-    </div>
-  );
-}
-
-function CustomerSatisfaction() {
-  // TODO: wire real data
-  return (
-    <div className="flex items-center gap-1">
-      <Smile
-        className="dark:text-white"
-        size={14}
-      />
-      <p className="dark:text-white">6.3</p>
-    </div>
-  );
-}
+import { Clock3, MapPin } from 'lucide-react';
 
 export function FacilityInfo({ selectedPoint, onClose }: FacilityInfoProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const setSelectedRestaurant = useRestaurantStore(s => s.setSelectedRestaurant);
+  const [restaurantDetails, setRestaurantDetails] = React.useState<Restaurant | null>(null);
+  const [isLoadingRestaurantDetails, setIsLoadingRestaurantDetails] = React.useState(false);
+
+  const isRestaurant = Boolean(selectedPoint && 'name' in selectedPoint);
+  const selectedRestaurant = isRestaurant ? (selectedPoint as Restaurant) : null;
+  const hoursSourceRestaurant = restaurantDetails ?? selectedRestaurant;
+
+  React.useEffect(() => {
+    let isActive = true;
+
+    if (!selectedRestaurant?.id) {
+      setRestaurantDetails(null);
+      setIsLoadingRestaurantDetails(false);
+      return () => {
+        isActive = false;
+      };
+    }
+
+    setIsLoadingRestaurantDetails(true);
+
+    void fetch(`${rootQueryUrl}/${allRestaurantsEndpoint}/${selectedRestaurant.id}`)
+      .then(async response => {
+        if (!response.ok) {
+          throw new Error(`Failed to load restaurant details (${response.status})`);
+        }
+        return (await response.json()) as Restaurant;
+      })
+      .then(details => {
+        if (isActive) {
+          setRestaurantDetails(details);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setRestaurantDetails(null);
+        }
+      })
+      .finally(() => {
+        if (isActive) {
+          setIsLoadingRestaurantDetails(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [selectedRestaurant?.id]);
+
+  const toDisplayTime = (time?: string) => {
+    if (!time) return '';
+    return time.length >= 5 ? time.slice(0, 5) : time;
+  };
+
+  const getTodayOpeningHours = (restaurant: Restaurant) => {
+    if (!restaurant.openingHours?.length) return null;
+
+    const dayMap: Record<number, string> = {
+      0: 'SUNDAY',
+      1: 'MONDAY',
+      2: 'TUESDAY',
+      3: 'WEDNESDAY',
+      4: 'THURSDAY',
+      5: 'FRIDAY',
+      6: 'SATURDAY',
+    };
+
+    const today = dayMap[new Date().getDay()];
+    return restaurant.openingHours.find(hours => hours.dayOfWeek === today) ?? null;
+  };
+
+  const openingHoursText = React.useMemo(() => {
+    if (!hoursSourceRestaurant) return '';
+
+    if (isLoadingRestaurantDetails) {
+      return t('map.loading');
+    }
+
+    const todayHours = getTodayOpeningHours(hoursSourceRestaurant);
+    if (todayHours?.openTime && todayHours?.closeTime) {
+      return `${toDisplayTime(todayHours.openTime)} - ${toDisplayTime(todayHours.closeTime)}`;
+    }
+
+    if (hoursSourceRestaurant.openingTime && hoursSourceRestaurant.closingTime) {
+      return `${toDisplayTime(hoursSourceRestaurant.openingTime)} - ${toDisplayTime(hoursSourceRestaurant.closingTime)}`;
+    }
+
+    return t('map.openingHoursUnavailable');
+  }, [hoursSourceRestaurant, isLoadingRestaurantDetails, t]);
 
   if (!selectedPoint) return null;
 
-  const isRestaurant = 'name' in selectedPoint;
-
   const handleGoToDishes = () => {
     if (!isRestaurant) return;
-    setSelectedRestaurant(selectedPoint as Restaurant);
+    setSelectedRestaurant((restaurantDetails as Restaurant) ?? (selectedPoint as Restaurant));
     navigate('/menu');
+  };
+
+  const handleGoToMap = () => {
+    if (selectedRestaurant?.id) {
+      navigate(`${appRoutes.map}?restaurantId=${encodeURIComponent(selectedRestaurant.id)}`);
+    } else {
+      navigate(appRoutes.map);
+    }
+    onClose();
   };
 
   return (
@@ -67,28 +133,38 @@ export function FacilityInfo({ selectedPoint, onClose }: FacilityInfoProps) {
           <h3 className="text-lg font-semibold dark:text-white">
             {isRestaurant ? (selectedPoint as Restaurant).name : t('map.vendingMachine')}
           </h3>
-          <CustomerSatisfaction />
-          <PricingIcon selectedPoint={selectedPoint} />
-          <div className="flex items-center gap-1">
-            <Route
-              className="dark:text-white"
+          <button
+            type="button"
+            onClick={handleGoToMap}
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm text-[#009DE0] hover:bg-sky-50 dark:hover:bg-sky-900/20"
+          >
+            <MapPin
+              className="text-current"
               size={13}
             />
-            <p className="text-sm dark:text-white">{t('map.navigate')}</p>
-          </div>
+            <span>{t('map.goToMap')}</span>
+          </button>
         </div>
 
         <p className="text-gray-700 dark:text-gray-300 mt-2">{selectedPoint.description}</p>
 
+        {isRestaurant && (
+          <div className="mt-3 flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <Clock3 size={14} />
+            <span className="font-medium">{t('map.openingHours')}:</span>
+            <span>{openingHoursText}</span>
+          </div>
+        )}
+
         <div className="flex gap-2 mt-8 justify-end">
           {isRestaurant && (
-            <Button
+            <button
+              type="button"
               onClick={handleGoToDishes}
-              className="text-primary-foreground text-white"
-              variant="default"
+              className="relative z-10 rounded-lg border border-zinc-900 bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
             >
-              {t('map.goTo', { name: (selectedPoint as Restaurant).name })}
-            </Button>
+              {t('map.goToTodayMenu')}
+            </button>
           )}
         </div>
       </div>

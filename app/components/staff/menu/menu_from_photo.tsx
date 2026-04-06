@@ -77,7 +77,7 @@ export function StaffMenuFromPhoto({ restaurantId }: StaffMenuFromPhotoProps) {
   }
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-white dark:bg-black">
+    <div className="flex flex-col w-full min-h-screen bg-transparent dark:bg-black">
       <TopBar isLoginPage={false} />
       <div className="flex flex-1 items-center justify-center">
         <div className="flex flex-col items-center justify-center w-full max-w-md px-4 pt-6 pb-24">

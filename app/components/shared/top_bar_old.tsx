@@ -4,7 +4,7 @@ import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from '~/shadcn/c
 import { useKeycloak } from '@react-keycloak/web';
 import { useTranslation } from 'react-i18next';
 
-export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
+export function TopBarOld({ isLoginPage }: { isLoginPage: boolean }) {
   const { keycloak, initialized } = useKeycloak();
   const { t, i18n } = useTranslation();
   const itemClassName = isLoginPage ? 'justify-center' : 'justify-between';

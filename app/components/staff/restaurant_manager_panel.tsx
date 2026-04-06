@@ -89,7 +89,7 @@ export default function RestaurantOwnerProfile() {
 
   if (!initialized || loading) {
     return (
-      <div className="relative min-h-screen bg-white dark:bg-zinc-950">
+      <div className="relative min-h-screen bg-transparent dark:bg-zinc-950">
         <TopBar isLoginPage={false} />
         <div
           className="w-full flex items-center justify-center"
@@ -108,7 +108,7 @@ export default function RestaurantOwnerProfile() {
 
   if (!userData) {
     return (
-      <div className="relative min-h-screen bg-white dark:bg-zinc-950">
+      <div className="relative min-h-screen bg-transparent dark:bg-zinc-950">
         <TopBar isLoginPage={false} />
         <div
           className="w-full flex items-center justify-center"
@@ -311,13 +311,22 @@ export default function RestaurantOwnerProfile() {
   };
 
   return (
-    <div className="relative min-h-screen bg-white dark:bg-zinc-950">
+    <div className="relative min-h-screen bg-transparent dark:bg-zinc-950">
       <TopBar isLoginPage={false} />
       <div
-        className="w-full overflow-y-auto flex flex-col items-center px-4 pt-6 pb-28 md:pb-10"
+        className="w-full overflow-y-auto flex flex-col items-center px-4 pt-0 pb-28 md:pb-10"
         style={{ minHeight: 'calc(100vh - 150px)' }}
       >
         <div className="w-full max-w-6xl">
+          <section className="rounded-3xl border border-sky-100 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/95 shadow-sm p-4 sm:p-5 mb-4">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              {t('manager.panelTitle')}
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-gray-600 dark:text-gray-300">
+              {t('manager.panelSubtitle')}
+            </p>
+          </section>
+
           <div>
             <RestaurantSectionHeader
               title={t('manager.yourRestaurants')}

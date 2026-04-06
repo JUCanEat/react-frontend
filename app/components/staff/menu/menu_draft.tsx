@@ -119,7 +119,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
   }
 
   return (
-    <div className="w-full min-h-screen bg-white dark:bg-zinc-950 p-4">
+    <div className="w-full min-h-screen bg-transparent dark:bg-zinc-950 p-4">
       <div className="max-w-4xl mx-auto">
         {saving && (
           <StatusBanner
