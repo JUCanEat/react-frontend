@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import { useSearchParams } from 'react-router-dom';
 import { zoom, mapStyles } from '~/components/map/map_config';
 
@@ -26,9 +26,6 @@ export function Map_proper({ searchQuery }: MapProperProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedPlace, setSelectedPlace] = useState<Facility | null>(null);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
-  const [userPosition, setUserPosition] = useState<{ lat: number; lng: number } | null>(null);
-  const [userMarkerPulseOn, setUserMarkerPulseOn] = useState(false);
-  const [userMarkerPulseKey, setUserMarkerPulseKey] = useState(0);
 
   const { isLoaded, loadError } = useJsApiLoader(MAPS_LOADER_OPTIONS);
 
@@ -125,78 +122,6 @@ export function Map_proper({ searchQuery }: MapProperProps) {
     east: lng + 0.02,
   };
 
-  const isUserWithinBounds = (location: { lat: number; lng: number } | null) => {
-    if (!location) return false;
-    return (
-      location.lat >= bounds.south &&
-      location.lat <= bounds.north &&
-      location.lng >= bounds.west &&
-      location.lng <= bounds.east
-    );
-  };
-
-  const isUserOutsideCampus = Boolean(userPosition) && !isUserWithinBounds(userPosition);
-  const displayedUserLocation = !isUserOutsideCampus ? userPosition : null;
-  const isUserLocationUnavailable = !userPosition;
-
-  const userLocationStatus = !userPosition
-    ? t('map.locationUnavailable')
-    : t('map.locationOutsideCampusNearby');
-
-  useEffect(() => {
-    if (userMarkerPulseKey === 0) return;
-
-    setUserMarkerPulseOn(true);
-
-    const timeouts = [
-      window.setTimeout(() => setUserMarkerPulseOn(false), 320),
-      window.setTimeout(() => setUserMarkerPulseOn(true), 640),
-      window.setTimeout(() => setUserMarkerPulseOn(false), 960),
-    ];
-
-    return () => {
-      timeouts.forEach(timeout => window.clearTimeout(timeout));
-    };
-  }, [userMarkerPulseKey]);
-
-  useEffect(() => {
-    if (!primaryFacility || !navigator.geolocation) {
-      setUserPosition(null);
-      return;
-    }
-
-    // if (import.meta.env.DEV) {
-    //   setUserPosition({
-    //     lat: lat + 0.0015,
-    //     lng: lng + 0.0015,
-    //   });
-    //   return;
-    // }
-
-    const watchId = navigator.geolocation.watchPosition(
-      position => {
-        const nextLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-
-        setUserPosition(nextLocation);
-      },
-      () => {
-        setUserPosition(null);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 10_000,
-        timeout: 10_000,
-      }
-    );
-
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
-  }, [bounds.east, bounds.north, bounds.south, bounds.west, primaryFacility]);
-
   if (restaurantsPending || vendingMachinesPending) {
     return <MapLoadingScreen message={t('map.loading')} />;
   }
@@ -212,34 +137,6 @@ export function Map_proper({ searchQuery }: MapProperProps) {
 
   return (
     <div className="relative w-full h-full">
-      {isUserLocationUnavailable ? (
-        <div className="absolute right-8 top-8 z-20">
-          <span className="inline-flex rounded-lg bg-gray-200/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm dark:bg-zinc-700/40 dark:text-gray-200">
-            {t('map.locationUnavailable')}
-          </span>
-        </div>
-      ) : isUserOutsideCampus ? (
-        <div className="absolute right-8 top-8 z-20">
-          <span className="inline-flex rounded-lg bg-gray-200/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm dark:bg-zinc-700/40 dark:text-gray-200">
-            {userLocationStatus}
-          </span>
-        </div>
-      ) : (
-        <div className="absolute right-8 top-8 z-20">
-          <button
-            type="button"
-            onClick={() => {
-              if (!userPosition) return;
-              setMapCenter(userPosition);
-              setUserMarkerPulseKey(prev => prev + 1);
-            }}
-            className="inline-flex rounded-full bg-amber-50/95 px-3 py-1 text-xs font-semibold text-amber-700 shadow-sm hover:bg-amber-100 dark:bg-amber-900/35 dark:text-amber-300 dark:hover:bg-amber-900/50"
-          >
-            {t('map.showMeWhereIAm')}
-          </button>
-        </div>
-      )}
-
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={mapCenter ?? { lat, lng }}
@@ -269,29 +166,6 @@ export function Map_proper({ searchQuery }: MapProperProps) {
             isHighlighted={selectedPlace?.id === vm.id || targetVendingMachineId === vm.id}
           />
         ))}
-
-        {displayedUserLocation && (
-          <Marker
-            position={displayedUserLocation}
-            clickable={false}
-            zIndex={1000}
-            icon={{
-              url:
-                'data:image/svg+xml;utf8,' +
-                encodeURIComponent(
-                  '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2"/><circle cx="14" cy="10.2" r="3.1" fill="#FFFFFF"/><path d="M8.8 20.8c0-3.1 2.3-5.4 5.2-5.4s5.2 2.3 5.2 5.4v1.1H8.8z" fill="#FFFFFF"/></svg>'
-                ),
-              scaledSize: new window.google.maps.Size(
-                userMarkerPulseOn ? 28 : 22,
-                userMarkerPulseOn ? 28 : 22
-              ),
-              anchor: new window.google.maps.Point(
-                userMarkerPulseOn ? 14 : 11,
-                userMarkerPulseOn ? 14 : 11
-              ),
-            }}
-          />
-        )}
       </GoogleMap>
 
       <FacilityInfo
