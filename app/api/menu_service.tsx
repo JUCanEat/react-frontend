@@ -122,13 +122,16 @@ function normalizeMenuStatus(rawStatus?: string, date?: string): 'ACTIVE' | 'SCH
 
 // React Query hooks
 export const useGetDailyMenu = (restaurantId: string) =>
-  useQuery<DailyMenu>({
+  useQuery<DailyMenu | null>({
     queryKey: ['dailyMenu', restaurantId, i18n.language],
     queryFn: async () => {
       const currentLanguage = getUiLanguageCode();
       const response = await fetch(
         `${rootQueryUrl}/${menusEndpoint}/${restaurantId}/localized?language=${currentLanguage}`
       );
+      if (response.status === 404) {
+        return null;
+      }
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`API Error: ${response.status} - ${text}`);

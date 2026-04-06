@@ -31,6 +31,7 @@ export function DishListComponent({
 
   const { data, isLoading, error } = useGetDailyMenu(restaurantId);
 
+  const isMenuNotFound = data === null;
   const dishes = data?.dishes ?? [];
 
   const toggleFilter = (filter: FilterValue) => {
@@ -67,8 +68,6 @@ export function DishListComponent({
   const mainCourseDishes = filteredDishes.filter(
     dish => (dish.category ?? 'MAIN_COURSE').toUpperCase() !== 'SOUP'
   );
-  const isMenuNotFound = !!error && /API Error:\s*404\b/.test(error.message);
-
   return (
     <div className="flex justify-center dark:bg-transparent min-h-screen overflow-hidden">
       <div className="dark:bg-transparent max-w-7xl w-full flex flex-col">
@@ -160,7 +159,7 @@ export function DishListComponent({
               </div>
             )}
 
-            {!isLoading && (isMenuNotFound || !dishes || dishes.length === 0) && (
+            {!isLoading && isMenuNotFound && (
               <div
                 className="w-full dark:bg-transparent flex items-center justify-center"
                 style={{ height: 'calc(100vh - 230px)' }}
