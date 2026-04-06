@@ -236,7 +236,7 @@ export function OverviewComponent() {
   );
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-gradient-to-b from-sky-50 via-white to-white dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-950">
+    <div className="min-h-screen w-full flex flex-col bg-gradient-to-b from-sky-50 via-white to-white dark:from-zinc-800 dark:via-zinc-950 dark:to-black">
       <TopBar isLoginPage={false} />
 
       <div className="flex-1 overflow-y-auto pb-28 md:pb-16">

@@ -10,7 +10,7 @@ export function MapComponent() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="flex flex-col h-screen w-full dark:bg-zinc-950">
+    <div className="flex flex-col h-screen w-full dark:bg-transparent">
       <TopBar isLoginPage={false} />
       <div className="flex-1 relative">
         <Map_proper searchQuery={searchQuery} />

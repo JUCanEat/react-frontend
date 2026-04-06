@@ -38,7 +38,7 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
         border="no_outline"
         size="xsm"
         width="default"
-        className={`${itemClassName} flex-nowrap w-full max-w-full min-w-0 gap-2 overflow-hidden sm:gap-3`}
+        className={`${itemClassName} flex-nowrap w-full max-w-full min-w-0 gap-2 overflow-hidden sm:gap-3 dark:!bg-transparent`}
       >
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <ItemMedia

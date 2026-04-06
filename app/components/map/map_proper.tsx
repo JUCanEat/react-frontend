@@ -313,7 +313,7 @@ export function Map_proper({ searchQuery }: MapProperProps) {
 
 function MapLoadingScreen({ message }: { message: string }) {
   return (
-    <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-sky-50 via-white to-white dark:bg-zinc-950">
+    <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-sky-50 via-white to-white dark:bg-gradient-to-b dark:from-zinc-800 dark:via-zinc-950 dark:to-black">
       <div className="text-center">
         <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#009DE0] border-t-transparent mx-auto mb-3" />
         <p className="text-sm text-gray-700 dark:text-gray-200">{message}</p>

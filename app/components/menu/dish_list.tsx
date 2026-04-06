@@ -70,10 +70,10 @@ export function DishListComponent({
   const isMenuNotFound = !!error && /API Error:\s*404\b/.test(error.message);
 
   return (
-    <div className="flex justify-center dark:bg-zinc-950 min-h-screen overflow-hidden">
-      <div className="dark:bg-zinc-950 max-w-3xl w-full flex flex-col">
+    <div className="flex justify-center dark:bg-transparent min-h-screen overflow-hidden">
+      <div className="dark:bg-transparent max-w-3xl w-full flex flex-col">
         <TopBar isLoginPage={false} />
-        <div className="pt-1 pl-5 pr-5 dark:bg-zinc-950 flex-1 flex flex-col">
+        <div className="pt-1 pl-5 pr-5 dark:bg-transparent flex-1 flex flex-col">
           <section className="rounded-3xl border border-sky-100 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/95 shadow-sm p-4 sm:p-5 mb-3">
             <div>
               <div className="flex items-center gap-1.5">
@@ -135,7 +135,7 @@ export function DishListComponent({
           <div className="flex-1">
             {isLoading && (
               <div
-                className="w-full dark:bg-zinc-950 flex items-center justify-center"
+                className="w-full dark:bg-transparent flex items-center justify-center"
                 style={{ height: 'calc(100vh - 230px)' }}
               >
                 <div className="text-center">
@@ -147,7 +147,7 @@ export function DishListComponent({
 
             {!isLoading && error && !isMenuNotFound && (
               <div
-                className="w-full dark:bg-zinc-950 flex items-center justify-center"
+                className="w-full dark:bg-transparent flex items-center justify-center"
                 style={{ height: 'calc(100vh - 230px)' }}
               >
                 <div className="text-center text-red-500 dark:text-red-400">
@@ -162,7 +162,7 @@ export function DishListComponent({
 
             {!isLoading && (isMenuNotFound || !dishes || dishes.length === 0) && (
               <div
-                className="w-full dark:bg-zinc-950 flex items-center justify-center"
+                className="w-full dark:bg-transparent flex items-center justify-center"
                 style={{ height: 'calc(100vh - 230px)' }}
               >
                 <div className="text-center dark:text-white">
@@ -176,7 +176,7 @@ export function DishListComponent({
 
             {!isLoading && !error && dishes.length > 0 && (
               <>
-                <div className="flex-1 overflow-y-auto pb-24 pt-2 dark:bg-zinc-950">
+                <div className="flex-1 overflow-y-auto pb-24 pt-2 dark:bg-transparent">
                   <div className="space-y-4">
                     <section className="space-y-3">
                       <div className="flex items-center justify-between gap-3">

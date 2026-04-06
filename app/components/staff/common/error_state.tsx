@@ -12,7 +12,7 @@ export function ErrorState({ message, backPath = '/profile', backLabel }: ErrorS
   const navigate = useNavigate();
 
   return (
-    <div className="w-full flex flex-col items-center justify-center min-h-screen p-4 bg-transparent dark:bg-zinc-950">
+    <div className="w-full flex flex-col items-center justify-center min-h-screen p-4 bg-transparent dark:bg-transparent">
       <div className="max-w-md w-full p-6 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700">
         <p className="text-center font-medium text-red-700 dark:text-red-300">{message}</p>
         <button
@@ -37,7 +37,7 @@ export function EmptyState({ message, backPath = '/profile', backLabel }: EmptyS
   const navigate = useNavigate();
 
   return (
-    <div className="w-full flex flex-col items-center justify-center min-h-screen p-4 bg-transparent dark:bg-zinc-950">
+    <div className="w-full flex flex-col items-center justify-center min-h-screen p-4 bg-transparent dark:bg-transparent">
       <p className="text-center mb-4 text-gray-900 dark:text-gray-200">{message}</p>
       <button
         onClick={() => navigate(backPath)}
