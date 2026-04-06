@@ -20,7 +20,12 @@ export default function DailyMenuPage() {
           className="w-full flex items-center justify-center dark:bg-transparent"
           style={{ height: 'calc(100vh - 150px)' }}
         >
-          <div className="animate-spin dark:text-white">{t('menuForm.loadingAuthentication')}</div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2" />
+            <p className="text-sm text-gray-700 dark:text-gray-200">
+              {t('menuForm.loadingAuthentication')}
+            </p>
+          </div>
         </div>
       </div>
     );
