@@ -73,7 +73,7 @@ export function DishListComponent({
     <div className="flex justify-center dark:bg-zinc-950 min-h-screen overflow-hidden">
       <div className="dark:bg-zinc-950 max-w-3xl w-full flex flex-col">
         <TopBar isLoginPage={false} />
-        <div className="pt-0 pl-5 pr-5 dark:bg-zinc-950 flex-1 flex flex-col">
+        <div className="pt-1 pl-5 pr-5 dark:bg-zinc-950 flex-1 flex flex-col">
           <section className="rounded-3xl border border-sky-100 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/95 shadow-sm p-4 sm:p-5 mb-3">
             <div>
               <div className="flex items-center gap-1.5">

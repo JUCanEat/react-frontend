@@ -314,7 +314,7 @@ export default function RestaurantOwnerProfile() {
     <div className="relative min-h-screen bg-transparent dark:bg-zinc-950">
       <TopBar isLoginPage={false} />
       <div
-        className="w-full overflow-y-auto flex flex-col items-center px-4 pt-0 pb-28 md:pb-10"
+        className="w-full overflow-y-auto flex flex-col items-center px-4 pt-1 pb-28 md:pb-10"
         style={{ minHeight: 'calc(100vh - 150px)' }}
       >
         <div className="w-full max-w-6xl">
