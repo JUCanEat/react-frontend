@@ -217,7 +217,7 @@ export function DailyMenuForm({
   };
 
   return (
-    <div className="relative min-h-screen bg-white dark:bg-zinc-950">
+    <div className="relative min-h-screen bg-white dark:bg-transparent">
       <div className="max-w-3xl mx-auto p-4">
         <Button
           variant="outline"

@@ -56,12 +56,14 @@ export type Facility = Restaurant | VendingMachine;
 export interface FacilityInfoProps {
   selectedPoint: Facility | null;
   onClose: () => void;
+  showGoToMapButton?: boolean;
 }
 
 export interface Dish {
   id: string;
   name: string;
   description: string;
+  category?: string;
   price: string;
   image: string;
   allergens: string[];

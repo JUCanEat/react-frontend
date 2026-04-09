@@ -4,6 +4,7 @@ import { appRoutePatterns } from './lib/app_routes';
 export default [
   layout('./routes/mainui.tsx', [
     index('routes/overview.tsx'),
+    route('overview-alt', 'routes/overview_old.tsx'),
     route('staff/menu/:restaurantId/photo', 'routes/staff_menu_from_photo.tsx'),
     route('staff/menu/:restaurantId/form', 'routes/staff_menu_form.tsx'),
     route('staff/menu/:restaurantId/drafts', 'routes/staff_menu_draft.tsx'),

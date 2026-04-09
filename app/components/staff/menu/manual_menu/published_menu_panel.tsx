@@ -279,7 +279,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
   }
 
   return (
-    <div className="w-full min-h-screen bg-white dark:bg-zinc-950 p-4">
+    <div className="w-full min-h-screen bg-white dark:bg-transparent p-4">
       <div className="max-w-4xl mx-auto">
         {saving && (
           <StatusBanner

@@ -26,7 +26,7 @@ function ManagerRouteInner() {
 
   if (!isOwner) {
     return (
-      <div className="relative min-h-screen bg-white dark:bg-zinc-950">
+      <div className="relative min-h-screen bg-transparent dark:bg-transparent">
         <TopBar isLoginPage={false} />
         <div
           className="w-full flex items-center justify-center"
