@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { DirectionsRenderer, GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { useSearchParams } from 'react-router-dom';
 import { zoom, mapStyles } from '~/components/map/map_config';
 
@@ -14,6 +14,8 @@ import { useGetAllVendingMachines } from '~/api/vending_machine_service';
 
 interface MapProperProps {
   searchQuery: string;
+  onLocationStateChange?: (state: 'inside' | 'outside' | 'unavailable') => void;
+  onCenterUserActionChange?: (action: (() => void) | null) => void;
 }
 
 const MAPS_LOADER_OPTIONS = {
@@ -21,7 +23,11 @@ const MAPS_LOADER_OPTIONS = {
   googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? '',
 } as const;
 
-export function Map_proper({ searchQuery }: MapProperProps) {
+export function Map_proper({
+  searchQuery,
+  onLocationStateChange,
+  onCenterUserActionChange,
+}: MapProperProps) {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedPlace, setSelectedPlace] = useState<Facility | null>(null);
@@ -29,6 +35,9 @@ export function Map_proper({ searchQuery }: MapProperProps) {
   const [userPosition, setUserPosition] = useState<{ lat: number; lng: number } | null>(null);
   const [userMarkerPulseOn, setUserMarkerPulseOn] = useState(false);
   const [userMarkerPulseKey, setUserMarkerPulseKey] = useState(0);
+  const [directionsResult, setDirectionsResult] = useState<google.maps.DirectionsResult | null>(
+    null
+  );
 
   const { isLoaded, loadError } = useJsApiLoader(MAPS_LOADER_OPTIONS);
 
@@ -139,9 +148,31 @@ export function Map_proper({ searchQuery }: MapProperProps) {
   const displayedUserLocation = !isUserOutsideCampus ? userPosition : null;
   const isUserLocationUnavailable = !userPosition;
 
-  const userLocationStatus = !userPosition
-    ? t('map.locationUnavailable')
-    : t('map.locationOutsideCampusNearby');
+  useEffect(() => {
+    if (isUserLocationUnavailable) {
+      onLocationStateChange?.('unavailable');
+      return;
+    }
+
+    if (isUserOutsideCampus) {
+      onLocationStateChange?.('outside');
+      return;
+    }
+
+    onLocationStateChange?.('inside');
+  }, [isUserLocationUnavailable, isUserOutsideCampus, onLocationStateChange]);
+
+  useEffect(() => {
+    if (!userPosition || isUserOutsideCampus) {
+      onCenterUserActionChange?.(null);
+      return;
+    }
+
+    onCenterUserActionChange?.(() => () => {
+      setMapCenter(userPosition);
+      setUserMarkerPulseKey(prev => prev + 1);
+    });
+  }, [userPosition, isUserOutsideCampus, onCenterUserActionChange]);
 
   useEffect(() => {
     if (userMarkerPulseKey === 0) return;
@@ -210,36 +241,77 @@ export function Map_proper({ searchQuery }: MapProperProps) {
     return <MapLoadingScreen message={t('map.loading')} />;
   }
 
+  const handleNavigateToFacility = async (facility: Facility) => {
+    if (!userPosition || isUserOutsideCampus) {
+      return;
+    }
+
+    const destination = {
+      lat: facility.location.latitude.value,
+      lng: facility.location.longitude.value,
+    };
+
+    const origin = await new Promise<{ lat: number; lng: number } | null>(resolve => {
+      if (userPosition) {
+        resolve(userPosition);
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        resolve(null);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const nextPosition = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setUserPosition(nextPosition);
+          resolve(nextPosition);
+        },
+        () => resolve(null),
+        {
+          enableHighAccuracy: true,
+          timeout: 10_000,
+          maximumAge: 10_000,
+        }
+      );
+    });
+
+    if (!origin || !window.google?.maps) {
+      return;
+    }
+
+    const service = new window.google.maps.DirectionsService();
+
+    const result = await new Promise<google.maps.DirectionsResult | null>(resolve => {
+      service.route(
+        {
+          origin,
+          destination,
+          travelMode: window.google.maps.TravelMode.WALKING,
+        },
+        (response, status) => {
+          if (status === window.google.maps.DirectionsStatus.OK && response) {
+            resolve(response);
+            return;
+          }
+          resolve(null);
+        }
+      );
+    });
+
+    if (!result) {
+      return;
+    }
+
+    setDirectionsResult(result);
+  };
+
   return (
     <div className="relative w-full h-full">
-      {isUserLocationUnavailable ? (
-        <div className="absolute right-8 top-8 z-20">
-          <span className="inline-flex rounded-lg bg-gray-200/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm dark:bg-zinc-700/40 dark:text-gray-200">
-            {t('map.locationUnavailable')}
-          </span>
-        </div>
-      ) : isUserOutsideCampus ? (
-        <div className="absolute right-8 top-8 z-20">
-          <span className="inline-flex rounded-lg bg-gray-200/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm dark:bg-zinc-700/40 dark:text-gray-200">
-            {userLocationStatus}
-          </span>
-        </div>
-      ) : (
-        <div className="absolute right-8 top-8 z-20">
-          <button
-            type="button"
-            onClick={() => {
-              if (!userPosition) return;
-              setMapCenter(userPosition);
-              setUserMarkerPulseKey(prev => prev + 1);
-            }}
-            className="inline-flex rounded-full bg-amber-50/95 px-3 py-1 text-xs font-semibold text-amber-700 shadow-sm hover:bg-amber-100 dark:bg-amber-900/35 dark:text-amber-300 dark:hover:bg-amber-900/50"
-          >
-            {t('map.showMeWhereIAm')}
-          </button>
-        </div>
-      )}
-
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={mapCenter ?? { lat, lng }}
@@ -270,6 +342,21 @@ export function Map_proper({ searchQuery }: MapProperProps) {
           />
         ))}
 
+        {directionsResult && (
+          <DirectionsRenderer
+            directions={directionsResult}
+            options={{
+              suppressMarkers: true,
+              preserveViewport: false,
+              polylineOptions: {
+                strokeColor: '#009DE0',
+                strokeOpacity: 0.9,
+                strokeWeight: 5,
+              },
+            }}
+          />
+        )}
+
         {displayedUserLocation && (
           <Marker
             position={displayedUserLocation}
@@ -297,6 +384,8 @@ export function Map_proper({ searchQuery }: MapProperProps) {
       <FacilityInfo
         selectedPoint={selectedPlace}
         showGoToMapButton={false}
+        onNavigateTo={handleNavigateToFacility}
+        navigateDisabled={!userPosition || isUserOutsideCampus}
         onClose={() => {
           setSelectedPlace(null);
           if (targetRestaurantId || targetVendingMachineId) {
