@@ -32,29 +32,33 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
   };
 
   return (
-    <div className="flex w-full max-w-full flex-col gap-6">
+    <div className="flex w-full max-w-full flex-col gap-6 overflow-x-hidden">
       <Item
         variant="outline"
+        border="no_outline"
         size="xsm"
         width="default"
-        className={itemClassName}
+        className={`${itemClassName} flex-nowrap w-full max-w-full min-w-0 gap-2 overflow-hidden sm:gap-3`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <ItemMedia
             variant="logo"
             onClick={() => (window.location.href = '/')}
           >
-            <img src="/logo.svg" />
+            <img
+              className={'dark:invert'}
+              src="/logo.svg"
+            />
           </ItemMedia>
-          <ItemContent>
-            <ItemTitle>JU Can Eat</ItemTitle>
+          <ItemContent className="min-w-0">
+            <ItemTitle className="truncate">JU Can Eat</ItemTitle>
           </ItemContent>
         </div>
 
-        <ItemActions>
+        <ItemActions className="ml-auto min-w-0 shrink-0 flex-nowrap justify-end gap-1 sm:gap-2">
           {!isLoginPage && (
-            <div className="flex items-center gap-1 mr-2">
-              <span className="text-xs text-gray-600 dark:text-gray-300">
+            <div className="flex items-center gap-1">
+              <span className="hidden text-xs text-gray-600 dark:text-gray-300 sm:inline">
                 {t('topBar.languageLabel')}:
               </span>
               <Button

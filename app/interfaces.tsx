@@ -14,6 +14,8 @@ export interface Restaurant {
 
 export type Allergen = 'NUTS' | 'GLUTEN' | 'MEAT' | 'LACTOSE';
 
+export const MENU_ALLERGENS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS'];
+
 export interface DailyMenu {
   id: string;
   date: string;
@@ -84,4 +86,21 @@ export interface RestaurantDetailsDTO {
   };
   openNow: boolean;
   owners?: string[];
+}
+
+// Restaurant manager panel interfaces
+export interface RestaurantManagerUserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  ownedRestaurants: Restaurant[];
+}
+
+export interface RestaurantCreateFormData {
+  name: string;
+  description: string;
+  latitude: string;
+  longitude: string;
+  photoPath: string;
 }
