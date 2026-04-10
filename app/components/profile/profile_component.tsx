@@ -36,7 +36,7 @@ export default function ProfileComponent() {
       <div className="flex flex-col h-screen w-full bg-transparent dark:bg-transparent">
         <TopBar isLoginPage={false} />
         <div className="flex-1 overflow-y-auto pb-28 md:pb-16">
-          <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 pt-1 pb-6 lg:pt-2 lg:pb-8 space-y-4">
+          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-1 pb-6 lg:pt-2 lg:pb-8 space-y-4">
             <section className="rounded-3xl border border-sky-100 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/95 shadow-sm p-4 sm:p-5">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 {t('profile.pageTitle')}
@@ -74,7 +74,7 @@ export default function ProfileComponent() {
     <div className="flex flex-col h-screen w-full bg-transparent dark:bg-transparent">
       <TopBar isLoginPage={false} />
       <div className="flex-1 overflow-y-auto pb-28 md:pb-16">
-        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 pt-1 pb-6 lg:pt-2 lg:pb-8 space-y-4">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-1 pb-6 lg:pt-2 lg:pb-8 space-y-4">
           <section className="rounded-3xl border border-sky-100 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/95 shadow-sm p-4 sm:p-5">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               {t('profile.pageTitle')}
@@ -98,7 +98,7 @@ export default function ProfileComponent() {
                 </p>
               </div>
 
-              <div className="w-full border-t border-gray-300 dark:border-zinc-500 dark:opacity-70" />
+              <div className="w-full h-px bg-gray-300 dark:bg-zinc-600" />
 
               <div className="flex flex-col items-center gap-1">
                 <p
@@ -110,7 +110,7 @@ export default function ProfileComponent() {
                 <p className="text-lg text-gray-800 dark:text-white">@{token.preferred_username}</p>
               </div>
 
-              <div className="w-full border-t border-gray-300 dark:border-zinc-500 dark:opacity-70" />
+              <div className="w-full h-px bg-gray-300 dark:bg-zinc-600" />
 
               <div className="flex flex-col items-center gap-1">
                 <p

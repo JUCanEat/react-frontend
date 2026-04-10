@@ -19,11 +19,11 @@ function StaffMenuFromPhotoInner() {
   const roles = keycloak.tokenParsed?.realm_access?.roles || [];
 
   if (!roles.includes('restaurant_owner')) {
-    return <div className="p-6 text-white">{t('auth.accessDenied')}</div>;
+    return <div className="p-6 text-gray-900 dark:text-white">{t('auth.accessDenied')}</div>;
   }
 
   if (!restaurantId) {
-    return <div className="p-6 text-white">{t('auth.restaurantIdMissing')}</div>;
+    return <div className="p-6 text-gray-900 dark:text-white">{t('auth.restaurantIdMissing')}</div>;
   }
 
   return <StaffMenuFromPhoto restaurantId={restaurantId} />;

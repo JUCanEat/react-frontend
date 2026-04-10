@@ -3,10 +3,13 @@ import { Button } from '~/shadcn/components/ui/button';
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from '~/shadcn/components/ui/item';
 import { useKeycloak } from '@react-keycloak/web';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { appRoutes } from '~/lib/app_routes';
 
 export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
   const { keycloak, initialized } = useKeycloak();
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const itemClassName = isLoginPage ? 'justify-center' : 'justify-between';
 
   const handleLogin = () => {
@@ -14,14 +17,14 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
 
     const loginLocale = i18n.language.startsWith('pl') ? 'pl' : 'en';
     keycloak.login({
-      redirectUri: window.location.origin + '/profile',
+      redirectUri: window.location.origin + appRoutes.profile,
       locale: loginLocale,
     });
   };
 
   const handleLogout = () => {
     keycloak.logout({
-      redirectUri: window.location.origin + '/',
+      redirectUri: window.location.origin + appRoutes.home,
     });
   };
 
@@ -34,16 +37,16 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
   return (
     <div className="flex w-full max-w-full flex-col gap-6 overflow-x-hidden">
       <Item
-        variant="outline"
+        variant="default"
         border="no_outline"
         size="xsm"
         width="default"
-        className={`${itemClassName} flex-nowrap w-full max-w-full min-w-0 gap-2 overflow-hidden sm:gap-3 dark:!bg-transparent`}
+        className={`${itemClassName} flex-nowrap w-full max-w-full min-w-0 gap-2 overflow-hidden sm:gap-3 !bg-transparent text-gray-900 dark:!bg-transparent dark:text-zinc-50`}
       >
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <ItemMedia
             variant="logo"
-            onClick={() => (window.location.href = '/')}
+            onClick={() => navigate(appRoutes.home)}
           >
             <img
               className={'dark:invert'}

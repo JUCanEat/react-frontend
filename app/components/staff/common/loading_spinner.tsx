@@ -20,7 +20,7 @@ export function LoadingSpinner({
   };
 
   const textColor = darkBackground ? '#009DE0' : '#1B1B1B';
-  const spinnerColor = darkBackground ? '#009DE0' : '#009DE0';
+  const spinnerColor = '#009DE0';
 
   const content = (
     <div className="text-center">
@@ -36,22 +36,18 @@ export function LoadingSpinner({
       >
         {message}
       </p>
-      {subMessage && (
-        <p
-          className="text-sm mt-2"
-          style={{ color: '#666' }}
-        >
-          {subMessage}
-        </p>
-      )}
+      {subMessage && <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">{subMessage}</p>}
     </div>
   );
 
   if (fullScreen) {
     return (
       <div
-        className="flex w-full h-screen justify-center items-center"
-        style={{ backgroundColor: darkBackground ? 'black' : 'white' }}
+        className={`flex w-full h-screen justify-center items-center ${
+          darkBackground
+            ? 'bg-black'
+            : 'bg-gradient-to-b from-sky-50 via-white to-white dark:from-zinc-800 dark:via-zinc-950 dark:to-black'
+        }`}
       >
         {content}
       </div>

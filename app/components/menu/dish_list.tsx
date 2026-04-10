@@ -31,6 +31,7 @@ export function DishListComponent({
 
   const { data, isLoading, error } = useGetDailyMenu(restaurantId);
 
+  const isMenuNotFound = data === null;
   const dishes = data?.dishes ?? [];
 
   const toggleFilter = (filter: FilterValue) => {
@@ -67,13 +68,11 @@ export function DishListComponent({
   const mainCourseDishes = filteredDishes.filter(
     dish => (dish.category ?? 'MAIN_COURSE').toUpperCase() !== 'SOUP'
   );
-  const isMenuNotFound = !!error && /API Error:\s*404\b/.test(error.message);
-
   return (
     <div className="flex justify-center dark:bg-transparent min-h-screen overflow-hidden">
-      <div className="dark:bg-transparent max-w-3xl w-full flex flex-col">
+      <div className="dark:bg-transparent max-w-7xl w-full flex flex-col">
         <TopBar isLoginPage={false} />
-        <div className="pt-1 pl-5 pr-5 dark:bg-transparent flex-1 flex flex-col">
+        <div className="pt-1 px-4 sm:px-6 lg:px-8 dark:bg-transparent flex-1 flex flex-col">
           <section className="rounded-3xl border border-sky-100 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/95 shadow-sm p-4 sm:p-5 mb-3">
             <div>
               <div className="flex items-center gap-1.5">
@@ -140,7 +139,7 @@ export function DishListComponent({
               >
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                  <p className="dark:text-white">{t('menu.loadingMenu')}</p>
+                  <p className="text-gray-700 dark:text-white">{t('menu.loadingMenu')}</p>
                 </div>
               </div>
             )}
@@ -160,7 +159,7 @@ export function DishListComponent({
               </div>
             )}
 
-            {!isLoading && (isMenuNotFound || !dishes || dishes.length === 0) && (
+            {!isLoading && isMenuNotFound && (
               <div
                 className="w-full dark:bg-transparent flex items-center justify-center"
                 style={{ height: 'calc(100vh - 230px)' }}
