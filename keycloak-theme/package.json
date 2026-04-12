@@ -1,0 +1,27 @@
+{
+  "name": "jucaneat-keycloak-theme",
+  "version": "1.0.0",
+  "description": "Custom Keycloak theme for JuCanEat",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build-keycloak-theme": "npm run build && npx keycloakify build",
+    "storybook": "npx keycloakify start-storybook"
+  },
+  "keywords": ["keycloak", "theme", "jucaneat"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "keycloakify": "^11.8.49",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.1",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
+  }
+}
