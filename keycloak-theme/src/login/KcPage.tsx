@@ -36,7 +36,7 @@ function LoginPage({ kcContext }: { kcContext: KcContext & { pageId: "login.ftl"
                 <h1 className="title">Login</h1>
 
                 {message && message.type === "error" && (
-                    <div className="error">{message.summary}</div>
+                    <div className="error" dangerouslySetInnerHTML={{ __html: message.summary.replace("Invalid username or password.", "Invalid email or password.") }} />
                 )}
 
                 <form action={url.loginAction} method="post">
@@ -126,7 +126,7 @@ function RegisterPage({ kcContext }: { kcContext: KcContext & { pageId: "registe
                 <h1 className="title">Create Account</h1>
 
                 {message && message.type === "error" && !messagesPerField?.existsError("general") && (
-                    <div className="error">{message.summary}</div>
+                    <div className="error" dangerouslySetInnerHTML={{ __html: message.summary }} />
                 )}
 
                 <form action={url.registrationAction} method="post">
@@ -161,17 +161,6 @@ function RegisterPage({ kcContext }: { kcContext: KcContext & { pageId: "registe
                             required
                         />
                         {fieldError("email") && <div className="field-error">{fieldError("email")}</div>}
-                    </div>
-
-                    <div className="field">
-                        <label>Username</label>
-                        <input
-                            type="text"
-                            name="username"
-                            defaultValue={attrs.username?.value ?? ""}
-                            required
-                        />
-                        {fieldError("username") && <div className="field-error">{fieldError("username")}</div>}
                     </div>
 
                     <div className="field">
@@ -237,7 +226,7 @@ function ResetPasswordPage({ kcContext }: { kcContext: KcContext & { pageId: "lo
                 <h1 className="title">Reset Password</h1>
 
                 {message && message.type === "error" && (
-                    <div className="error">{message.summary}</div>
+                    <div className="error" dangerouslySetInnerHTML={{ __html: message.summary }} />
                 )}
 
                 <form action={url.loginAction} method="post">
@@ -276,7 +265,7 @@ function UpdatePasswordPage({ kcContext }: { kcContext: KcContext & { pageId: "l
                 <h1 className="title">New Password</h1>
 
                 {message && message.type === "error" && (
-                    <div className="error">{message.summary}</div>
+                    <div className="error" dangerouslySetInnerHTML={{ __html: message.summary }} />
                 )}
 
                 <form action={url.loginAction} method="post">
@@ -320,8 +309,8 @@ function VerifyEmailPage({ kcContext }: { kcContext: KcContext & { pageId: "logi
                 <h1 className="title">Verify Email</h1>
 
                 {message && (
-                    <div className={message.type === "error" ? "error" : "error"}>
-                        {message.summary}
+                    <div className={message.type === "error" ? "error" : "info"}>
+                        <span dangerouslySetInnerHTML={{ __html: message.summary }} />
                     </div>
                 )}
 
@@ -329,9 +318,11 @@ function VerifyEmailPage({ kcContext }: { kcContext: KcContext & { pageId: "logi
                     Check your inbox and click the verification link.
                 </p>
 
-                <a className="btn primary" style={{ display: "block", textAlign: "center" }} href={url.loginAction}>
-                    Resend Email
-                </a>
+                <form method="post" action={url.loginAction}>
+                    <button type="submit" className="btn primary" style={{ display: "block", width: "100%", textAlign: "center" }}>
+                        Resend Email
+                    </button>
+                </form>
 
                 <a className="back-link" href={url.loginUrl}>
                     Back to Login
@@ -349,7 +340,7 @@ function ErrorPage({ kcContext }: { kcContext: KcContext & { pageId: "error.ftl"
             <div className="card">
                 <h1 className="title">Error</h1>
                 {message && (
-                    <div className="error">{message.summary}</div>
+                    <div className="error" dangerouslySetInnerHTML={{ __html: message.summary }} />
                 )}
             </div>
         </div>
