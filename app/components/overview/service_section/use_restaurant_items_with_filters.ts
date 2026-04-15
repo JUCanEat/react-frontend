@@ -82,6 +82,8 @@ export function useRestaurantItemsWithFilters({
             return hasLactoseFreeOption(menu);
           case 'glutenFree':
             return hasGlutenFreeOption(menu);
+          case 'hasMenuToday':
+            return !!menu && !!menu.dishes && menu.dishes.length > 0;
           default:
             return true;
         }

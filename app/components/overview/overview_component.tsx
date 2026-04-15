@@ -1,6 +1,14 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, MilkOff, Sprout, UtensilsCrossed, Vegan, WheatOff } from 'lucide-react';
+import {
+  MapPin,
+  MilkOff,
+  Sprout,
+  UtensilsCrossed,
+  Vegan,
+  WheatOff,
+  CalendarX2,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { TopBar } from '~/components/shared/top_bar';
@@ -197,6 +205,15 @@ export function OverviewComponent() {
     { value: 'vegetarian', label: t('filters.vegetarian'), icon: <Sprout size={16} /> },
     { value: 'lactoseFree', label: t('filters.lactoseFree'), icon: <MilkOff size={16} /> },
     { value: 'glutenFree', label: t('filters.glutenFree'), icon: <WheatOff size={16} /> },
+    ...(mode === 'restaurants'
+      ? [
+          {
+            value: 'hasMenuToday' as FilterValue,
+            label: t('filters.hasMenuToday'),
+            icon: <CalendarX2 size={16} />,
+          },
+        ]
+      : []),
   ];
 
   const Section = ({
