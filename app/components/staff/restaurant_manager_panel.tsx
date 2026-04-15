@@ -286,10 +286,22 @@ export default function RestaurantOwnerProfile() {
 
     setUpdating(true);
     try {
+      const updatePayload = {
+        name: editFormData.name,
+        description: editFormData.description,
+        photoPath: editFormData.photoPath,
+        openingTime: editFormData.openingTime,
+        closingTime: editFormData.closingTime,
+        location: {
+          latitude: parseFloat(editFormData.latitude),
+          longitude: parseFloat(editFormData.longitude),
+        },
+      };
+
       const updatedRestaurant = await restaurantManagerService.updateRestaurant(
         keycloak.token,
         editingRestaurant.id,
-        editFormData
+        updatePayload
       );
 
       setUserData(prev =>

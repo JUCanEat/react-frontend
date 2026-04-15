@@ -109,7 +109,7 @@ export const restaurantManagerService = {
   updateRestaurant: async (
     token: string,
     restaurantId: string,
-    formData: RestaurantCreateFormData
+    update: import('~/interfaces').UpdateRestaurantRequest
   ): Promise<Restaurant> => {
     const response = await fetch(`${API_BASE_URL}/restaurants/${restaurantId}`, {
       method: 'PUT',
@@ -117,7 +117,7 @@ export const restaurantManagerService = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(toUpsertPayload(formData)),
+      body: JSON.stringify(update),
     });
 
     if (!response.ok) {
