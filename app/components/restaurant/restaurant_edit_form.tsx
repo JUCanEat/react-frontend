@@ -4,7 +4,8 @@ import {
   useUpdateRestaurant,
   useGetRestaurantOwners,
 } from '~/api/restaurant_service';
-import type { UpdateRestaurantRequest, RestaurantDetailsDTO } from '~/interfaces';
+import type { UpdateRestaurantRequest, RestaurantDetailsDTO, DayOfWeek } from '~/interfaces';
+import { DAYS_OF_WEEK } from '~/interfaces';
 
 interface RestaurantEditFormProps {
   restaurantId: string;
@@ -29,13 +30,15 @@ export function RestaurantEditForm({ restaurantId, onSave, onCancel }: Restauran
       latitude: 0,
       longitude: 0,
     },
+    openingHours: DAYS_OF_WEEK.map(day => ({ dayOfWeek: day, openTime: '', closeTime: '' })),
   });
 
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (restaurant) {
-      setFormData({
+      setFormData(prev => ({
+        ...prev,
         name: restaurant.name,
         description: restaurant.description,
         photoPath: restaurant.photoPath,
@@ -43,9 +46,38 @@ export function RestaurantEditForm({ restaurantId, onSave, onCancel }: Restauran
           latitude: restaurant.location.latitude.value,
           longitude: restaurant.location.longitude.value,
         },
-      });
+        openingHours:
+          restaurant.openingHours && restaurant.openingHours.length === 7
+            ? restaurant.openingHours.map(h => ({ ...h }))
+            : DAYS_OF_WEEK.map(day => ({ dayOfWeek: day, openTime: '', closeTime: '' })),
+      }));
     }
   }, [restaurant]);
+  const handleOpeningHourChange = (
+    day: DayOfWeek,
+    field: 'openTime' | 'closeTime',
+    value: string
+  ) => {
+    setFormData(prev => ({
+      ...prev,
+      openingHours: prev.openingHours?.map(h =>
+        h.dayOfWeek === day ? { ...h, [field]: value } : h
+      ),
+    }));
+  };
+
+  const handleClosedToggle = (day: DayOfWeek, closed: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      openingHours: prev.openingHours?.map(h =>
+        h.dayOfWeek === day
+          ? closed
+            ? { dayOfWeek: day, openTime: '', closeTime: '', closed: true }
+            : { dayOfWeek: day, openTime: '', closeTime: '' }
+          : h
+      ),
+    }));
+  };
 
   const handleInputChange = (field: keyof UpdateRestaurantRequest, value: string | number) => {
     if (field === 'location') {
@@ -268,23 +300,74 @@ export function RestaurantEditForm({ restaurantId, onSave, onCancel }: Restauran
         )}
 
         {isEditing && (
-          <div className="flex space-x-4 pt-4">
-            <button
-              type="submit"
-              disabled={updateMutation.isPending}
-              className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            >
-              {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              disabled={updateMutation.isPending}
-              className="px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Opening Hours</label>
+              <div className="grid grid-cols-1 gap-2">
+                {formData.openingHours?.map(h => (
+                  <div
+                    key={h.dayOfWeek}
+                    className="flex items-center gap-2"
+                  >
+                    <span className="w-24 font-medium">
+                      {h.dayOfWeek.charAt(0) + h.dayOfWeek.slice(1).toLowerCase()}
+                    </span>
+                    <label className="flex items-center gap-1">
+                      <input
+                        type="checkbox"
+                        checked={!!h.closed}
+                        onChange={e => handleClosedToggle(h.dayOfWeek, e.target.checked)}
+                        disabled={!isEditing}
+                      />
+                      <span className="text-xs">Closed</span>
+                    </label>
+                    {!h.closed && (
+                      <>
+                        <input
+                          type="time"
+                          value={h.openTime}
+                          onChange={e =>
+                            handleOpeningHourChange(h.dayOfWeek, 'openTime', e.target.value)
+                          }
+                          disabled={!isEditing}
+                          className="p-1 border border-gray-300 rounded"
+                          required
+                        />
+                        <span>-</span>
+                        <input
+                          type="time"
+                          value={h.closeTime}
+                          onChange={e =>
+                            handleOpeningHourChange(h.dayOfWeek, 'closeTime', e.target.value)
+                          }
+                          disabled={!isEditing}
+                          className="p-1 border border-gray-300 rounded"
+                          required
+                        />
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex space-x-4 pt-4">
+              <button
+                type="submit"
+                disabled={updateMutation.isPending}
+                className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={updateMutation.isPending}
+                className="px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </>
         )}
       </form>
 
