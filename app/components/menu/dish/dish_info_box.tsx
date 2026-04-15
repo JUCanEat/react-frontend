@@ -1,5 +1,5 @@
 import type { Dish } from '~/interfaces';
-import { Beef, Milk, Nut, Wheat } from 'lucide-react';
+import { Beef, Milk, Nut, Wheat, CirclePlay } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 const ALLERGEN_ICON_MAP: Record<string, { icon: ComponentType<{ size?: number }>; label: string }> =
@@ -8,11 +8,15 @@ const ALLERGEN_ICON_MAP: Record<string, { icon: ComponentType<{ size?: number }>
     LACTOSE: { icon: Milk, label: 'Lactose' },
     MEAT: { icon: Beef, label: 'Meat' },
     NUTS: { icon: Nut, label: 'Nuts' },
+    SESAME: { icon: CirclePile, label: 'Sesame' },
   };
 
 export function DishInfo({ dish }: { dish: Dish }) {
   const allergenIcons = (dish.allergens ?? [])
-    .map(allergen => ALLERGEN_ICON_MAP[allergen])
+    .map(allergen => {
+      const key = allergen.toUpperCase();
+      return ALLERGEN_ICON_MAP[key];
+    })
     .filter(Boolean);
 
   return (
@@ -25,15 +29,18 @@ export function DishInfo({ dish }: { dish: Dish }) {
 
         <div className="mt-3 flex items-center gap-2 text-[#009DE0] dark:text-[#28b9f7]">
           {allergenIcons.length > 0 ? (
-            allergenIcons.map(({ icon: Icon, label }) => (
-              <span
-                key={`${dish.id}-${label}`}
-                title={label}
-                className="inline-flex items-center justify-center"
-              >
-                <Icon size={14} />
-              </span>
-            ))
+            allergenIcons.map(entry => {
+              const Icon = entry.icon;
+              return (
+                <span
+                  key={`${dish.id}-${entry.label}`}
+                  title={entry.label}
+                  className="inline-flex items-center justify-center"
+                >
+                  <Icon size={14} />
+                </span>
+              );
+            })
           ) : (
             <span className="text-xs text-gray-400 dark:text-gray-500">—</span>
           )}
