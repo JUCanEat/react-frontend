@@ -30,9 +30,9 @@ export interface Restaurant {
   openNow: boolean;
 }
 
-export type Allergen = 'NUTS' | 'GLUTEN' | 'MEAT' | 'LACTOSE';
+export type Allergen = 'NUTS' | 'GLUTEN' | 'MEAT' | 'LACTOSE' | 'SESAME';
 
-export const MENU_ALLERGENS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS'];
+export const MENU_ALLERGENS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS', 'SESAME'];
 
 export interface DailyMenu {
   id: string;
