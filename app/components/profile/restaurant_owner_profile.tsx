@@ -91,7 +91,7 @@ export default function RestaurantOwnerProfile() {
 
   if (!initialized || loading) {
     return (
-      <div className="relative min-h-screen bg-white dark:bg-zinc-950">
+      <div className="relative min-h-screen bg-transparent dark:bg-transparent">
         <TopBar isLoginPage={false} />
         <div
           className="w-full flex items-center justify-center"
@@ -110,7 +110,7 @@ export default function RestaurantOwnerProfile() {
 
   if (!userData) {
     return (
-      <div className="relative min-h-screen bg-white dark:bg-zinc-950">
+      <div className="relative min-h-screen bg-transparent dark:bg-transparent">
         <TopBar isLoginPage={false} />
         <div
           className="w-full flex items-center justify-center"
@@ -286,7 +286,7 @@ export default function RestaurantOwnerProfile() {
   };
 
   return (
-    <div className="relative min-h-screen bg-white dark:bg-zinc-950">
+    <div className="relative min-h-screen bg-transparent dark:bg-transparent">
       <TopBar isLoginPage={false} />
       <div
         className="w-full flex flex-col items-center px-4 py-6"

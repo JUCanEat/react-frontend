@@ -14,13 +14,18 @@ export default function DailyMenuPage() {
 
   if (!initialized) {
     return (
-      <div className="dark:bg-zinc-950">
+      <div className="dark:bg-transparent">
         <TopBar isLoginPage={false}></TopBar>
         <div
-          className="w-full flex items-center justify-center dark:bg-zinc-950"
+          className="w-full flex items-center justify-center dark:bg-transparent"
           style={{ height: 'calc(100vh - 150px)' }}
         >
-          <div className="animate-spin dark:text-white">{t('menuForm.loadingAuthentication')}</div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2" />
+            <p className="text-sm text-gray-700 dark:text-gray-200">
+              {t('menuForm.loadingAuthentication')}
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -28,9 +33,9 @@ export default function DailyMenuPage() {
 
   if (!keycloak.token) {
     return (
-      <div className="dark:bg-zinc-950">
+      <div className="dark:bg-transparent">
         <TopBar isLoginPage={false}></TopBar>
-        <div className="max-w-3xl mx-auto p-4 dark:bg-zinc-950">
+        <div className="max-w-3xl mx-auto p-4 dark:bg-transparent">
           <Alert variant="destructive">
             <AlertTitle>{t('menuForm.authenticationRequired')}</AlertTitle>
             <AlertDescription>{t('menuForm.pleaseLoginToAddMenu')}</AlertDescription>
@@ -42,9 +47,9 @@ export default function DailyMenuPage() {
 
   if (!restaurantId) {
     return (
-      <div className="dark:bg-zinc-950">
+      <div className="dark:bg-transparent">
         <TopBar isLoginPage={false}></TopBar>
-        <div className="max-w-3xl mx-auto p-4 dark:bg-zinc-950">
+        <div className="max-w-3xl mx-auto p-4 dark:bg-transparent">
           <Alert variant="destructive">
             <AlertTitle>{t('common.error')}</AlertTitle>
             <AlertDescription>{t('menuForm.noRestaurantSpecified')}</AlertDescription>
@@ -55,10 +60,10 @@ export default function DailyMenuPage() {
   }
 
   return (
-    <div className="dark:bg-zinc-950">
+    <div className="dark:bg-transparent">
       <TopBar isLoginPage={false}></TopBar>
       <div
-        className="w-full dark:bg-zinc-950"
+        className="w-full dark:bg-transparent"
         style={{ height: 'calc(100vh - 150px)' }}
       >
         <DailyMenuForm

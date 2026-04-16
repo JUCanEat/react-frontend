@@ -1,9 +1,27 @@
 // backend
+export type DayOfWeek =
+  | 'MONDAY'
+  | 'TUESDAY'
+  | 'WEDNESDAY'
+  | 'THURSDAY'
+  | 'FRIDAY'
+  | 'SATURDAY'
+  | 'SUNDAY';
+
+export interface OpeningHoursDTO {
+  dayOfWeek: DayOfWeek;
+  openTime: string;
+  closeTime: string;
+}
+
 export interface Restaurant {
   id: string;
   name: string;
   description: string;
   photoPath: string;
+  openingTime?: string;
+  closingTime?: string;
+  openingHours?: OpeningHoursDTO[];
   location: {
     id: string;
     latitude: { value: number };
@@ -13,6 +31,8 @@ export interface Restaurant {
 }
 
 export type Allergen = 'NUTS' | 'GLUTEN' | 'MEAT' | 'LACTOSE';
+
+export const MENU_ALLERGENS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS'];
 
 export interface DailyMenu {
   id: string;
@@ -36,12 +56,14 @@ export type Facility = Restaurant | VendingMachine;
 export interface FacilityInfoProps {
   selectedPoint: Facility | null;
   onClose: () => void;
+  showGoToMapButton?: boolean;
 }
 
 export interface Dish {
   id: string;
   name: string;
   description: string;
+  category?: string;
   price: string;
   image: string;
   allergens: string[];
@@ -66,6 +88,9 @@ export interface UpdateRestaurantRequest {
   name?: string;
   description?: string;
   photoPath?: string;
+  openingTime?: string;
+  closingTime?: string;
+  openingHours?: OpeningHoursDTO[];
   location?: {
     latitude: number;
     longitude: number;
@@ -77,6 +102,9 @@ export interface RestaurantDetailsDTO {
   name: string;
   description: string;
   photoPath: string;
+  openingTime?: string;
+  closingTime?: string;
+  openingHours?: OpeningHoursDTO[];
   location: {
     id: string;
     latitude: { value: number };
@@ -84,4 +112,23 @@ export interface RestaurantDetailsDTO {
   };
   openNow: boolean;
   owners?: string[];
+}
+
+// Restaurant manager panel interfaces
+export interface RestaurantManagerUserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  ownedRestaurants: Restaurant[];
+}
+
+export interface RestaurantCreateFormData {
+  name: string;
+  description: string;
+  latitude: string;
+  longitude: string;
+  photoPath: string;
+  openingTime: string;
+  closingTime: string;
 }

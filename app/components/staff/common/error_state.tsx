@@ -12,21 +12,12 @@ export function ErrorState({ message, backPath = '/profile', backLabel }: ErrorS
   const navigate = useNavigate();
 
   return (
-    <div className="w-full flex flex-col items-center justify-center min-h-screen p-4">
-      <div
-        className="max-w-md w-full p-6 rounded-lg"
-        style={{ backgroundColor: '#FFE5E5', border: '1px solid #FF6B6B' }}
-      >
-        <p
-          className="text-center font-medium"
-          style={{ color: '#D32F2F' }}
-        >
-          {message}
-        </p>
+    <div className="w-full flex flex-col items-center justify-center min-h-screen p-4 bg-transparent dark:bg-transparent">
+      <div className="max-w-md w-full p-6 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700">
+        <p className="text-center font-medium text-red-700 dark:text-red-300">{message}</p>
         <button
           onClick={() => navigate(backPath)}
-          className="w-full mt-4 px-4 py-2 rounded text-white font-medium"
-          style={{ backgroundColor: '#1B1B1B' }}
+          className="w-full mt-4 px-4 py-2 rounded text-white font-medium bg-[#1B1B1B] dark:bg-zinc-800 hover:opacity-90 transition-opacity"
         >
           {backLabel ?? t('staff.backToProfile')}
         </button>
@@ -46,17 +37,11 @@ export function EmptyState({ message, backPath = '/profile', backLabel }: EmptyS
   const navigate = useNavigate();
 
   return (
-    <div className="w-full flex flex-col items-center justify-center min-h-screen p-4">
-      <p
-        className="text-center mb-4"
-        style={{ color: '#1B1B1B' }}
-      >
-        {message}
-      </p>
+    <div className="w-full flex flex-col items-center justify-center min-h-screen p-4 bg-transparent dark:bg-transparent">
+      <p className="text-center mb-4 text-gray-900 dark:text-gray-200">{message}</p>
       <button
         onClick={() => navigate(backPath)}
-        className="px-4 py-2 rounded text-white font-medium"
-        style={{ backgroundColor: '#1B1B1B' }}
+        className="px-4 py-2 rounded text-white font-medium bg-[#1B1B1B] dark:bg-zinc-800 hover:opacity-90 transition-opacity"
       >
         {backLabel ?? t('staff.backToProfile')}
       </button>

@@ -40,6 +40,11 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export const meta: Route.MetaFunction = () => [
+  { title: 'JU Can Eat' },
+  { name: 'description', content: 'Welcome to JU Can Eat/ObiadUJ!' },
+];
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -52,7 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-gradient-to-b from-sky-50 via-white to-white dark:bg-gradient-to-b dark:from-zinc-800 dark:via-zinc-950 dark:to-black">
         {children}
         <ScrollRestoration />
         <Scripts />

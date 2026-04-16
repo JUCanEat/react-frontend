@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface RestaurantTileProps {
   name: string;
@@ -8,10 +9,12 @@ interface RestaurantTileProps {
 }
 
 export function RestaurantTile({ name, description, openNow, onClick }: RestaurantTileProps) {
+  const { t } = useTranslation();
+
   return (
     <div
       onClick={onClick}
-      className="w-[227px] h-[148px] rounded-xl overflow-hidden flex flex-col bg-black cursor-pointer"
+      className="w-[227px] h-[148px] rounded-xl overflow-hidden flex flex-col bg-white cursor-pointer border-1 border-[#000000]"
     >
       <div className="flex-1 bg-white" />
 
@@ -24,7 +27,7 @@ export function RestaurantTile({ name, description, openNow, onClick }: Restaura
               openNow ? 'text-[#2ECC71]' : 'text-[#E74C3C]'
             }`}
           >
-            {openNow ? 'Open' : 'Closed'}
+            {openNow ? t('overview.open') : t('overview.closed')}
           </span>
         </div>
 

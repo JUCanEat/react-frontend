@@ -13,10 +13,10 @@ const stars = Array.from({ length: 80 }, (_, i) => ({
 export default function NotFound() {
   return (
     <div
-      className="flex flex-col h-screen w-full bg-sky-50 dark:bg-zinc-950"
+      className="flex flex-col h-screen w-full bg-sky-50 dark:bg-transparent"
       style={{ overflow: 'hidden' }}
     >
-      <div className="relative z-20 bg-white dark:bg-zinc-950">
+      <div className="relative z-20 bg-white dark:bg-transparent">
         <TopBar isLoginPage={false} />
       </div>
 
