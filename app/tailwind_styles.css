@@ -1,6 +1,12 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+@media (prefers-color-scheme: light) {
+  html.high-contrast * {
+    border-color: rgb(0 0 0 / 0.15) !important;
+  }
+}
+
 @theme {
   --breakpoint-3xs: 16rem; /* 256px */
   --breakpoint-2xs: 18rem; /* 288px */

@@ -10,6 +10,10 @@ const resources = {
         login: 'Login',
         logout: 'Logout',
         languageLabel: 'Language',
+        highContrast: 'Contrast',
+        contrastReset: 'Reset',
+        contrastNormal: 'Normal',
+        contrastHigh: 'High',
       },
       common: {
         loading: 'Loading...',
@@ -264,6 +268,10 @@ const resources = {
         login: 'Zaloguj',
         logout: 'Wyloguj',
         languageLabel: 'Język',
+        highContrast: 'Kontrast',
+        contrastReset: 'Resetuj',
+        contrastNormal: 'Normalny',
+        contrastHigh: 'Wysoki',
       },
       common: {
         loading: 'Ładowanie...',
