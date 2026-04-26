@@ -2,12 +2,12 @@ import * as React from 'react';
 import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group';
 import { type VariantProps } from 'class-variance-authority';
 
-import { Vegan, Sprout, MilkOff, WheatOff } from 'lucide-react';
+import { Vegan, Sprout, MilkOff, WheatOff, CalendarCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { ToggleGroup, ToggleGroupItem } from '~/shadcn/components/ui/toggle-group';
 
-export type FilterValue = 'vegan' | 'vegetarian' | 'lactoseFree' | 'glutenFree';
+export type FilterValue = 'vegan' | 'vegetarian' | 'lactoseFree' | 'glutenFree' | 'hasMenuToday';
 
 export interface FilterBarProps {
   value: FilterValue[];
@@ -33,6 +33,14 @@ export function FilterBar({ value, onChange }: FilterBarProps) {
       >
         <Vegan />
         <div className={'hidden osm1:block'}>{t('filters.vegan')}</div>
+      </ToggleGroupItem>
+      <ToggleGroupItem
+        value="hasMenuToday"
+        aria-label={t('filters.toggleHasMenuToday')}
+        className="flex-1 data-[state=on]:bg-transparent data-[state=on]:*:[svg]:stroke-jcablue"
+      >
+        <CalendarCheck />
+        <div className={'hidden osm1:block'}>{t('filters.hasMenuToday')}</div>
       </ToggleGroupItem>
       <ToggleGroupItem
         value="vegetarian"
