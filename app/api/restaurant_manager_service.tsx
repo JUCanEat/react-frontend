@@ -4,6 +4,7 @@ import type {
   RestaurantCreateFormData,
   RestaurantManagerUserData,
 } from '~/interfaces';
+import { DAYS_OF_WEEK } from '~/interfaces';
 
 const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
@@ -20,16 +21,6 @@ type RestaurantUpsertPayload = {
   }[];
 };
 
-const ALL_DAYS: DayOfWeek[] = [
-  'MONDAY',
-  'TUESDAY',
-  'WEDNESDAY',
-  'THURSDAY',
-  'FRIDAY',
-  'SATURDAY',
-  'SUNDAY',
-];
-
 function toBackendTime(value: string) {
   if (!value) return value;
   return value.length === 5 ? `${value}:00` : value;
@@ -44,11 +35,19 @@ function toUpsertPayload(formData: RestaurantCreateFormData): RestaurantUpsertPa
     photoPath: formData.photoPath,
   };
 
-  if (formData.openingTime && formData.closingTime) {
-    payload.openingHours = ALL_DAYS.map(day => ({
+  if (formData.openingHours && formData.openingHours.length > 0) {
+    payload.openingHours = formData.openingHours
+      .filter(h => !h.closed)
+      .map(h => ({
+        dayOfWeek: h.dayOfWeek,
+        openTime: toBackendTime(h.openTime),
+        closeTime: toBackendTime(h.closeTime),
+      }));
+  } else if (formData.openingTime && formData.closingTime) {
+    payload.openingHours = DAYS_OF_WEEK.map(day => ({
       dayOfWeek: day,
-      openTime: toBackendTime(formData.openingTime),
-      closeTime: toBackendTime(formData.closingTime),
+      openTime: toBackendTime(formData.openingTime!),
+      closeTime: toBackendTime(formData.closingTime!),
     }));
   }
 
@@ -110,7 +109,7 @@ export const restaurantManagerService = {
   updateRestaurant: async (
     token: string,
     restaurantId: string,
-    formData: RestaurantCreateFormData
+    update: import('~/interfaces').UpdateRestaurantRequest
   ): Promise<Restaurant> => {
     const response = await fetch(`${API_BASE_URL}/restaurants/${restaurantId}`, {
       method: 'PUT',
@@ -118,7 +117,7 @@ export const restaurantManagerService = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(toUpsertPayload(formData)),
+      body: JSON.stringify(update),
     });
 
     if (!response.ok) {

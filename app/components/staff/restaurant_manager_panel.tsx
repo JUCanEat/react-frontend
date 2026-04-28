@@ -161,20 +161,23 @@ export default function RestaurantOwnerProfile() {
       errors.longitude = t('manager.validationLongitude');
     }
 
-    if (!formData.openingTime) {
-      errors.openingTime = t('manager.validationOpeningTimeRequired');
-    }
+    const hasOpeningHours = (formData.openingHours?.length ?? 0) > 0;
+    if (!hasOpeningHours) {
+      if (!formData.openingTime) {
+        errors.openingTime = t('manager.validationOpeningTimeRequired');
+      }
 
-    if (!formData.closingTime) {
-      errors.closingTime = t('manager.validationClosingTimeRequired');
-    }
+      if (!formData.closingTime) {
+        errors.closingTime = t('manager.validationClosingTimeRequired');
+      }
 
-    if (formData.openingTime && formData.closingTime) {
-      const openMinutes = toMinutes(formData.openingTime);
-      const closeMinutes = toMinutes(formData.closingTime);
+      if (formData.openingTime && formData.closingTime) {
+        const openMinutes = toMinutes(formData.openingTime);
+        const closeMinutes = toMinutes(formData.closingTime);
 
-      if (openMinutes !== null && closeMinutes !== null && closeMinutes < openMinutes) {
-        errors.closingTime = t('manager.validationClosingNotEarlierThanOpening');
+        if (openMinutes !== null && closeMinutes !== null && closeMinutes < openMinutes) {
+          errors.closingTime = t('manager.validationClosingNotEarlierThanOpening');
+        }
       }
     }
 
@@ -244,6 +247,7 @@ export default function RestaurantOwnerProfile() {
       photoPath: source.photoPath || '',
       openingTime: openingRange.openingTime,
       closingTime: openingRange.closingTime,
+      openingHours: source.openingHours,
     });
     setValidationErrors({});
   };
@@ -282,10 +286,22 @@ export default function RestaurantOwnerProfile() {
 
     setUpdating(true);
     try {
+      const updatePayload = {
+        name: editFormData.name,
+        description: editFormData.description,
+        photoPath: editFormData.photoPath,
+        openingTime: editFormData.openingTime,
+        closingTime: editFormData.closingTime,
+        location: {
+          latitude: parseFloat(editFormData.latitude),
+          longitude: parseFloat(editFormData.longitude),
+        },
+      };
+
       const updatedRestaurant = await restaurantManagerService.updateRestaurant(
         keycloak.token,
         editingRestaurant.id,
-        editFormData
+        updatePayload
       );
 
       setUserData(prev =>
