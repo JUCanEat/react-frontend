@@ -57,6 +57,8 @@ export interface FacilityInfoProps {
   selectedPoint: Facility | null;
   onClose: () => void;
   showGoToMapButton?: boolean;
+  onNavigateTo?: (facility: Facility) => void;
+  navigateDisabled?: boolean;
 }
 
 export interface Dish {
