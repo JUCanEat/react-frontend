@@ -228,17 +228,6 @@ function RegisterPage({ kcContext }: { kcContext: KcContext & { pageId: 'registe
           </div>
 
           <div className="field">
-            <label>{msgStr('username')}</label>
-            <input
-              type="text"
-              name="username"
-              defaultValue={attrs.username?.value ?? ''}
-              required
-            />
-            {fieldError('username') && <div className="field-error">{fieldError('username')}</div>}
-          </div>
-
-          <div className="field">
             <label>{msgStr('password')}</label>
             <input
               type="password"

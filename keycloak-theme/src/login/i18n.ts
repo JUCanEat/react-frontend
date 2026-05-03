@@ -30,6 +30,7 @@ const { useI18n, ofTypeI18n } = i18nBuilder
       reqDigit: 'At least one digit',
       reqSpecial: 'At least one special character',
       reqMatch: 'Passwords match',
+      invalidUserMessage: 'Invalid email or password.',
     },
     pl: {
       loginTitle: 'Logowanie',
@@ -57,6 +58,7 @@ const { useI18n, ofTypeI18n } = i18nBuilder
       reqDigit: 'Co najmniej jedna cyfra',
       reqSpecial: 'Co najmniej jeden znak specjalny',
       reqMatch: 'Hasła są zgodne',
+      invalidUserMessage: 'Nieprawidłowy email lub hasło.',
     },
   })
   .build();
