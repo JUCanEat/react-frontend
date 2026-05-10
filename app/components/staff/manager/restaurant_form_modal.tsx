@@ -1,5 +1,29 @@
-import type { FormEvent } from 'react';
-import type { RestaurantCreateFormData } from '~/interfaces';
+import { useState, useEffect, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { RestaurantCreateFormData, OpeningHoursDTO, DayOfWeek } from '~/interfaces';
+import { DAYS_OF_WEEK } from '~/interfaces';
+
+const DAY_I18N_KEY: Record<DayOfWeek, string> = {
+  MONDAY: 'daysShort.monday',
+  TUESDAY: 'daysShort.tuesday',
+  WEDNESDAY: 'daysShort.wednesday',
+  THURSDAY: 'daysShort.thursday',
+  FRIDAY: 'daysShort.friday',
+  SATURDAY: 'daysShort.saturday',
+  SUNDAY: 'daysShort.sunday',
+};
+
+function makeDefaultPerDayHours(openTime: string, closeTime: string): OpeningHoursDTO[] {
+  return DAYS_OF_WEEK.map(day => ({ dayOfWeek: day, openTime, closeTime }));
+}
+
+function allSameHours(hours: OpeningHoursDTO[]): boolean {
+  if (!hours || hours.length === 0) return true;
+  const { openTime, closeTime, closed } = hours[0];
+  return hours.every(
+    h => h.openTime === openTime && h.closeTime === closeTime && !!h.closed === !!closed
+  );
+}
 
 interface RestaurantFormModalProps {
   isOpen: boolean;
@@ -44,7 +68,108 @@ export function RestaurantFormModal({
   onChange,
   labels,
 }: RestaurantFormModalProps) {
+  const { t } = useTranslation();
+  const [sameHoursEveryDay, setSameHoursEveryDay] = useState(true);
+  const [perDayHours, setPerDayHours] = useState<OpeningHoursDTO[]>(makeDefaultPerDayHours('', ''));
+
+  useEffect(() => {
+    if (isOpen) {
+      const hasOpeningHours = (formData.openingHours?.length ?? 0) > 0;
+      if (hasOpeningHours && !allSameHours(formData.openingHours!)) {
+        setSameHoursEveryDay(false);
+        setPerDayHours(
+          DAYS_OF_WEEK.map(day => {
+            const existing = formData.openingHours!.find(h => h.dayOfWeek === day);
+            return existing ?? { dayOfWeek: day, openTime: '', closeTime: '' };
+          })
+        );
+      } else {
+        setSameHoursEveryDay(true);
+        const openTime = hasOpeningHours
+          ? formData.openingHours![0].openTime
+          : (formData.openingTime ?? '');
+        const closeTime = hasOpeningHours
+          ? formData.openingHours![0].closeTime
+          : (formData.closingTime ?? '');
+        setPerDayHours(makeDefaultPerDayHours(openTime, closeTime));
+      }
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
+
+  const handleToggleSameHours = () => {
+    if (sameHoursEveryDay) {
+      // Switching to per-day mode: copy current same hours to all days
+      const newPerDayHours = makeDefaultPerDayHours(
+        formData.openingTime ?? '',
+        formData.closingTime ?? ''
+      ).map(h => ({ ...h, openTime: h.openTime || '', closeTime: h.closeTime || '' }));
+      setPerDayHours(newPerDayHours);
+      setSameHoursEveryDay(false);
+      onChange({
+        ...formData,
+        openingHours: newPerDayHours,
+        openingTime: undefined,
+        closingTime: undefined,
+      });
+    } else {
+      // Switching to same every day: use first non-closed or first day as template
+      const firstOpen = perDayHours.find(h => h.openTime && h.closeTime) ?? perDayHours[0];
+      setSameHoursEveryDay(true);
+      onChange({
+        ...formData,
+        openingHours: undefined,
+        openingTime: firstOpen?.openTime ?? '',
+        closingTime: firstOpen?.closeTime ?? '',
+      });
+    }
+  };
+
+  const handlePerDayChange = (day: DayOfWeek, field: 'openTime' | 'closeTime', value: string) => {
+    const updated = perDayHours.map(h =>
+      h.dayOfWeek === day
+        ? {
+            dayOfWeek: day,
+            openTime: field === 'openTime' ? value : h.openTime,
+            closeTime: field === 'closeTime' ? value : h.closeTime,
+          }
+        : h
+    );
+    setPerDayHours(updated);
+    onChange({
+      ...formData,
+      openingHours: updated,
+      openingTime: undefined,
+      closingTime: undefined,
+    });
+  };
+
+  const renderTimeField = (
+    label: string,
+    value: string,
+    error: string | undefined,
+    onChangeField: (val: string) => void
+  ) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        {label}
+      </label>
+      <input
+        type="time"
+        required
+        value={value}
+        onChange={e => onChangeField(e.target.value)}
+        className={`w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white ${
+          error ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-zinc-600'
+        }`}
+      />
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+    </div>
+  );
+
+  const timeInputClass =
+    'w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -147,49 +272,99 @@ export function RestaurantFormModal({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {labels.openingTimeLabel}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('manager.openingHoursLabel')}
                 </label>
-                <input
-                  type="time"
-                  required
-                  value={formData.openingTime}
-                  onChange={e => onChange({ ...formData, openingTime: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white ${
-                    validationErrors.openingTime
-                      ? 'border-red-500 dark:border-red-400'
-                      : 'border-gray-300 dark:border-zinc-600'
-                  }`}
-                />
-                {validationErrors.openingTime && (
-                  <p className="text-red-500 text-xs mt-1">{validationErrors.openingTime}</p>
-                )}
+                <button
+                  type="button"
+                  onClick={handleToggleSameHours}
+                  className="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
+                >
+                  <span
+                    className={`inline-flex items-center justify-center w-3.5 h-3.5 rounded-sm border text-[10px] leading-none transition-colors ${
+                      sameHoursEveryDay
+                        ? 'bg-[#009DE0] border-[#009DE0] text-white'
+                        : 'border-gray-400 dark:border-zinc-500 bg-transparent'
+                    }`}
+                  >
+                    {sameHoursEveryDay && '✓'}
+                  </span>
+                  {t('manager.sameHoursEveryDay')}
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {labels.closingTimeLabel}
-                </label>
-                <input
-                  type="time"
-                  required
-                  value={formData.closingTime}
-                  onChange={e => onChange({ ...formData, closingTime: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 text-gray-900 dark:text-white ${
-                    validationErrors.closingTime
-                      ? 'border-red-500 dark:border-red-400'
-                      : 'border-gray-300 dark:border-zinc-600'
-                  }`}
-                />
-                {validationErrors.closingTime && (
-                  <p className="text-red-500 text-xs mt-1">{validationErrors.closingTime}</p>
-                )}
-              </div>
+
+              {sameHoursEveryDay ? (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    {renderTimeField(
+                      labels.openingTimeLabel,
+                      formData.openingTime ?? '',
+                      validationErrors.openingTime,
+                      val => onChange({ ...formData, openingTime: val, openingHours: undefined })
+                    )}
+                    {renderTimeField(
+                      labels.closingTimeLabel,
+                      formData.closingTime ?? '',
+                      validationErrors.closingTime,
+                      val => onChange({ ...formData, closingTime: val, openingHours: undefined })
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {labels.timeFormatHint}
+                  </p>
+                </>
+              ) : (
+                <table className="w-full text-sm border-collapse table-fixed">
+                  <thead>
+                    <tr>
+                      <th className="text-left py-1 pr-2 font-medium text-gray-700 dark:text-gray-300 text-xs w-8" />
+                      <th className="text-left py-1 pr-3 font-medium text-gray-700 dark:text-gray-300 text-xs w-1/2">
+                        {labels.openingTimeLabel}
+                      </th>
+                      <th className="text-left py-1 font-medium text-gray-700 dark:text-gray-300 text-xs w-1/2">
+                        {labels.closingTimeLabel}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {perDayHours.map(h => (
+                      <tr
+                        key={h.dayOfWeek}
+                        className="border-t border-gray-100 dark:border-zinc-700"
+                      >
+                        <td className="py-1 pr-2 font-medium text-gray-700 dark:text-gray-300 text-xs align-middle whitespace-nowrap">
+                          {t(DAY_I18N_KEY[h.dayOfWeek])}
+                        </td>
+                        <td className="py-1 pr-3 align-middle">
+                          <input
+                            type="time"
+                            required
+                            value={h.openTime}
+                            onChange={e =>
+                              handlePerDayChange(h.dayOfWeek, 'openTime', e.target.value)
+                            }
+                            className={timeInputClass}
+                          />
+                        </td>
+                        <td className="py-1 align-middle">
+                          <input
+                            type="time"
+                            required
+                            value={h.closeTime}
+                            onChange={e =>
+                              handlePerDayChange(h.dayOfWeek, 'closeTime', e.target.value)
+                            }
+                            className={timeInputClass}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 -mt-2">
-              {labels.timeFormatHint}
-            </p>
 
             <div className="flex gap-3 pt-4">
               <button

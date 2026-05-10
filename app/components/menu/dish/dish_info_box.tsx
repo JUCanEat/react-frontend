@@ -1,5 +1,5 @@
 import type { Dish } from '~/interfaces';
-import { Beef, Milk, Nut, Wheat } from 'lucide-react';
+import { Beef, Milk, Nut, Wheat, CirclePile } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 const ALLERGEN_ICON_MAP: Record<string, { icon: ComponentType<{ size?: number }>; label: string }> =
@@ -8,11 +8,15 @@ const ALLERGEN_ICON_MAP: Record<string, { icon: ComponentType<{ size?: number }>
     LACTOSE: { icon: Milk, label: 'Lactose' },
     MEAT: { icon: Beef, label: 'Meat' },
     NUTS: { icon: Nut, label: 'Nuts' },
+    SESAME: { icon: CirclePile, label: 'Sesame' },
   };
 
 export function DishInfo({ dish }: { dish: Dish }) {
   const allergenIcons = (dish.allergens ?? [])
-    .map(allergen => ALLERGEN_ICON_MAP[allergen])
+    .map(allergen => {
+      const key = allergen.toUpperCase();
+      return ALLERGEN_ICON_MAP[key];
+    })
     .filter(Boolean);
 
   return (

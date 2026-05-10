@@ -5,6 +5,7 @@ const ALLERGEN_KEY_MAP: Record<string, string> = {
   LACTOSE: 'menuForm.allergenLactose',
   MEAT: 'menuForm.allergenMeat',
   NUTS: 'menuForm.allergenNuts',
+  SESAME: 'menuForm.allergenSesame',
 };
 
 const CATEGORY_KEY_MAP: Record<string, string> = {

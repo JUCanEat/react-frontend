@@ -8,10 +8,21 @@ export type DayOfWeek =
   | 'SATURDAY'
   | 'SUNDAY';
 
+export const DAYS_OF_WEEK: DayOfWeek[] = [
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+  'SUNDAY',
+];
+
 export interface OpeningHoursDTO {
   dayOfWeek: DayOfWeek;
   openTime: string;
   closeTime: string;
+  closed?: boolean;
 }
 
 export interface Restaurant {
@@ -30,9 +41,9 @@ export interface Restaurant {
   openNow: boolean;
 }
 
-export type Allergen = 'NUTS' | 'GLUTEN' | 'MEAT' | 'LACTOSE';
+export type Allergen = 'NUTS' | 'GLUTEN' | 'MEAT' | 'LACTOSE' | 'SESAME';
 
-export const MENU_ALLERGENS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS'];
+export const MENU_ALLERGENS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS', 'SESAME'];
 
 export interface DailyMenu {
   id: string;
@@ -129,6 +140,12 @@ export interface RestaurantCreateFormData {
   latitude: string;
   longitude: string;
   photoPath: string;
-  openingTime: string;
-  closingTime: string;
+  // flat fields used when same hours apply every day; openingHours takes precedence
+  openingTime?: string;
+  closingTime?: string;
+  openingHours?: OpeningHoursDTO[];
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
 }

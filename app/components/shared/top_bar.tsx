@@ -62,6 +62,7 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <ItemMedia
             variant="logo"
+            className="truncate cursor-pointer"
             onClick={() => navigate(appRoutes.home)}
           >
             <img
@@ -70,7 +71,12 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
             />
           </ItemMedia>
           <ItemContent className="min-w-0">
-            <ItemTitle className="truncate">JU Can Eat</ItemTitle>
+            <ItemTitle
+              className="truncate cursor-pointer"
+              onClick={() => navigate(appRoutes.home)}
+            >
+              JU Can Eat
+            </ItemTitle>
           </ItemContent>
         </div>
 
