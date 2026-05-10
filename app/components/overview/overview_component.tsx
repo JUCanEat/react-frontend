@@ -8,6 +8,7 @@ import {
   Vegan,
   WheatOff,
   CalendarX2,
+  NutOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,8 +17,9 @@ import { BottomNav } from '~/components/shared/bottom_nav';
 import { SearchBar } from '~/components/overview/search_bar';
 import { type FilterValue } from '~/components/overview/filter_bar';
 import { useRestaurantItemsWithFilters } from '~/components/overview/service_section/use_restaurant_items_with_filters';
-import { useGetAllRestaurants } from '~/api/restaurant_service';
+import { useGetAllRestaurants, useGetRestaurantRecommendations } from '~/api/restaurant_service';
 import { useGetAllVendingMachines } from '~/api/vending_machine_service';
+import { useKeycloak } from '@react-keycloak/web';
 import { appRoutes } from '~/lib/app_routes';
 import { useRestaurantStore } from '~/store/restaurant_store';
 import type { Facility, Restaurant, VendingMachine } from '~/interfaces';
@@ -137,11 +139,15 @@ function VendingMachineCard({
 export function OverviewComponent() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { keycloak, initialized } = useKeycloak();
   const setSelectedRestaurant = useRestaurantStore(state => state.setSelectedRestaurant);
   const [mode, setMode] = React.useState<'restaurants' | 'vending'>('restaurants');
   const [filters, setFilters] = React.useState<FilterValue[]>([]);
   const [query, setQuery] = React.useState('');
   const [selectedPoint, setSelectedPoint] = React.useState<Facility | null>(null);
+
+  const token = initialized && keycloak.authenticated ? keycloak.token : undefined;
+  const { data: recommendationsData } = useGetRestaurantRecommendations(token);
 
   const { isPending, error, items } = useRestaurantItemsWithFilters({
     carouselItemSource: useGetAllRestaurants,
@@ -168,8 +174,18 @@ export function OverviewComponent() {
     return name.includes(normalizedQuery) || description.includes(normalizedQuery);
   });
 
-  const openItems = filteredItems.filter(item => item.openNow);
-  const closedItems = filteredItems.filter(item => !item.openNow);
+  const scoreMap = React.useMemo(() => {
+    if (!recommendationsData) return {} as Record<string, number>;
+    return Object.fromEntries(recommendationsData.map(r => [r.restaurant.id, r.score]));
+  }, [recommendationsData]);
+
+  const sortedFilteredItems = React.useMemo(() => {
+    if (!recommendationsData) return filteredItems;
+    return [...filteredItems].sort((a, b) => (scoreMap[b.id] ?? 0) - (scoreMap[a.id] ?? 0));
+  }, [filteredItems, recommendationsData, scoreMap]);
+
+  const openItems = sortedFilteredItems.filter(item => item.openNow);
+  const closedItems = sortedFilteredItems.filter(item => !item.openNow);
   const filteredVendingMachines = (vendingMachines ?? []).filter(vendingMachine => {
     if (!normalizedQuery) return true;
 
@@ -200,11 +216,13 @@ export function OverviewComponent() {
     );
   };
 
-  const filterOptions: Array<{ value: FilterValue; label: string; icon: React.ReactNode }> = [
+  const preferFilters: Array<{ value: FilterValue; label: string; icon: React.ReactNode }> = [
     { value: 'vegan', label: t('filters.vegan'), icon: <Vegan size={16} /> },
     { value: 'vegetarian', label: t('filters.vegetarian'), icon: <Sprout size={16} /> },
-    { value: 'lactoseFree', label: t('filters.lactoseFree'), icon: <MilkOff size={16} /> },
-    { value: 'glutenFree', label: t('filters.glutenFree'), icon: <WheatOff size={16} /> },
+    { value: 'italian', label: t('filters.italian'), icon: <span className="text-xs">🇮🇹</span> },
+    { value: 'polish', label: t('filters.polish'), icon: <span className="text-xs">🇵🇱</span> },
+    { value: 'asian', label: t('filters.asian'), icon: <span className="text-xs">🥢</span> },
+    { value: 'fastFood', label: t('filters.fastFood'), icon: <span className="text-xs">🍔</span> },
     ...(mode === 'restaurants'
       ? [
           {
@@ -214,6 +232,12 @@ export function OverviewComponent() {
           },
         ]
       : []),
+  ];
+
+  const avoidFilters: Array<{ value: FilterValue; label: string; icon: React.ReactNode }> = [
+    { value: 'glutenFree', label: t('filters.glutenFree'), icon: <WheatOff size={16} /> },
+    { value: 'lactoseFree', label: t('filters.lactoseFree'), icon: <MilkOff size={16} /> },
+    { value: 'nutsFree', label: t('filters.nutsFree'), icon: <NutOff size={16} /> },
   ];
 
   const Section = ({
@@ -290,28 +314,59 @@ export function OverviewComponent() {
               />
 
               {mode === 'restaurants' && (
-                <div>
-                  <div className="overflow-x-auto overflow-y-hidden">
-                    <div className="flex gap-2 min-w-max pr-1">
-                      {filterOptions.map(option => {
-                        const active = filters.includes(option.value);
-
-                        return (
-                          <button
-                            key={option.value}
-                            type="button"
-                            onClick={() => toggleFilter(option.value)}
-                            className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm whitespace-nowrap transition-colors ${
-                              active
-                                ? 'border-[#009DE0] bg-sky-50 dark:bg-sky-900/20 text-[#009DE0]'
-                                : 'border-gray-200 dark:border-zinc-700 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-800'
-                            }`}
-                          >
-                            <span className="shrink-0">{option.icon}</span>
-                            <span>{option.label}</span>
-                          </button>
-                        );
-                      })}
+                <div className="space-y-1.5">
+                  <div>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">
+                      {t('filters.preferSection')}
+                    </p>
+                    <div className="overflow-x-auto overflow-y-hidden">
+                      <div className="flex gap-2 min-w-max pr-1">
+                        {preferFilters.map(option => {
+                          const active = filters.includes(option.value);
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => toggleFilter(option.value)}
+                              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm whitespace-nowrap transition-colors ${
+                                active
+                                  ? 'border-[#009DE0] bg-sky-50 dark:bg-sky-900/20 text-[#009DE0]'
+                                  : 'border-gray-200 dark:border-zinc-700 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-800'
+                              }`}
+                            >
+                              <span className="shrink-0">{option.icon}</span>
+                              <span>{option.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">
+                      {t('filters.avoidSection')}
+                    </p>
+                    <div className="overflow-x-auto overflow-y-hidden">
+                      <div className="flex gap-2 min-w-max pr-1">
+                        {avoidFilters.map(option => {
+                          const active = filters.includes(option.value);
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => toggleFilter(option.value)}
+                              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm whitespace-nowrap transition-colors ${
+                                active
+                                  ? 'border-red-400 bg-red-50 dark:bg-red-900/20 text-red-500'
+                                  : 'border-gray-200 dark:border-zinc-700 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-800'
+                              }`}
+                            >
+                              <span className="shrink-0">{option.icon}</span>
+                              <span>{option.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>

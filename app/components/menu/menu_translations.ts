@@ -3,9 +3,13 @@ type TranslateFn = (key: string) => string;
 const ALLERGEN_KEY_MAP: Record<string, string> = {
   GLUTEN: 'menuForm.allergenGluten',
   LACTOSE: 'menuForm.allergenLactose',
-  MEAT: 'menuForm.allergenMeat',
   NUTS: 'menuForm.allergenNuts',
-  SESAME: 'menuForm.allergenSesame',
+  VEGAN: 'filters.vegan',
+  VEGETARIAN: 'filters.vegetarian',
+  ITALIAN: 'filters.italian',
+  POLISH: 'filters.polish',
+  ASIAN: 'filters.asian',
+  FAST_FOOD: 'filters.fastFood',
 };
 
 const CATEGORY_KEY_MAP: Record<string, string> = {
