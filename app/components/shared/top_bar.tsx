@@ -24,6 +24,7 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
     const root = document.documentElement;
     root.style.filter = contrast > 1 ? `contrast(${contrast})` : '';
     root.classList.toggle('high-contrast', contrast > 1);
+    root.style.setProperty('--contrast-level', String((contrast - 1) / 0.2));
     localStorage.setItem('jucaneat-contrast', String(contrast));
   }, [contrast]);
 
