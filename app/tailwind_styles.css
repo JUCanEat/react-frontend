@@ -1,6 +1,17 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+@media (prefers-color-scheme: light) {
+  html.high-contrast * {
+    border-color: rgb(0 0 0 / 0.15) !important;
+  }
+}
+
+html.high-contrast .sign-up-btn {
+  outline: 0.5px solid
+    color-mix(in srgb, rgb(60 60 60), rgb(190 190 190) calc(var(--contrast-level, 0) * 100%));
+}
+
 @theme {
   --breakpoint-3xs: 16rem; /* 256px */
   --breakpoint-2xs: 18rem; /* 288px */

@@ -55,7 +55,7 @@ export default function ProfileComponent() {
                 {t('profile.logIn')}
               </button>
               <button
-                className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-[#1B1B1B]"
+                className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-[#1B1B1B] sign-up-btn"
                 onClick={() =>
                   keycloak.register({ redirectUri: window.location.origin + '/profile' })
                 }
