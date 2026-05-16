@@ -50,6 +50,7 @@ export type TagValue =
   | 'NUTS'
   | 'GLUTEN'
   | 'LACTOSE'
+  | 'SESAME'
   | 'VEGAN'
   | 'VEGETARIAN';
 
@@ -62,7 +63,7 @@ export interface Tag {
 
 export const MENU_ALLERGENS: TagValue[] = ['GLUTEN', 'LACTOSE', 'NUTS', 'VEGAN', 'VEGETARIAN'];
 export const MENU_DIETARY_TAGS: TagValue[] = ['VEGAN', 'VEGETARIAN'];
-export const MENU_ALLERGEN_TAGS: TagValue[] = ['GLUTEN', 'LACTOSE', 'NUTS'];
+export const MENU_ALLERGEN_TAGS: TagValue[] = ['GLUTEN', 'LACTOSE', 'NUTS', 'SESAME'];
 export const MENU_CUISINE_TAGS: TagValue[] = ['ITALIAN', 'POLISH', 'ASIAN', 'FAST_FOOD'];
 
 export const TAG_ID_MAP: Record<TagValue, string> = {
@@ -73,6 +74,7 @@ export const TAG_ID_MAP: Record<TagValue, string> = {
   NUTS: 'a0000000-0000-0000-0000-000000000005',
   GLUTEN: 'a0000000-0000-0000-0000-000000000006',
   LACTOSE: 'a0000000-0000-0000-0000-000000000007',
+  SESAME: 'a0000000-0000-0000-0000-000000000010',
   VEGAN: 'a0000000-0000-0000-0000-000000000008',
   VEGETARIAN: 'a0000000-0000-0000-0000-000000000009',
 };

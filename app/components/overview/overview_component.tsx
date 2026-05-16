@@ -9,6 +9,7 @@ import {
   WheatOff,
   CalendarX2,
   NutOff,
+  Pizza,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -219,10 +220,22 @@ export function OverviewComponent() {
   const preferFilters: Array<{ value: FilterValue; label: string; icon: React.ReactNode }> = [
     { value: 'vegan', label: t('filters.vegan'), icon: <Vegan size={16} /> },
     { value: 'vegetarian', label: t('filters.vegetarian'), icon: <Sprout size={16} /> },
-    { value: 'italian', label: t('filters.italian'), icon: <span className="text-xs">🇮🇹</span> },
-    { value: 'polish', label: t('filters.polish'), icon: <span className="text-xs">🇵🇱</span> },
-    { value: 'asian', label: t('filters.asian'), icon: <span className="text-xs">🥢</span> },
-    { value: 'fastFood', label: t('filters.fastFood'), icon: <span className="text-xs">🍔</span> },
+    {
+      value: 'italian',
+      label: t('filters.italian'),
+      icon: <span className="text-base leading-none">🇮🇹</span>,
+    },
+    {
+      value: 'polish',
+      label: t('filters.polish'),
+      icon: <span className="text-base leading-none">🇵🇱</span>,
+    },
+    {
+      value: 'asian',
+      label: t('filters.asian'),
+      icon: <span className="text-base leading-none">🍜</span>,
+    },
+    { value: 'fastFood', label: t('filters.fastFood'), icon: <Pizza size={16} /> },
     ...(mode === 'restaurants'
       ? [
           {

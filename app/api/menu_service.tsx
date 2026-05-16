@@ -93,7 +93,7 @@ function convertTagsToObjects(menu: any) {
 }
 
 function getUiLanguageCode() {
-  return (i18n.language || 'en').split('-')[0].toLowerCase();
+  return (i18n.language || 'en').split('-')[0].toUpperCase();
 }
 
 function mapLocalizedDishes(rawDishes: any[]): DailyMenu['dishes'] {

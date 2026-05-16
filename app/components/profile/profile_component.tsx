@@ -8,8 +8,18 @@ import { appRoutes } from '~/lib/app_routes';
 import { useGetPreferences, useGetCurrentUserWithToken, savePreferences } from '~/api/user_service';
 import type { TagValue } from '~/interfaces';
 
-const INCLUDE_TAGS: TagValue[] = ['VEGAN', 'VEGETARIAN', 'ITALIAN', 'POLISH', 'ASIAN', 'FAST_FOOD'];
-const EXCLUDE_TAGS: TagValue[] = ['GLUTEN', 'LACTOSE', 'NUTS'];
+const ALL_TAGS: TagValue[] = [
+  'ITALIAN',
+  'POLISH',
+  'ASIAN',
+  'FAST_FOOD',
+  'VEGAN',
+  'VEGETARIAN',
+  'GLUTEN',
+  'LACTOSE',
+  'NUTS',
+  'SESAME',
+];
 
 function PreferencesSection({
   token,
@@ -33,8 +43,15 @@ function PreferencesSection({
     setExclude(prefsData.filter(p => p.preferenceType === 'EXCLUDE').map(p => p.tagValue));
   }, [prefsData]);
 
-  const toggle = (list: TagValue[], setList: (v: TagValue[]) => void, value: TagValue) => {
-    setList(list.includes(value) ? list.filter(v => v !== value) : [...list, value]);
+  const toggleInclude = (value: TagValue) => {
+    setInclude(prev => (prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]));
+    setExclude(prev => prev.filter(v => v !== value));
+    setSaved(false);
+  };
+
+  const toggleExclude = (value: TagValue) => {
+    setExclude(prev => (prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]));
+    setInclude(prev => prev.filter(v => v !== value));
     setSaved(false);
   };
 
@@ -70,6 +87,7 @@ function PreferencesSection({
       GLUTEN: t('menuForm.allergenGluten'),
       LACTOSE: t('menuForm.allergenLactose'),
       NUTS: t('menuForm.allergenNuts'),
+      SESAME: t('menuForm.allergenSesame'),
       ITALIAN: t('profile.tagItalian'),
       POLISH: t('profile.tagPolish'),
       ASIAN: t('profile.tagAsian'),
@@ -103,11 +121,11 @@ function PreferencesSection({
           {t('profile.iPrefer')}
         </p>
         <div className="flex flex-wrap gap-2">
-          {INCLUDE_TAGS.map(tag => (
+          {ALL_TAGS.map(tag => (
             <button
               key={tag}
               type="button"
-              onClick={() => toggle(include, setInclude, tag)}
+              onClick={() => toggleInclude(tag)}
               className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
                 include.includes(tag)
                   ? 'bg-[#009DE0] text-white border-[#009DE0]'
@@ -125,11 +143,11 @@ function PreferencesSection({
           {t('profile.iAvoid')}
         </p>
         <div className="flex flex-wrap gap-2">
-          {EXCLUDE_TAGS.map(tag => (
+          {ALL_TAGS.map(tag => (
             <button
               key={tag}
               type="button"
-              onClick={() => toggle(exclude, setExclude, tag)}
+              onClick={() => toggleExclude(tag)}
               className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
                 exclude.includes(tag)
                   ? 'bg-red-500 text-white border-red-500'

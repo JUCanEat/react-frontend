@@ -4,6 +4,7 @@ const ALLERGEN_KEY_MAP: Record<string, string> = {
   GLUTEN: 'menuForm.allergenGluten',
   LACTOSE: 'menuForm.allergenLactose',
   NUTS: 'menuForm.allergenNuts',
+  SESAME: 'menuForm.allergenSesame',
   VEGAN: 'filters.vegan',
   VEGETARIAN: 'filters.vegetarian',
   ITALIAN: 'filters.italian',
