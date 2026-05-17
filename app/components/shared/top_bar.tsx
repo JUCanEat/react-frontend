@@ -7,8 +7,8 @@ import { useKeycloak } from '@react-keycloak/web';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { appRoutes } from '~/lib/app_routes';
-import { useState, useEffect } from 'react';
-import { Contrast } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Contrast, ALargeSmall } from 'lucide-react';
 
 export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
   const { keycloak, initialized } = useKeycloak();
@@ -16,8 +16,25 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
   const navigate = useNavigate();
   const itemClassName = isLoginPage ? 'justify-center' : 'justify-between';
 
+  const titleRef = useRef<HTMLDivElement>(null);
+  const [showTitle, setShowTitle] = useState(true);
+
+  useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    const obs = new ResizeObserver(() => {
+      setShowTitle(el.scrollWidth <= el.clientWidth + 1);
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   const [contrast, setContrast] = useState(() => {
     return Number(localStorage.getItem('jucaneat-contrast') ?? 1);
+  });
+
+  const [fontSize, setFontSize] = useState(() => {
+    return Number(localStorage.getItem('jucaneat-font-size') ?? 1);
   });
 
   useEffect(() => {
@@ -27,6 +44,11 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
     root.style.setProperty('--contrast-level', String((contrast - 1) / 0.2));
     localStorage.setItem('jucaneat-contrast', String(contrast));
   }, [contrast]);
+
+  useEffect(() => {
+    document.documentElement.style.fontSize = fontSize !== 1 ? `${fontSize * 100}%` : '';
+    localStorage.setItem('jucaneat-font-size', String(fontSize));
+  }, [fontSize]);
 
   const handleLogin = () => {
     if (!initialized) return;
@@ -70,9 +92,14 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
               src="/logo.svg"
             />
           </ItemMedia>
-          <ItemContent className="min-w-0">
+          <ItemContent
+            ref={titleRef}
+            className="min-w-0 overflow-hidden"
+            style={{ flexShrink: 1 }}
+          >
             <ItemTitle
-              className="truncate cursor-pointer"
+              className="whitespace-nowrap cursor-pointer"
+              style={{ visibility: showTitle ? 'visible' : 'hidden' }}
               onClick={() => navigate(appRoutes.home)}
             >
               JU Can Eat
@@ -151,6 +178,51 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
                     <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                       <span>{t('topBar.contrastNormal')}</span>
                       <span>{t('topBar.contrastHigh')}</span>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    size="xsm"
+                    variant={fontSize > 1 ? 'default' : 'outline'}
+                    className={
+                      fontSize > 1
+                        ? 'border-gray-200 shadow-sm bg-black text-white hover:bg-black/90 hover:text-white dark:border-zinc-200 dark:bg-white dark:text-black dark:hover:bg-zinc-100'
+                        : 'border-gray-200 shadow-sm bg-white text-black hover:bg-gray-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+                    }
+                    aria-label={t('topBar.fontSize')}
+                  >
+                    <ALargeSmall size={14} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-56"
+                  align="end"
+                >
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">{t('topBar.fontSize')}</span>
+                      {fontSize > 1 && (
+                        <button
+                          onClick={() => setFontSize(1)}
+                          className="text-xs text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                        >
+                          {t('topBar.fontSizeReset')}
+                        </button>
+                      )}
+                    </div>
+                    <Slider
+                      min={1}
+                      max={1.3}
+                      step={0.05}
+                      value={[fontSize]}
+                      onValueChange={([val]) => setFontSize(val)}
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                      <span>{t('topBar.fontSizeSmall')}</span>
+                      <span>{t('topBar.fontSizeLarge')}</span>
                     </div>
                   </div>
                 </PopoverContent>
