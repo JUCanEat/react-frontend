@@ -8,8 +8,6 @@ import {
   Vegan,
   WheatOff,
   CalendarX2,
-  NutOff,
-  Pizza,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -217,25 +215,11 @@ export function OverviewComponent() {
     );
   };
 
-  const preferFilters: Array<{ value: FilterValue; label: string; icon: React.ReactNode }> = [
+  const filterOptions: Array<{ value: FilterValue; label: string; icon: React.ReactNode }> = [
     { value: 'vegan', label: t('filters.vegan'), icon: <Vegan size={16} /> },
     { value: 'vegetarian', label: t('filters.vegetarian'), icon: <Sprout size={16} /> },
-    {
-      value: 'italian',
-      label: t('filters.italian'),
-      icon: <span className="text-base leading-none">🇮🇹</span>,
-    },
-    {
-      value: 'polish',
-      label: t('filters.polish'),
-      icon: <span className="text-base leading-none">🇵🇱</span>,
-    },
-    {
-      value: 'asian',
-      label: t('filters.asian'),
-      icon: <span className="text-base leading-none">🍜</span>,
-    },
-    { value: 'fastFood', label: t('filters.fastFood'), icon: <Pizza size={16} /> },
+    { value: 'lactoseFree', label: t('filters.lactoseFree'), icon: <MilkOff size={16} /> },
+    { value: 'glutenFree', label: t('filters.glutenFree'), icon: <WheatOff size={16} /> },
     ...(mode === 'restaurants'
       ? [
           {
@@ -245,12 +229,6 @@ export function OverviewComponent() {
           },
         ]
       : []),
-  ];
-
-  const avoidFilters: Array<{ value: FilterValue; label: string; icon: React.ReactNode }> = [
-    { value: 'glutenFree', label: t('filters.glutenFree'), icon: <WheatOff size={16} /> },
-    { value: 'lactoseFree', label: t('filters.lactoseFree'), icon: <MilkOff size={16} /> },
-    { value: 'nutsFree', label: t('filters.nutsFree'), icon: <NutOff size={16} /> },
   ];
 
   const Section = ({
@@ -327,60 +305,26 @@ export function OverviewComponent() {
               />
 
               {mode === 'restaurants' && (
-                <div className="space-y-1.5">
-                  <div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">
-                      {t('filters.preferSection')}
-                    </p>
-                    <div className="overflow-x-auto overflow-y-hidden">
-                      <div className="flex gap-2 min-w-max pr-1">
-                        {preferFilters.map(option => {
-                          const active = filters.includes(option.value);
-                          return (
-                            <button
-                              key={option.value}
-                              type="button"
-                              onClick={() => toggleFilter(option.value)}
-                              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm whitespace-nowrap transition-colors ${
-                                active
-                                  ? 'border-[#009DE0] bg-sky-50 dark:bg-sky-900/20 text-[#009DE0]'
-                                  : 'border-gray-200 dark:border-zinc-700 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-800'
-                              }`}
-                            >
-                              <span className="shrink-0">{option.icon}</span>
-                              <span>{option.label}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">
-                      {t('filters.avoidSection')}
-                    </p>
-                    <div className="overflow-x-auto overflow-y-hidden">
-                      <div className="flex gap-2 min-w-max pr-1">
-                        {avoidFilters.map(option => {
-                          const active = filters.includes(option.value);
-                          return (
-                            <button
-                              key={option.value}
-                              type="button"
-                              onClick={() => toggleFilter(option.value)}
-                              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm whitespace-nowrap transition-colors ${
-                                active
-                                  ? 'border-red-400 bg-red-50 dark:bg-red-900/20 text-red-500'
-                                  : 'border-gray-200 dark:border-zinc-700 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-800'
-                              }`}
-                            >
-                              <span className="shrink-0">{option.icon}</span>
-                              <span>{option.label}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
+                <div className="overflow-x-auto overflow-y-hidden">
+                  <div className="flex gap-2 min-w-max pr-1">
+                    {filterOptions.map(option => {
+                      const active = filters.includes(option.value);
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => toggleFilter(option.value)}
+                          className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm whitespace-nowrap transition-colors ${
+                            active
+                              ? 'border-[#009DE0] bg-sky-50 dark:bg-sky-900/20 text-[#009DE0]'
+                              : 'border-gray-200 dark:border-zinc-700 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-800'
+                          }`}
+                        >
+                          <span className="shrink-0">{option.icon}</span>
+                          <span>{option.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
