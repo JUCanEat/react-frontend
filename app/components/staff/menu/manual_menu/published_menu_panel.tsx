@@ -3,7 +3,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { menuService, type PublishedMenu } from '~/api/menu_service';
-import type { DailyMenu, Dish, TagValue } from '~/interfaces';
+import type { DailyMenu, Dish, Allergen } from '~/interfaces';
 import { LoadingSpinner } from '~/components/staff/common/loading_spinner';
 import { ErrorState, EmptyState } from '~/components/staff/common/error_state';
 import { StatusBanner } from '~/components/staff/common/status_banner';
@@ -63,7 +63,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
     dishes: (item.dishes ?? []).map((dish: any) => ({
       ...dish,
       category: dish.category ?? 'MAIN_COURSE',
-      tags: Array.isArray(dish.tags) ? dish.tags.map((t: any) => t.value ?? t) : [],
+      allergens: Array.isArray(dish.allergens) ? dish.allergens : [],
       price: typeof dish.price === 'string' ? dish.price : String(dish.price ?? ''),
     })),
   });
@@ -137,15 +137,17 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
     });
   };
 
-  const handleTagToggle = (dishIndex: number, tag: TagValue) => {
+  const handleAllergenToggle = (dishIndex: number, allergen: Allergen) => {
     if (!menu || !menu.dishes) return;
 
-    const dish = menu.dishes[dishIndex] as any;
-    const tags = dish.tags || [];
+    const dish = menu.dishes[dishIndex];
+    const allergens = dish.allergens || [];
 
-    const updatedTags = tags.includes(tag) ? tags.filter((t: string) => t !== tag) : [...tags, tag];
+    const updatedAllergens = allergens.includes(allergen)
+      ? allergens.filter(a => a !== allergen)
+      : [...allergens, allergen];
 
-    handleDishChange(dishIndex, 'tags' as any, updatedTags);
+    handleDishChange(dishIndex, 'allergens', updatedAllergens);
   };
 
   const handleRemoveDish = (index: number) => {
@@ -172,7 +174,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
           image: '',
           category: 'MAIN_COURSE',
           price: '0',
-          tags: [],
+          allergens: [],
         } as any,
       ],
     });
@@ -216,7 +218,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
           ...dish,
           category: dish.category ?? 'MAIN_COURSE',
           price: String(typeof dish.price === 'number' ? dish.price : Number(dish.price ?? 0)),
-          tags: (dish as any).tags ?? [],
+          allergens: dish.allergens ?? [],
         })),
       };
 
@@ -373,7 +375,7 @@ export function PublishedMenuPanel({ restaurantId }: PublishedMenuPanelProps) {
                 dish={dish as any}
                 index={index}
                 onDishChange={handleDishChange}
-                onTagToggle={handleTagToggle}
+                onAllergenToggle={handleAllergenToggle}
                 onRemove={handleRemoveDish}
               />
             ))}

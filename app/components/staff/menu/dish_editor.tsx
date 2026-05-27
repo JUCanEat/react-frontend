@@ -1,20 +1,25 @@
 import * as React from 'react';
-import type { Dish, TagValue } from '~/interfaces';
-import { MENU_DIETARY_TAGS, MENU_ALLERGEN_TAGS, MENU_CUISINE_TAGS } from '~/interfaces';
+import type { Dish, Allergen } from '~/interfaces';
 import { useTranslation } from 'react-i18next';
-import { translateAllergen } from '~/components/menu/menu_translations';
 
+const ALLERGEN_OPTIONS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS'];
 const CATEGORY_OPTIONS = ['SOUP', 'MAIN_COURSE'];
 
 interface DishEditorProps {
   dish: Dish;
   index: number;
   onDishChange: (index: number, field: keyof Dish, value: any) => void;
-  onTagToggle: (index: number, tag: TagValue) => void;
+  onAllergenToggle: (index: number, allergen: Allergen) => void;
   onRemove: (index: number) => void;
 }
 
-export function DishEditor({ dish, index, onDishChange, onTagToggle, onRemove }: DishEditorProps) {
+export function DishEditor({
+  dish,
+  index,
+  onDishChange,
+  onAllergenToggle,
+  onRemove,
+}: DishEditorProps) {
   const { t } = useTranslation();
 
   return (
@@ -77,66 +82,24 @@ export function DishEditor({ dish, index, onDishChange, onTagToggle, onRemove }:
           />
         </div>
 
-        <div className="space-y-2">
-          <div>
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-              {t('menuForm.dietaryTags')}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {MENU_DIETARY_TAGS.map(tag => {
-                const selected = ((dish as any).tags || []).includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => onTagToggle(index, tag)}
-                    className={`px-3 py-1 rounded text-sm border transition-colors ${selected ? 'bg-[#009DE0] text-white border-[#009DE0]' : 'bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white border-gray-300 dark:border-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-700'}`}
-                  >
-                    {translateAllergen(tag, t)}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-              {t('menuForm.allergenTags')}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {MENU_ALLERGEN_TAGS.map(tag => {
-                const selected = ((dish as any).tags || []).includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => onTagToggle(index, tag)}
-                    className={`px-3 py-1 rounded text-sm border transition-colors ${selected ? 'bg-red-500 text-white border-red-500' : 'bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white border-gray-300 dark:border-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-700'}`}
-                  >
-                    {translateAllergen(tag, t)}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-              {t('menuForm.cuisine')}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {MENU_CUISINE_TAGS.map(tag => {
-                const selected = ((dish as any).tags || []).includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => onTagToggle(index, tag)}
-                    className={`px-3 py-1 rounded text-sm border transition-colors ${selected ? 'bg-[#009DE0] text-white border-[#009DE0]' : 'bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white border-gray-300 dark:border-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-700'}`}
-                  >
-                    {translateAllergen(tag, t)}
-                  </button>
-                );
-              })}
-            </div>
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-white">
+            {t('menuForm.allergens')}
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {ALLERGEN_OPTIONS.map(allergen => {
+              const selected = (dish.allergens || []).includes(allergen);
+              return (
+                <button
+                  key={allergen}
+                  type="button"
+                  onClick={() => onAllergenToggle(index, allergen)}
+                  className={`px-3 py-1 rounded text-sm border transition-colors ${selected ? 'bg-[#009DE0] text-white border-[#009DE0]' : 'bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white border-gray-300 dark:border-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-700'}`}
+                >
+                  {allergen}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -1,41 +1,42 @@
-import type { DailyMenu, Dish } from '~/interfaces';
-
-function hasTag(dish: Dish, value: string): boolean {
-  return (dish.tags ?? []).some(t => t.value === value);
-}
+import type { DailyMenu, Dish } from "~/interfaces"
 
 function isVeganDish(dish: Dish): boolean {
-  return hasTag(dish, 'VEGAN');
+    if (!dish.allergens || dish.allergens.length === 0) return true
+    return !dish.allergens.includes("MEAT") &&
+        !dish.allergens.includes("LACTOSE")
 }
 
 function isVegetarianDish(dish: Dish): boolean {
-  return hasTag(dish, 'VEGETARIAN');
+    if (!dish.allergens || dish.allergens.length === 0) return true
+    return !dish.allergens.includes("MEAT")
 }
 
 function isLactoseFreeDish(dish: Dish): boolean {
-  return !hasTag(dish, 'LACTOSE');
+    if (!dish.allergens || dish.allergens.length === 0) return true
+    return !dish.allergens.includes("LACTOSE")
 }
 
 function isGlutenFreeDish(dish: Dish): boolean {
-  return !hasTag(dish, 'GLUTEN');
+    if (!dish.allergens || dish.allergens.length === 0) return true
+    return !dish.allergens.includes("GLUTEN")
 }
 
 export function hasVeganOption(menu: DailyMenu | null): boolean {
-  if (!menu?.dishes) return false;
-  return menu.dishes.some(isVeganDish);
+    if (!menu?.dishes) return false
+    return menu.dishes.some(isVeganDish)
 }
 
 export function hasVegetarianOption(menu: DailyMenu | null): boolean {
-  if (!menu?.dishes) return false;
-  return menu.dishes.some(isVegetarianDish);
+    if (!menu?.dishes) return false
+    return menu.dishes.some(isVegetarianDish)
 }
 
 export function hasLactoseFreeOption(menu: DailyMenu | null): boolean {
-  if (!menu?.dishes) return false;
-  return menu.dishes.some(isLactoseFreeDish);
+    if (!menu?.dishes) return false
+    return menu.dishes.some(isLactoseFreeDish)
 }
 
 export function hasGlutenFreeOption(menu: DailyMenu | null): boolean {
-  if (!menu?.dishes) return false;
-  return menu.dishes.some(isGlutenFreeDish);
+    if (!menu?.dishes) return false
+    return menu.dishes.some(isGlutenFreeDish)
 }
