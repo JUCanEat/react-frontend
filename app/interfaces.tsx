@@ -41,9 +41,43 @@ export interface Restaurant {
   openNow: boolean;
 }
 
-export type Allergen = 'NUTS' | 'GLUTEN' | 'MEAT' | 'LACTOSE' | 'SESAME';
+export type TagType = 'CUISINE' | 'ALLERGEN' | 'DIETARY';
+export type TagValue =
+  | 'ITALIAN'
+  | 'POLISH'
+  | 'ASIAN'
+  | 'FAST_FOOD'
+  | 'NUTS'
+  | 'GLUTEN'
+  | 'LACTOSE'
+  | 'SESAME'
+  | 'VEGAN'
+  | 'VEGETARIAN';
 
-export const MENU_ALLERGENS: Allergen[] = ['GLUTEN', 'LACTOSE', 'MEAT', 'NUTS', 'SESAME'];
+export interface Tag {
+  id: string;
+  value: TagValue;
+  tagType: TagType;
+  name: string;
+}
+
+export const MENU_ALLERGENS: TagValue[] = ['GLUTEN', 'LACTOSE', 'NUTS', 'VEGAN', 'VEGETARIAN'];
+export const MENU_DIETARY_TAGS: TagValue[] = ['VEGAN', 'VEGETARIAN'];
+export const MENU_ALLERGEN_TAGS: TagValue[] = ['GLUTEN', 'LACTOSE', 'NUTS', 'SESAME'];
+export const MENU_CUISINE_TAGS: TagValue[] = ['ITALIAN', 'POLISH', 'ASIAN', 'FAST_FOOD'];
+
+export const TAG_ID_MAP: Record<TagValue, string> = {
+  ITALIAN: 'a0000000-0000-0000-0000-000000000001',
+  POLISH: 'a0000000-0000-0000-0000-000000000002',
+  ASIAN: 'a0000000-0000-0000-0000-000000000003',
+  FAST_FOOD: 'a0000000-0000-0000-0000-000000000004',
+  NUTS: 'a0000000-0000-0000-0000-000000000005',
+  GLUTEN: 'a0000000-0000-0000-0000-000000000006',
+  LACTOSE: 'a0000000-0000-0000-0000-000000000007',
+  SESAME: 'a0000000-0000-0000-0000-000000000010',
+  VEGAN: 'a0000000-0000-0000-0000-000000000008',
+  VEGETARIAN: 'a0000000-0000-0000-0000-000000000009',
+};
 
 export interface DailyMenu {
   id: string;
@@ -64,6 +98,11 @@ export interface VendingMachine {
 
 export type Facility = Restaurant | VendingMachine;
 
+export interface RankedRestaurant {
+  restaurant: Restaurant;
+  score: number;
+}
+
 export interface FacilityInfoProps {
   selectedPoint: Facility | null;
   onClose: () => void;
@@ -77,7 +116,7 @@ export interface Dish {
   category?: string;
   price: string;
   image: string;
-  allergens: string[];
+  tags: Tag[];
 }
 
 export interface DishDTO {
@@ -85,7 +124,7 @@ export interface DishDTO {
   name: string;
   category: string;
   price: number;
-  allergens: string[];
+  tags: string[];
 }
 
 export interface DailyMenuDTO {
