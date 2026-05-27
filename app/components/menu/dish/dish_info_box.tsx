@@ -1,23 +1,17 @@
 import type { Dish } from '~/interfaces';
-import { Beef, Milk, Nut, Wheat, CirclePile } from 'lucide-react';
+import { Milk, Nut, Wheat, Leaf, Vegan } from 'lucide-react';
 import type { ComponentType } from 'react';
 
-const ALLERGEN_ICON_MAP: Record<string, { icon: ComponentType<{ size?: number }>; label: string }> =
-  {
-    GLUTEN: { icon: Wheat, label: 'Gluten' },
-    LACTOSE: { icon: Milk, label: 'Lactose' },
-    MEAT: { icon: Beef, label: 'Meat' },
-    NUTS: { icon: Nut, label: 'Nuts' },
-    SESAME: { icon: CirclePile, label: 'Sesame' },
-  };
+const TAG_ICON_MAP: Record<string, { icon: ComponentType<{ size?: number }>; label: string }> = {
+  GLUTEN: { icon: Wheat, label: 'Gluten' },
+  LACTOSE: { icon: Milk, label: 'Lactose' },
+  NUTS: { icon: Nut, label: 'Nuts' },
+  VEGAN: { icon: Vegan, label: 'Vegan' },
+  VEGETARIAN: { icon: Leaf, label: 'Vegetarian' },
+};
 
 export function DishInfo({ dish }: { dish: Dish }) {
-  const allergenIcons = (dish.allergens ?? [])
-    .map(allergen => {
-      const key = allergen.toUpperCase();
-      return ALLERGEN_ICON_MAP[key];
-    })
-    .filter(Boolean);
+  const tagIcons = (dish.tags ?? []).map(tag => TAG_ICON_MAP[tag.value]).filter(Boolean);
 
   return (
     <div className="flex w-full items-start justify-between gap-4 p-4 rounded-2xl border border-gray-200 dark:border-zinc-700 bg-white/95 dark:bg-zinc-900 shadow-sm hover:shadow-md transition-all">
@@ -28,8 +22,8 @@ export function DishInfo({ dish }: { dish: Dish }) {
         </div>
 
         <div className="mt-3 flex items-center gap-2 text-[#009DE0] dark:text-[#28b9f7]">
-          {allergenIcons.length > 0 ? (
-            allergenIcons.map(({ icon: Icon, label }) => (
+          {tagIcons.length > 0 ? (
+            tagIcons.map(({ icon: Icon, label }) => (
               <span
                 key={`${dish.id}-${label}`}
                 title={label}
