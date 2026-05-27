@@ -15,7 +15,7 @@ export let useGetRestaurantRecommendations = (token: string | undefined) =>
   useQuery<RankedRestaurant[]>({
     queryKey: ['restaurantRecommendations', token],
     queryFn: async () => {
-      const response = await fetch(`${rootQueryUrl}/${allRestaurantsEndpoint}/recommendation`, {
+      const response = await fetch(`${rootQueryUrl}/${allRestaurantsEndpoint}/me/recommendation`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error(`API Error: ${response.status}`);
