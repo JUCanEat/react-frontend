@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { rootQueryUrl } from '~/root';
-import type { TagValue, TagType } from '~/interfaces';
 
 export interface RestaurantListDTO {
   id: string;
@@ -105,42 +104,3 @@ export const useGetFirstOwnedRestaurant = (token: string | undefined) => {
     enabled: isBrowser && !!token,
   });
 };
-
-export type PreferenceType = 'INCLUDE' | 'EXCLUDE';
-
-export interface UserPreferenceDTO {
-  tagValue: TagValue;
-  tagType: TagType;
-  preferenceType: PreferenceType;
-}
-
-export const useGetPreferences = (token: string | undefined) =>
-  useQuery<UserPreferenceDTO[]>({
-    queryKey: ['userPreferences'],
-    queryFn: async () => {
-      const response = await fetch(`${rootQueryUrl}/api/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) throw new Error('Failed to fetch preferences');
-      return response.json();
-    },
-    enabled: !!token,
-  });
-
-export async function savePreferences(
-  token: string,
-  preferences: Array<{ tagValue: TagValue; preferenceType: PreferenceType }>
-): Promise<void> {
-  const response = await fetch(`${rootQueryUrl}/api/users/preferences`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ preferences }),
-  });
-  if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    throw new Error(`Failed to save preferences (${response.status}): ${text}`);
-  }
-}

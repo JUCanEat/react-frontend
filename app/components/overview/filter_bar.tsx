@@ -7,17 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ToggleGroup, ToggleGroupItem } from '~/shadcn/components/ui/toggle-group';
 
-export type FilterValue =
-  | 'vegan'
-  | 'vegetarian'
-  | 'lactoseFree'
-  | 'glutenFree'
-  | 'nutsFree'
-  | 'hasMenuToday'
-  | 'italian'
-  | 'polish'
-  | 'asian'
-  | 'fastFood';
+export type FilterValue = 'vegan' | 'vegetarian' | 'lactoseFree' | 'glutenFree' | 'hasMenuToday';
 
 export interface FilterBarProps {
   value: FilterValue[];

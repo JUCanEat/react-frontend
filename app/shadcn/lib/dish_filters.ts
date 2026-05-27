@@ -1,56 +1,45 @@
-import type { DailyMenu, Dish } from '~/interfaces';
+import type { DailyMenu, Dish } from "~/interfaces";
 
-function hasTag(dish: Dish, value: string): boolean {
-  return (dish.tags ?? []).some(t => t.value === value);
+function normalizeAllergens(dish: Dish): string[] {
+  return (dish.allergens ?? []).map((a) => String(a).toLowerCase());
 }
 
 export function isVeganDish(dish: Dish): boolean {
-  return hasTag(dish, 'VEGAN');
+  const allergens = normalizeAllergens(dish);
+  if (allergens.length === 0) return true;
+  return !allergens.includes("meat") && !allergens.includes("lactose");
 }
 
 export function isVegetarianDish(dish: Dish): boolean {
-  return hasTag(dish, 'VEGETARIAN');
+  const allergens = normalizeAllergens(dish);
+  if (allergens.length === 0) return true;
+  return !allergens.includes("meat");
 }
 
 export function isLactoseFreeDish(dish: Dish): boolean {
-  return !hasTag(dish, 'LACTOSE');
+  const allergens = normalizeAllergens(dish);
+  if (allergens.length === 0) return true;
+  return !allergens.includes("lactose");
 }
 
 export function isGlutenFreeDish(dish: Dish): boolean {
-  return !hasTag(dish, 'GLUTEN');
-}
-
-export function isNutsFreeDish(dish: Dish): boolean {
-  return !hasTag(dish, 'NUTS');
-}
-
-export function hasCuisineTag(dish: Dish, cuisine: string): boolean {
-  return hasTag(dish, cuisine);
+  const allergens = normalizeAllergens(dish);
+  if (allergens.length === 0) return true;
+  return !allergens.includes("gluten");
 }
 
 export function matchesDishFilter(dish: Dish, filter: string): boolean {
   switch (filter) {
-    case 'vegan':
+    case "vegan":
       return isVeganDish(dish);
-    case 'vegetarian':
+    case "vegetarian":
       return isVegetarianDish(dish);
-    case 'lactose-free':
-    case 'lactoseFree':
+    case "lactose-free":
+    case "lactoseFree":
       return isLactoseFreeDish(dish);
-    case 'gluten-free':
-    case 'glutenFree':
+    case "gluten-free":
+    case "glutenFree":
       return isGlutenFreeDish(dish);
-    case 'nuts-free':
-    case 'nutsFree':
-      return isNutsFreeDish(dish);
-    case 'italian':
-      return hasCuisineTag(dish, 'ITALIAN');
-    case 'polish':
-      return hasCuisineTag(dish, 'POLISH');
-    case 'asian':
-      return hasCuisineTag(dish, 'ASIAN');
-    case 'fastFood':
-      return hasCuisineTag(dish, 'FAST_FOOD');
     default:
       return true;
   }
@@ -62,7 +51,7 @@ export function filterDishes(
 ): Dish[] {
   if (!dishes) return [];
   if (!filters || filters.length === 0) return dishes;
-  return dishes.filter(d => filters.every(f => matchesDishFilter(d, f)));
+  return dishes.filter((d) => filters.every((f) => matchesDishFilter(d, f)));
 }
 
 export function hasVeganOption(menu: DailyMenu | null): boolean {
@@ -83,14 +72,4 @@ export function hasLactoseFreeOption(menu: DailyMenu | null): boolean {
 export function hasGlutenFreeOption(menu: DailyMenu | null): boolean {
   if (!menu?.dishes) return false;
   return menu.dishes.some(isGlutenFreeDish);
-}
-
-export function hasNutsFreeOption(menu: DailyMenu | null): boolean {
-  if (!menu?.dishes) return false;
-  return menu.dishes.some(isNutsFreeDish);
-}
-
-export function hasCuisineOption(menu: DailyMenu | null, cuisine: string): boolean {
-  if (!menu?.dishes) return false;
-  return menu.dishes.some(d => hasCuisineTag(d, cuisine));
 }

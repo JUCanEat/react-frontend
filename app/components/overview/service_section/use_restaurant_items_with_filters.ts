@@ -15,8 +15,6 @@ import {
   hasVegetarianOption,
   hasLactoseFreeOption,
   hasGlutenFreeOption,
-  hasNutsFreeOption,
-  hasCuisineOption,
 } from '~/shadcn/lib/dish_filters';
 
 interface UseRestaurantItemsWithFiltersProps {
@@ -84,16 +82,6 @@ export function useRestaurantItemsWithFilters({
             return hasLactoseFreeOption(menu);
           case 'glutenFree':
             return hasGlutenFreeOption(menu);
-          case 'nutsFree':
-            return hasNutsFreeOption(menu);
-          case 'italian':
-            return hasCuisineOption(menu, 'ITALIAN');
-          case 'polish':
-            return hasCuisineOption(menu, 'POLISH');
-          case 'asian':
-            return hasCuisineOption(menu, 'ASIAN');
-          case 'fastFood':
-            return hasCuisineOption(menu, 'FAST_FOOD');
           case 'hasMenuToday':
             return !!menu && !!menu.dishes && menu.dishes.length > 0;
           default:
@@ -103,5 +91,5 @@ export function useRestaurantItemsWithFilters({
     });
   }
 
-  return { isPending, error, items: filtered, menusData: menusData ?? {} };
+  return { isPending, error, items: filtered };
 }
