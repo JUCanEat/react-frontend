@@ -47,9 +47,17 @@ function RestaurantCard({
           onOpenDetails(restaurant);
         }
       }}
-      className="rounded-2xl border border-gray-200 dark:border-zinc-700 bg-white/95 dark:bg-zinc-900 p-4 shadow-sm hover:shadow-md transition-all cursor-pointer"
+      className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-zinc-700 bg-white/95 dark:bg-zinc-900 p-4 shadow-sm hover:shadow-md transition-all cursor-pointer"
     >
-      <div className="flex items-start justify-between gap-3">
+      <img
+        src="/static/placeholder.jpg"
+        alt=""
+        className="pointer-events-none absolute inset-y-0 left-0 w-[70%] h-full object-cover"
+      />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[38.5%] bg-gradient-to-r from-white to-white/0 dark:from-zinc-900 dark:to-zinc-900/0" />
+      <div className="pointer-events-none absolute inset-y-0 left-[43.4%] w-[26.6%] bg-gradient-to-l from-white to-white/0 dark:from-zinc-900 dark:to-zinc-900/0" />
+
+      <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-base font-semibold text-gray-900 dark:text-white break-words">
             {restaurant.name}
@@ -69,7 +77,7 @@ function RestaurantCard({
         </span>
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-3">
+      <div className="relative mt-4 flex items-center justify-between gap-3">
         <button
           type="button"
           aria-label={t('overview.showOnMap')}
