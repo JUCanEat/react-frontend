@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { DirectionsRenderer, GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { useSearchParams } from 'react-router-dom';
 import { zoom, mapStyles } from '~/components/map/map_config';
 
@@ -14,6 +14,8 @@ import { useGetAllVendingMachines } from '~/api/vending_machine_service';
 
 interface MapProperProps {
   searchQuery: string;
+  onLocationStateChange?: (state: 'inside' | 'outside' | 'unavailable') => void;
+  onCenterUserActionChange?: (action: (() => void) | null) => void;
 }
 
 const MAPS_LOADER_OPTIONS = {
@@ -21,11 +23,21 @@ const MAPS_LOADER_OPTIONS = {
   googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? '',
 } as const;
 
-export function Map_proper({ searchQuery }: MapProperProps) {
+export function Map_proper({
+  searchQuery,
+  onLocationStateChange,
+  onCenterUserActionChange,
+}: MapProperProps) {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedPlace, setSelectedPlace] = useState<Facility | null>(null);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
+  const [userPosition, setUserPosition] = useState<{ lat: number; lng: number } | null>(null);
+  const [userMarkerPulseOn, setUserMarkerPulseOn] = useState(false);
+  const [userMarkerPulseKey, setUserMarkerPulseKey] = useState(0);
+  const [directionsResult, setDirectionsResult] = useState<google.maps.DirectionsResult | null>(
+    null
+  );
 
   const { isLoaded, loadError } = useJsApiLoader(MAPS_LOADER_OPTIONS);
 
@@ -122,6 +134,100 @@ export function Map_proper({ searchQuery }: MapProperProps) {
     east: lng + 0.02,
   };
 
+  const isUserWithinBounds = (location: { lat: number; lng: number } | null) => {
+    if (!location) return false;
+    return (
+      location.lat >= bounds.south &&
+      location.lat <= bounds.north &&
+      location.lng >= bounds.west &&
+      location.lng <= bounds.east
+    );
+  };
+
+  const isUserOutsideCampus = Boolean(userPosition) && !isUserWithinBounds(userPosition);
+  const displayedUserLocation = !isUserOutsideCampus ? userPosition : null;
+  const isUserLocationUnavailable = !userPosition;
+
+  useEffect(() => {
+    if (isUserLocationUnavailable) {
+      onLocationStateChange?.('unavailable');
+      return;
+    }
+
+    if (isUserOutsideCampus) {
+      onLocationStateChange?.('outside');
+      return;
+    }
+
+    onLocationStateChange?.('inside');
+  }, [isUserLocationUnavailable, isUserOutsideCampus, onLocationStateChange]);
+
+  useEffect(() => {
+    if (!userPosition || isUserOutsideCampus) {
+      onCenterUserActionChange?.(null);
+      return;
+    }
+
+    onCenterUserActionChange?.(() => () => {
+      setMapCenter(userPosition);
+      setUserMarkerPulseKey(prev => prev + 1);
+    });
+  }, [userPosition, isUserOutsideCampus, onCenterUserActionChange]);
+
+  useEffect(() => {
+    if (userMarkerPulseKey === 0) return;
+
+    setUserMarkerPulseOn(true);
+
+    const timeouts = [
+      window.setTimeout(() => setUserMarkerPulseOn(false), 320),
+      window.setTimeout(() => setUserMarkerPulseOn(true), 640),
+      window.setTimeout(() => setUserMarkerPulseOn(false), 960),
+    ];
+
+    return () => {
+      timeouts.forEach(timeout => window.clearTimeout(timeout));
+    };
+  }, [userMarkerPulseKey]);
+
+  useEffect(() => {
+    if (!primaryFacility || !navigator.geolocation) {
+      setUserPosition(null);
+      return;
+    }
+
+    // if (import.meta.env.DEV) {
+    //   setUserPosition({
+    //     lat: lat + 0.0015,
+    //     lng: lng + 0.0015,
+    //   });
+    //   return;
+    // }
+
+    const watchId = navigator.geolocation.watchPosition(
+      position => {
+        const nextLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        setUserPosition(nextLocation);
+      },
+      () => {
+        setUserPosition(null);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 10_000,
+        timeout: 10_000,
+      }
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, [bounds.east, bounds.north, bounds.south, bounds.west, primaryFacility]);
+
   if (restaurantsPending || vendingMachinesPending) {
     return <MapLoadingScreen message={t('map.loading')} />;
   }
@@ -134,6 +240,75 @@ export function Map_proper({ searchQuery }: MapProperProps) {
   if (!isLoaded) {
     return <MapLoadingScreen message={t('map.loading')} />;
   }
+
+  const handleNavigateToFacility = async (facility: Facility) => {
+    if (!userPosition || isUserOutsideCampus) {
+      return;
+    }
+
+    const destination = {
+      lat: facility.location.latitude.value,
+      lng: facility.location.longitude.value,
+    };
+
+    const origin = await new Promise<{ lat: number; lng: number } | null>(resolve => {
+      if (userPosition) {
+        resolve(userPosition);
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        resolve(null);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const nextPosition = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setUserPosition(nextPosition);
+          resolve(nextPosition);
+        },
+        () => resolve(null),
+        {
+          enableHighAccuracy: true,
+          timeout: 10_000,
+          maximumAge: 10_000,
+        }
+      );
+    });
+
+    if (!origin || !window.google?.maps) {
+      return;
+    }
+
+    const service = new window.google.maps.DirectionsService();
+
+    const result = await new Promise<google.maps.DirectionsResult | null>(resolve => {
+      service.route(
+        {
+          origin,
+          destination,
+          travelMode: window.google.maps.TravelMode.WALKING,
+        },
+        (response, status) => {
+          if (status === window.google.maps.DirectionsStatus.OK && response) {
+            resolve(response);
+            return;
+          }
+          resolve(null);
+        }
+      );
+    });
+
+    if (!result) {
+      return;
+    }
+
+    setDirectionsResult(result);
+  };
 
   return (
     <div className="relative w-full h-full">
@@ -166,11 +341,51 @@ export function Map_proper({ searchQuery }: MapProperProps) {
             isHighlighted={selectedPlace?.id === vm.id || targetVendingMachineId === vm.id}
           />
         ))}
+
+        {directionsResult && (
+          <DirectionsRenderer
+            directions={directionsResult}
+            options={{
+              suppressMarkers: true,
+              preserveViewport: false,
+              polylineOptions: {
+                strokeColor: '#009DE0',
+                strokeOpacity: 0.9,
+                strokeWeight: 5,
+              },
+            }}
+          />
+        )}
+
+        {displayedUserLocation && (
+          <Marker
+            position={displayedUserLocation}
+            clickable={false}
+            zIndex={1000}
+            icon={{
+              url:
+                'data:image/svg+xml;utf8,' +
+                encodeURIComponent(
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2"/><circle cx="14" cy="10.2" r="3.1" fill="#FFFFFF"/><path d="M8.8 20.8c0-3.1 2.3-5.4 5.2-5.4s5.2 2.3 5.2 5.4v1.1H8.8z" fill="#FFFFFF"/></svg>'
+                ),
+              scaledSize: new window.google.maps.Size(
+                userMarkerPulseOn ? 28 : 22,
+                userMarkerPulseOn ? 28 : 22
+              ),
+              anchor: new window.google.maps.Point(
+                userMarkerPulseOn ? 14 : 11,
+                userMarkerPulseOn ? 14 : 11
+              ),
+            }}
+          />
+        )}
       </GoogleMap>
 
       <FacilityInfo
         selectedPoint={selectedPlace}
         showGoToMapButton={false}
+        onNavigateTo={handleNavigateToFacility}
+        navigateDisabled={!userPosition || isUserOutsideCampus}
         onClose={() => {
           setSelectedPlace(null);
           if (targetRestaurantId || targetVendingMachineId) {

@@ -14,6 +14,8 @@ export function FacilityInfo({
   selectedPoint,
   onClose,
   showGoToMapButton = true,
+  onNavigateTo,
+  navigateDisabled = false,
 }: FacilityInfoProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -163,6 +165,24 @@ export function FacilityInfo({
         )}
 
         <div className="flex gap-2 mt-8 justify-end">
+          {onNavigateTo && (
+            <button
+              type="button"
+              disabled={navigateDisabled}
+              onClick={() => {
+                if (navigateDisabled) return;
+                onNavigateTo(selectedPoint);
+                onClose();
+              }}
+              className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
+                navigateDisabled
+                  ? 'cursor-not-allowed border-gray-200 text-gray-400 dark:border-zinc-700 dark:text-zinc-500'
+                  : 'border-[#009DE0] text-[#009DE0] hover:bg-sky-50 dark:hover:bg-sky-900/20'
+              }`}
+            >
+              {t('map.navigate')}
+            </button>
+          )}
           {isRestaurant && (
             <button
               type="button"
