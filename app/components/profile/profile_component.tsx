@@ -1,9 +1,178 @@
+import React from 'react';
 import { TopBar } from '~/components/shared/top_bar';
 import { BottomNav } from '~/components/shared/bottom_nav';
 import { useKeycloak } from '@react-keycloak/web';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { appRoutes } from '~/lib/app_routes';
+import { useGetPreferences, useGetCurrentUserWithToken, savePreferences } from '~/api/user_service';
+import type { TagValue } from '~/interfaces';
+
+const ALL_TAGS: TagValue[] = [
+  'ITALIAN',
+  'POLISH',
+  'ASIAN',
+  'FAST_FOOD',
+  'VEGAN',
+  'VEGETARIAN',
+  'GLUTEN',
+  'LACTOSE',
+  'NUTS',
+  'SESAME',
+];
+
+function PreferencesSection({
+  token,
+  userReady,
+  t,
+}: {
+  token: string | undefined;
+  userReady: boolean;
+  t: (key: string) => string;
+}) {
+  const { data: prefsData, isLoading } = useGetPreferences(userReady ? token : undefined);
+  const [include, setInclude] = React.useState<TagValue[]>([]);
+  const [exclude, setExclude] = React.useState<TagValue[]>([]);
+  const [saving, setSaving] = React.useState(false);
+  const [saved, setSaved] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!prefsData) return;
+    setInclude(prefsData.filter(p => p.preferenceType === 'INCLUDE').map(p => p.tagValue));
+    setExclude(prefsData.filter(p => p.preferenceType === 'EXCLUDE').map(p => p.tagValue));
+  }, [prefsData]);
+
+  const toggleInclude = (value: TagValue) => {
+    setInclude(prev => (prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]));
+    setExclude(prev => prev.filter(v => v !== value));
+    setSaved(false);
+  };
+
+  const toggleExclude = (value: TagValue) => {
+    setExclude(prev => (prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]));
+    setInclude(prev => prev.filter(v => v !== value));
+    setSaved(false);
+  };
+
+  const handleSave = async () => {
+    if (!token) return;
+    setSaving(true);
+    setError(null);
+    try {
+      // Ensure user exists in backend DB before saving preferences
+      const meRes = await fetch('/api/users/me', { headers: { Authorization: `Bearer ${token}` } });
+      const meText = await meRes.text().catch(() => '');
+      console.log('[preferences] /api/users/me ->', meRes.status, meText.slice(0, 200));
+      if (!meRes.ok) {
+        throw new Error(`/api/users/me failed (${meRes.status}): ${meText}`);
+      }
+      await savePreferences(token, [
+        ...include.map(tagValue => ({ tagValue, preferenceType: 'INCLUDE' as const })),
+        ...exclude.map(tagValue => ({ tagValue, preferenceType: 'EXCLUDE' as const })),
+      ]);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('profile.failedToSavePreferences'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const tagLabel = (tag: TagValue): string => {
+    const map: Partial<Record<TagValue, string>> = {
+      VEGAN: t('filters.vegan'),
+      VEGETARIAN: t('filters.vegetarian'),
+      GLUTEN: t('menuForm.allergenGluten'),
+      LACTOSE: t('menuForm.allergenLactose'),
+      NUTS: t('menuForm.allergenNuts'),
+      SESAME: t('menuForm.allergenSesame'),
+      ITALIAN: t('profile.tagItalian'),
+      POLISH: t('profile.tagPolish'),
+      ASIAN: t('profile.tagAsian'),
+      FAST_FOOD: t('profile.tagFastFood'),
+    };
+    return map[tag] ?? tag;
+  };
+
+  if (isLoading) {
+    return (
+      <p className="text-sm text-gray-500 dark:text-gray-400">{t('profile.loadingPreferences')}</p>
+    );
+  }
+
+  return (
+    <div className="w-full space-y-5">
+      <div>
+        <p
+          className="text-xs uppercase tracking-widest mb-1"
+          style={{ color: '#009DE0' }}
+        >
+          {t('profile.preferences')}
+        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {t('profile.preferencesSubtitle')}
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {t('profile.iPrefer')}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {ALL_TAGS.map(tag => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => toggleInclude(tag)}
+              className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                include.includes(tag)
+                  ? 'bg-[#009DE0] text-white border-[#009DE0]'
+                  : 'bg-white dark:bg-zinc-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-zinc-600 hover:bg-gray-50 dark:hover:bg-zinc-700'
+              }`}
+            >
+              {tagLabel(tag)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {t('profile.iAvoid')}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {ALL_TAGS.map(tag => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => toggleExclude(tag)}
+              className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                exclude.includes(tag)
+                  ? 'bg-red-500 text-white border-red-500'
+                  : 'bg-white dark:bg-zinc-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-zinc-600 hover:bg-gray-50 dark:hover:bg-zinc-700'
+              }`}
+            >
+              {tagLabel(tag)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-60"
+        style={{ backgroundColor: saved ? '#16a34a' : '#009DE0' }}
+      >
+        {saving ? '…' : saved ? t('profile.preferencesSaved') : t('profile.savePreferences')}
+      </button>
+    </div>
+  );
+}
 
 export default function ProfileComponent() {
   const { keycloak, initialized } = useKeycloak();
@@ -30,6 +199,7 @@ export default function ProfileComponent() {
   const token = keycloak.tokenParsed;
   const roles = token?.realm_access?.roles || [];
   const isOwner = roles.includes('restaurant_owner');
+  const { data: backendUser } = useGetCurrentUserWithToken(keycloak.token);
 
   if (!token) {
     return (
@@ -130,6 +300,17 @@ export default function ProfileComponent() {
                 >
                   {t('profile.openManagerPanel')}
                 </button>
+              )}
+
+              {!isOwner && (
+                <>
+                  <div className="w-full h-px bg-gray-300 dark:bg-zinc-600" />
+                  <PreferencesSection
+                    token={keycloak.token}
+                    userReady={!!backendUser}
+                    t={t}
+                  />
+                </>
               )}
             </div>
           </div>

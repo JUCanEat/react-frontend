@@ -1,9 +1,28 @@
+import { useQuery } from '@tanstack/react-query';
 import { rootQueryUrl, allRestaurantsEndpoint } from '~/root';
 import { apiGet, useApiPut } from '~/api/api';
-import type { Restaurant, RestaurantDetailsDTO, UpdateRestaurantRequest } from '~/interfaces';
+import type {
+  Restaurant,
+  RankedRestaurant,
+  RestaurantDetailsDTO,
+  UpdateRestaurantRequest,
+} from '~/interfaces';
 
 export let useGetAllRestaurants = () =>
   apiGet<Restaurant[]>('restaurants', `${rootQueryUrl}/${allRestaurantsEndpoint}`);
+
+export let useGetRestaurantRecommendations = (token: string | undefined) =>
+  useQuery<RankedRestaurant[]>({
+    queryKey: ['restaurantRecommendations', token],
+    queryFn: async () => {
+      const response = await fetch(`${rootQueryUrl}/${allRestaurantsEndpoint}/me/recommendation`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      return response.json() as Promise<RankedRestaurant[]>;
+    },
+    enabled: !!token,
+  });
 
 export let useGetRestaurantDetails = (id: string) =>
   apiGet<RestaurantDetailsDTO>(

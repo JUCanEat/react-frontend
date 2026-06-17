@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { rootQueryUrl, menusEndpoint } from '~/root';
 import type { DailyMenu, DailyMenuDTO } from '~/interfaces';
+import { TAG_ID_MAP } from '~/interfaces';
 import { getAccessToken } from '~/api/user_service';
 import i18n from '~/i18n';
 
@@ -76,8 +77,23 @@ function upsertLocalDraft(
   return stored;
 }
 
+function convertTagsToObjects(menu: any) {
+  return {
+    ...menu,
+    dishes: (menu.dishes || []).map((dish: any) => ({
+      ...dish,
+      tags: (dish.tags || [])
+        .map((tag: string) => ({
+          id: TAG_ID_MAP[tag as keyof typeof TAG_ID_MAP],
+          value: tag,
+        }))
+        .filter((t: any) => t.id),
+    })),
+  };
+}
+
 function getUiLanguageCode() {
-  return (i18n.language || 'en').split('-')[0].toLowerCase();
+  return (i18n.language || 'en').split('-')[0].toUpperCase();
 }
 
 function mapLocalizedDishes(rawDishes: any[]): DailyMenu['dishes'] {
@@ -90,7 +106,7 @@ function mapLocalizedDishes(rawDishes: any[]): DailyMenu['dishes'] {
       image: dishData?.image || '',
       category: dishData?.category || 'MAIN_COURSE',
       price: String(item?.price ?? dishData?.price ?? '0'),
-      allergens: Array.isArray(dishData?.allergens) ? dishData.allergens : [],
+      tags: Array.isArray(dishData?.tags) ? dishData.tags : [],
     } as any;
   });
 }
@@ -180,19 +196,35 @@ export const useUpdateDailyMenuWithToken = (token: string) =>
       }
 
       const currentLanguage = getUiLanguageCode();
+      const body = JSON.stringify(convertTagsToObjects(menu));
+      console.log('[updateMenu] sending body:', body);
 
-      const response = await fetch(`${rootQueryUrl}/${menusEndpoint}/${restaurantId}`, {
-        method: 'PUT',
+      // Try POST first (create), fall back to PUT (update) if 405
+      let response = await fetch(`${rootQueryUrl}/${menusEndpoint}/${restaurantId}`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
           'Accept-Language': currentLanguage,
         },
-        body: JSON.stringify(menu),
+        body,
       });
+
+      if (response.status === 405) {
+        response = await fetch(`${rootQueryUrl}/${menusEndpoint}/${restaurantId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            'Accept-Language': currentLanguage,
+          },
+          body,
+        });
+      }
 
       if (!response.ok) {
         const text = await response.text().catch(() => '');
+        console.log('[updateMenu] error response:', text);
         throw new Error(`Failed to update menu (${response.status}): ${text}`);
       }
 
@@ -371,7 +403,7 @@ export const menuService = {
           name: dish.name,
           category: dish.category ?? 'MAIN_COURSE',
           price: typeof dish.price === 'number' ? dish.price : Number(dish.price ?? 0),
-          allergens: dish.allergens ?? [],
+          tags: (dish as any).tags?.map((t: any) => t.value ?? t) ?? [],
         })),
       };
     } catch {
@@ -443,7 +475,7 @@ export const menuService = {
         'Content-Type': 'application/json',
         'Accept-Language': currentLanguage,
       },
-      body: JSON.stringify(menu),
+      body: JSON.stringify(convertTagsToObjects(menu)),
     });
 
     if (!response.ok) {

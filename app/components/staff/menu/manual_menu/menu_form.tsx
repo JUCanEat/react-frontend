@@ -14,7 +14,12 @@ import {
 import { Checkbox } from '~/shadcn/components/ui/checkbox';
 import { Plus, Trash } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '~/shadcn/components/ui/alert';
-import { MENU_ALLERGENS, type DishDTO } from '~/interfaces';
+import {
+  MENU_DIETARY_TAGS,
+  MENU_ALLERGEN_TAGS,
+  MENU_CUISINE_TAGS,
+  type DishDTO,
+} from '~/interfaces';
 import {
   menuService,
   useSaveMenuDraftWithToken,
@@ -82,7 +87,7 @@ export function DailyMenuForm({
   }, [searchParams, restaurantId]);
 
   const addDish = () => {
-    setDishes([...dishes, { name: '', category: '', price: 0, allergens: [] }]);
+    setDishes([...dishes, { name: '', category: '', price: 0, tags: [] }]);
   };
 
   const updateDish = (index: number, field: keyof DishDTO, value: any) => {
@@ -91,12 +96,12 @@ export function DailyMenuForm({
     setDishes(updated);
   };
 
-  const toggleAllergen = (index: number, allergen: string) => {
+  const toggleTag = (index: number, tag: string) => {
     const updated = [...dishes];
-    const exists = updated[index].allergens.includes(allergen);
-    updated[index].allergens = exists
-      ? updated[index].allergens.filter(a => a !== allergen)
-      : [...updated[index].allergens, allergen];
+    const exists = updated[index].tags.includes(tag);
+    updated[index].tags = exists
+      ? updated[index].tags.filter(a => a !== tag)
+      : [...updated[index].tags, tag];
     setDishes(updated);
   };
 
@@ -344,25 +349,69 @@ export function DailyMenuForm({
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-gray-900 dark:text-white">
-                      {t('menuForm.allergens')}
-                    </Label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {MENU_ALLERGENS.map(a => (
-                        <label
-                          key={a}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox
-                            checked={dish.allergens.includes(a)}
-                            onCheckedChange={() => toggleAllergen(index, a)}
-                          />
-                          <span className="text-sm text-gray-900 dark:text-white">
-                            {translateAllergen(a, t)}
-                          </span>
-                        </label>
-                      ))}
+                  <div className="space-y-3">
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        {t('menuForm.dietaryTags')}
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {MENU_DIETARY_TAGS.map(tag => (
+                          <label
+                            key={tag}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              checked={dish.tags.includes(tag)}
+                              onCheckedChange={() => toggleTag(index, tag)}
+                            />
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {translateAllergen(tag, t)}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        {t('menuForm.allergenTags')}
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {MENU_ALLERGEN_TAGS.map(tag => (
+                          <label
+                            key={tag}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              checked={dish.tags.includes(tag)}
+                              onCheckedChange={() => toggleTag(index, tag)}
+                            />
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {translateAllergen(tag, t)}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        {t('menuForm.cuisine')}
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {MENU_CUISINE_TAGS.map(tag => (
+                          <label
+                            key={tag}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              checked={dish.tags.includes(tag)}
+                              onCheckedChange={() => toggleTag(index, tag)}
+                            />
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {translateAllergen(tag, t)}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </Card>

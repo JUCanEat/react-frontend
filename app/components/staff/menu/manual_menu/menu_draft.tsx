@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { menuService, type StoredMenuDraft } from '~/api/menu_service';
-import type { DailyMenu, DailyMenuDTO, Dish, Allergen } from '~/interfaces';
+import type { DailyMenu, DailyMenuDTO, Dish, TagValue } from '~/interfaces';
 import { LoadingSpinner } from '~/components/staff/common/loading_spinner';
 import { ErrorState, EmptyState } from '~/components/staff/common/error_state';
 import { StatusBanner } from '~/components/staff/common/status_banner';
@@ -130,17 +130,15 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
     });
   };
 
-  const handleAllergenToggle = (dishIndex: number, allergen: Allergen) => {
+  const handleTagToggle = (dishIndex: number, tag: TagValue) => {
     if (!menu || !menu.dishes) return;
 
-    const dish = menu.dishes[dishIndex];
-    const allergens = dish.allergens || [];
+    const dish = menu.dishes[dishIndex] as any;
+    const tags = dish.tags || [];
 
-    const updatedAllergens = allergens.includes(allergen)
-      ? allergens.filter(a => a !== allergen)
-      : [...allergens, allergen];
+    const updatedTags = tags.includes(tag) ? tags.filter((t: string) => t !== tag) : [...tags, tag];
 
-    handleDishChange(dishIndex, 'allergens', updatedAllergens);
+    handleDishChange(dishIndex, 'tags' as any, updatedTags);
   };
 
   const handleRemoveDish = (index: number) => {
@@ -187,7 +185,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
             name: dish.name,
             category: dish.category ?? 'MAIN_COURSE',
             price: normalizedPrice,
-            allergens: dish.allergens ?? [],
+            tags: (dish as any).tags ?? [],
           };
 
           if (typeof dish.id === 'string' && isUuid(dish.id)) {
@@ -222,7 +220,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
         name: dish.name,
         category: dish.category ?? 'MAIN_COURSE',
         price: typeof dish.price === 'number' ? dish.price : Number(dish.price ?? 0),
-        allergens: dish.allergens ?? [],
+        tags: dish.tags ?? [],
       })),
     };
 
@@ -370,7 +368,7 @@ export function StaffMenuDraft({ restaurantId }: StaffMenuDraftProps) {
                 dish={dish}
                 index={index}
                 onDishChange={handleDishChange}
-                onAllergenToggle={handleAllergenToggle}
+                onTagToggle={handleTagToggle}
                 onRemove={handleRemoveDish}
               />
             ))}
