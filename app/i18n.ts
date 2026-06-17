@@ -14,6 +14,7 @@ const resources = {
         contrastReset: 'Reset',
         contrastNormal: 'Normal',
         contrastHigh: 'High',
+        themeToggle: 'Toggle theme',
       },
       common: {
         loading: 'Loading...',
@@ -287,6 +288,7 @@ const resources = {
         contrastReset: 'Resetuj',
         contrastNormal: 'Normalny',
         contrastHigh: 'Wysoki',
+        themeToggle: 'Przełącz motyw',
       },
       common: {
         loading: 'Ładowanie...',

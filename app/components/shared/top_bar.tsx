@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { appRoutes } from '~/lib/app_routes';
 import { useState, useEffect } from 'react';
-import { Contrast } from 'lucide-react';
+import { Contrast, Moon, Sun } from 'lucide-react';
 
 export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
   const { keycloak, initialized } = useKeycloak();
@@ -20,6 +20,13 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
     return Number(localStorage.getItem('jucaneat-contrast') ?? 1);
   });
 
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('jucaneat-theme');
+    if (saved === 'dark') return true;
+    if (saved === 'light') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
   useEffect(() => {
     const root = document.documentElement;
     root.style.filter = contrast > 1 ? `contrast(${contrast})` : '';
@@ -27,6 +34,11 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
     root.style.setProperty('--contrast-level', String((contrast - 1) / 0.2));
     localStorage.setItem('jucaneat-contrast', String(contrast));
   }, [contrast]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('jucaneat-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   const handleLogin = () => {
     if (!initialized) return;
@@ -109,6 +121,15 @@ export function TopBar({ isLoginPage }: { isLoginPage: boolean }) {
                 onClick={() => switchLanguage('pl')}
               >
                 PL
+              </Button>
+              <Button
+                size="xsm"
+                variant="outline"
+                className="border-gray-200 shadow-sm bg-white text-black hover:bg-gray-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
+                aria-label={t('topBar.themeToggle')}
+                onClick={() => setIsDark(d => !d)}
+              >
+                {isDark ? <Sun size={14} /> : <Moon size={14} />}
               </Button>
               <Popover>
                 <PopoverTrigger asChild>

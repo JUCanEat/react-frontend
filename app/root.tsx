@@ -57,6 +57,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `(function(){var s=localStorage.getItem('jucaneat-theme');if(s==='dark'||(s==null&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}})();`,
+        }}
+      />
       <body className="bg-gradient-to-b from-sky-50 via-white to-white dark:bg-gradient-to-b dark:from-zinc-800 dark:via-zinc-950 dark:to-black">
         {children}
         <ScrollRestoration />
