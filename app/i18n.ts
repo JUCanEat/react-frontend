@@ -14,6 +14,10 @@ const resources = {
         contrastReset: 'Reset',
         contrastNormal: 'Normal',
         contrastHigh: 'High',
+        fontSize: 'Font size',
+        fontSizeReset: 'Reset',
+        fontSizeSmall: 'Normal',
+        fontSizeLarge: 'Large',
       },
       common: {
         loading: 'Loading...',
@@ -287,6 +291,10 @@ const resources = {
         contrastReset: 'Resetuj',
         contrastNormal: 'Normalny',
         contrastHigh: 'Wysoki',
+        fontSize: 'Rozmiar czcionki',
+        fontSizeReset: 'Resetuj',
+        fontSizeSmall: 'Normalny',
+        fontSizeLarge: 'Duży',
       },
       common: {
         loading: 'Ładowanie...',
